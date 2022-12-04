@@ -3,6 +3,7 @@ import About from "../pages/About";
 import Gallery from "../pages/Gallery";
 import Home from "../pages/Home";
 import Lore from "../pages/Lore";
+import NotFound from "../pages/NotFound";
 import Read from "../pages/Read";
 
 export default function Main() {

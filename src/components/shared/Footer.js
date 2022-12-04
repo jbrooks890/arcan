@@ -1,3 +1,9 @@
+import Copy from "../frags/Copy";
+
 export default function Footer() {
-  return <footer></footer>;
+  return (
+    <footer>
+      <Copy />
+    </footer>
+  );
 }
