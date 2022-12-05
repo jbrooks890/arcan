@@ -6,6 +6,8 @@
   --lite: white;
   --pop-alt: red;
   --dark: black;
+  --shadow: hsla(0,0%,0%,0.1);
+  --faint: hsla(0,0%,0%,0.05);
   /* ========== FONTS ========== */
   font-size: 18px;
   /* ========== BORDERS ========== */
@@ -30,6 +32,18 @@ a, a:visited, a:focus, a:hover {
   cursor: pointer;
   color: inherit;
   text-decoration: none;
+}
+
+button {
+  appearance: none;
+  background-color: inherit;
+  color: inherit;
+  border: none;
+}
+
+ul {
+  padding-left: 0;
+  list-style: none inside none;
 }
 
 /* ::::::::::\ FLEX /:::::::::: */

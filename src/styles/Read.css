@@ -1,0 +1,13 @@
+#read--story-btnCache button{
+  --size: 4rem;
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  background-color: var(--pop);
+  box-sizing: border-box;
+  border-radius: 50%;
+}
+
+#read--story-btnCache button:not(:last-of-type){
+  margin-right: 1em;
+}
