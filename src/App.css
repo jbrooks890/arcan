@@ -24,11 +24,15 @@
 .App {
   min-height: 100vh;
   box-sizing: border-box;
+  background-color: var(--dark);
+  color: var(--pop);
+  fill: var(--pop);
 }
 
 header, footer {
-  background-color: #eee;
   font-family: var(--keyFont2);
+  font-weight: bold;
+  font-size: 12px;
 }
 
 .flex main {

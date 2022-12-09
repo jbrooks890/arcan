@@ -10,7 +10,6 @@ export default function Dashboard() {
           <li>Worlds</li>
           <li>Other</li>
           <li>Stuff</li>
-          <li>Characters</li>
         </ul>
       </div>
     </div>

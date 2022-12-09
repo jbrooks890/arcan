@@ -1,3 +1,7 @@
 nav a {
-  margin-inline-end: 1em;
+  text-transform: uppercase;
+}
+
+nav a:not(:last-of-type) {
+  margin-inline-end: 2em;
 }

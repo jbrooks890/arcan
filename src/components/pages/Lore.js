@@ -5,6 +5,7 @@ export default function Lore() {
         <li>World</li>
         <li>Characters</li>
         <li>Magic</li>
+        <li>Glossary</li>
       </ul>
     </div>
   );
