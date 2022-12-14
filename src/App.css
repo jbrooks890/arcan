@@ -19,6 +19,8 @@
   /* ========== BORDERS ========== */
   --inside: 5px;
   --outside: 10px;
+  /* ============================= */
+  background-color: var(--dark);
 }
 
 .App {
