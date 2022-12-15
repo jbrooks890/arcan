@@ -31,6 +31,10 @@
   fill: var(--pop);
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 header, footer {
   font-family: var(--keyFont2);
   font-weight: bold;

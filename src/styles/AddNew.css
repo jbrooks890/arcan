@@ -1,0 +1,38 @@
+#addNew form {
+  border: 2px solid var(--green);
+  padding: 1em;
+  box-sizing: border-box;
+  border-radius: var(--outside);
+}
+
+#addNew form > * {
+  display: block;
+  margin-bottom: 1em;
+  text-align: left;
+}
+
+#addNew label span {
+  text-transform: uppercase;
+  font-size: small;
+}
+
+#addNew input {
+  display: block;
+  padding: .5em;
+  font-size: 1rem;
+  box-sizing: border-box;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+}
+
+#addNew input::selection{
+  background-color: var(--green);
+  color: black;
+}
+
+/* #addNew .select-box {
+  
+  text-transform: uppercase;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+} */

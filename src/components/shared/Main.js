@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import About from "../pages/About";
+import AddNew from "../pages/admin/AddNew";
 import Gallery from "../pages/Gallery";
 import Home from "../pages/Home";
 import Lore from "../pages/Lore";
@@ -15,6 +16,7 @@ export default function Main() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/lore" element={<Lore />} />
         <Route path="/read" element={<Read />} />
+        <Route path="/add" element={<AddNew />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </main>

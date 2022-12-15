@@ -1,0 +1,215 @@
+input {
+  appearance: none;
+  background-color: transparent;
+  color: inherit;
+  border: inherit;
+  outline: inherit;
+}
+
+/* ::::::::\ CHECKBOX /:::::::: */
+
+.custom-checkbox {
+  /* --size: 2rem; */
+  --color: inherit;
+  cursor: pointer;
+  position: relative;
+  /* margin-top: 1em; */
+  width: var(--size);
+  height: var(--size);
+  box-sizing: border-box;
+  /* border: 2px solid var(--color); */
+  /* border-radius: 50%; */
+}
+
+.custom-checkbox input[type='checkbox'] {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  height: 0;
+  border: none;
+  visibility: hidden;
+}
+
+.custom-checkbox .checkmark {
+  --size: 1.5rem;
+  --color: inherit;
+  width: var(--size);
+  height: var(--size);
+  margin-right: .5rem;
+  box-sizing: border-box;
+  border: 2px solid var(--color);
+  border-radius: 50%;
+  mix-blend-mode: lighten;
+}
+
+.custom-checkbox input[type='checkbox']:checked+.checkmark {
+  --color: inherit;
+  background-color: var(--color);
+}
+
+.custom-checkbox svg {
+  --size: 60%;
+  --color: inherit;
+  width: var(--size);
+  height: var(--size);
+  fill: black;
+  opacity: 0;
+  transition: 0.1s ease-out;
+}
+
+.custom-checkbox input[type='checkbox']:checked~.checkmark svg {
+  opacity: 1;
+}
+
+.custom-checkbox .label-text {
+  font-size: .75rem;
+  line-height: 1em;
+}
+
+/* ::::::::\ SELECT BOX /:::::::: */
+
+.select-box {
+  position: relative;
+  box-sizing: border-box;
+}
+
+.select-box .wrapper {
+  position: relative;
+  padding: .5em;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+  box-sizing: border-box;
+}
+
+.option-display {
+  cursor: pointer;
+  position: relative;
+  line-height: 1em;
+  z-index: 2;
+}
+
+.option-display::after {
+  content: '\254B';
+  display: block;
+  /* justify-content: center; */
+  /* align-items: center; */
+  /* margin-left: .5em; */
+  /* background-color: red; */
+  color: inherit;
+  /* font-family: monospace; */
+  font-size: 1rem;
+  line-height: 1em;
+  transform-origin: center;
+  /* transform: rotate(45deg); */
+  /* border: 1px solid red; */
+  opacity: 0.25;
+  transition: 0.1s ease-out;
+  box-sizing: border-box;
+}
+
+.option-display.open::after {
+  transform: rotate(45deg);
+  opacity: 1;
+}
+
+.option-display:hover::after {
+  opacity: 1;
+}
+
+.option-display.flex {
+  justify-content: space-between;
+}
+
+.option-display svg {
+  --size: 0.75rem;
+  width: var(--size);
+  height: var(--size);
+  stroke: var(--lavender);
+  stroke-width: 8;
+  transform: rotate(90deg);
+}
+
+.option-list {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  background-color: var(--dark);
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.1s ease-out;
+  box-sizing: border-box;
+  overflow: hidden;
+
+}
+
+.option-list.open {
+  opacity: 1;
+  z-index: 1;
+}
+
+.option-list li {
+  cursor: pointer;
+  padding: 0.5em 1em;
+  font-size: 0.8rem;
+  line-height: 1em;
+  /* border: 1px solid cyan; */
+}
+
+.option-list li:focus {
+  background-color: var(--mid);
+}
+
+/* ::::::::\ TOGGLE /:::::::: */
+.toggle input[type="checkbox"]{
+  position: absolute;
+  visibility: hidden;
+}
+
+.cb-toggle {
+  --size: 1.25rem;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid var(--green);
+  padding: 3px;
+  width: calc(var(--size)*2);
+  height: var(--size);
+  border-radius: 100px;
+  transition: 0.2s ease-out;
+}
+
+.cb-toggle::before{
+  --size: inherit;
+  content: "";
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  transition: inherit;
+  background-color: var(--green);
+  border-radius: 50%;
+}
+
+input:checked+.cb-toggle{
+  background-color: var(--green);
+}
+
+input:checked + .cb-toggle::before {
+  --size: inherit;
+  background-color: var(--dark);
+  transform: translateX(var(--size));
+}
+
+/* ========================================= *\
+|| >> HOVER <<
+\* ========================================= */
+
+@media (hover:hover) {
+  .option-list li:hover {
+    background-color: var(--green);
+    color: var(--dark);
+  }
+}
