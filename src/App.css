@@ -63,6 +63,12 @@ ul {
   list-style: none inside none;
 }
 
+/* ::::::::::\ HEADINGS /:::::::::: */
+
+h3 {
+  font-family: var(--keyFont2);
+}
+
 /* ::::::::::\ FLEX /:::::::::: */
 .flex {
   display: flex;
@@ -70,6 +76,10 @@ ul {
 
 .flex.col {
   flex-direction: column;
+}
+
+.flex.start {
+  justify-content: flex-start;
 }
 
 .flex.middle {

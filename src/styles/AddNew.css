@@ -1,7 +1,15 @@
+#addNew {
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
 #addNew form {
-  border: 2px solid var(--green);
+  position: relative;
+  width: 75vw;
+  max-width: 480px;
   padding: 1em;
   box-sizing: border-box;
+  border: 2px solid var(--green);
   border-radius: var(--outside);
 }
 
@@ -11,9 +19,22 @@
   text-align: left;
 }
 
+#addNew form h3 {
+  align-self: stretch;
+  position: sticky;
+  top: 0;
+  padding-block: .5em;
+  background-color: var(--dark);
+  text-align: center;
+}
+
 #addNew label span {
   text-transform: uppercase;
   font-size: small;
+}
+
+#addNew label span+*{
+  margin-top: 2px;
 }
 
 #addNew input {

@@ -6,6 +6,11 @@ input {
   outline: inherit;
 }
 
+.flex input {
+  flex-grow: 1;
+  align-self: stretch;
+}
+
 /* ::::::::\ CHECKBOX /:::::::: */
 
 .custom-checkbox {
@@ -203,12 +208,66 @@ input:checked + .cb-toggle::before {
   transform: translateX(var(--size));
 }
 
+/* ::::::::\ MENU /:::::::: */
+
+.select-menu {
+  position: sticky;
+  top:1em;
+  left: 0;
+  margin-right: 1em;
+  padding-block: 1em;
+  border: 2px solid var(--green);
+  border-radius: var(--outside);
+}
+
+.flex .select-menu{
+  align-self: flex-start;
+}
+
+.select-menu legend {
+  /* display: block; */
+  /* padding-inline: .25em; */
+  font-size: small;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.select-menu input[type="radio"]{
+  position: absolute;
+  visibility: hidden;
+}
+
+.select-menu input[type="radio"]+label {
+  cursor: pointer;
+  border: 2px solid var(--green);
+  margin-bottom: .5em;
+  padding: .5em;
+  font-family: var(--keyFont2);
+  font-size: smaller;
+  font-weight: bold;
+  line-height: 1em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  border-radius: var(--inside);
+  transition: .1s ease-out;
+}
+
+.select-menu input[type="radio"]:checked+label{
+  background-color: var(--green);
+  color: var(--dark);
+}
+
 /* ========================================= *\
 || >> HOVER <<
 \* ========================================= */
 
 @media (hover:hover) {
   .option-list li:hover {
+    background-color: var(--green);
+    color: var(--dark);
+  }
+
+  .select-menu input[type="radio"]:hover+label{
     background-color: var(--green);
     color: var(--dark);
   }
