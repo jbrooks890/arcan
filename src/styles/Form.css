@@ -11,6 +11,13 @@ input {
   align-self: stretch;
 }
 
+input::placeholder {
+  color: inherit;
+  opacity: .5;
+  font-family: inherit;
+  font-style: italic;
+}
+
 /* ::::::::\ CHECKBOX /:::::::: */
 
 .custom-checkbox {
@@ -94,7 +101,7 @@ input {
 }
 
 .option-display::after {
-  content: '\254B';
+  content: var(--cancel);
   display: block;
   /* justify-content: center; */
   /* align-items: center; */
@@ -218,6 +225,7 @@ input:checked + .cb-toggle::before {
   padding-block: 1em;
   border: 2px solid var(--green);
   border-radius: var(--outside);
+  transition: .2s ease-out;
 }
 
 .flex .select-menu{
@@ -257,6 +265,82 @@ input:checked + .cb-toggle::before {
   color: var(--dark);
 }
 
+/* ::::::::\ WORD BANK /:::::::: */
+
+.word-bank {
+  border: 1px solid var(--green);
+  box-sizing: border-box;
+  border-radius: var(--outside);
+}
+
+.word-bank legend {
+  font-size: small;
+  text-transform: uppercase;
+}
+
+.word-bank .new-entry-wrap {
+  box-sizing: border-box;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+}
+
+.word-bank .new-entry-wrap input.new-entry {
+  position: relative;
+  border: none !important;
+}
+
+.word-bank .new-entry-wrap button {
+  --size: 2em;
+  cursor: pointer;
+  width: var(--size);
+  height: var(--size);
+  margin-inline: .5em;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  transition: .1s ease-out;
+}
+
+.word-bank .new-entry-wrap button::before {
+  content: var(--cancel);
+  font-size: smaller;
+  font-weight: bold;
+}
+
+.word-bank .entry-cache .entry {
+  cursor: pointer;
+  margin: 0 .5em .5em 0;
+  padding: .25em;
+  background-color: var(--green);
+  color: var(--dark);
+  line-height: 1em;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.word-bank .entry-cache .entry .delete-entry{
+  cursor: pointer;
+  display: inline-block;
+  font-size: .5em;
+  font-weight: bold;
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: .1s ease-out;
+  /* border: 1px solid red; */
+}
+
+.word-bank .entry-cache .entry .delete-entry::after {
+  content: "\2573";
+}
+
+.word-bank .entry-cache .entry:hover .delete-entry{
+  width: auto;
+  padding-left: 1em;
+  opacity: .5;
+}
+
+
+
 /* ========================================= *\
 || >> HOVER <<
 \* ========================================= */
@@ -268,6 +352,11 @@ input:checked + .cb-toggle::before {
   }
 
   .select-menu input[type="radio"]:hover+label{
+    background-color: var(--green);
+    color: var(--dark);
+  }
+
+  .word-bank .new-entry-wrap button:hover {
     background-color: var(--green);
     color: var(--dark);
   }

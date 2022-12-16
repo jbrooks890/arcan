@@ -6,6 +6,8 @@ import Form from "../../form/Form";
 import TextField from "../../form/TextField";
 import Toggle from "../../form/Toggle";
 import Menu from "../../form/Menu";
+import WordBank from "../../form/WordBank";
+import ButtonCache from "../../form/ButtonCache";
 
 export default function AddNew() {
   const [models, setModels] = useState({});
@@ -14,10 +16,7 @@ export default function AddNew() {
 
   const initEntry = entry => {
     const data = models[entry];
-    // console.log(data);
     const { paths } = data;
-    // console.log("paths:", paths);
-    // setNewEntry(paths.map(field=> ))
     const fields = Object.fromEntries(
       Object.entries(paths)
         .filter(
@@ -40,50 +39,81 @@ export default function AddNew() {
               dataType = [];
               break;
             case "ObjectID":
-              dataType = {};
+              dataType = "0000000000";
               break;
           }
           return [field, defaultValue ? defaultValue : dataType];
         })
     );
     // console.log("fields", fields);
-    setNewEntry();
+    setNewEntry(fields);
+  };
+
+  // :::::::::::::\ SELECT MODEL /:::::::::::::
+  const selectModel = option => {
+    setSelection(option);
+    initEntry(option);
   };
 
   useEffect(async () => {
     try {
       const response = await axios.get("/models");
       setModels(response.data);
-      // initEntry();
     } catch (err) {
       console.log(err);
     }
   }, []);
 
-  // console.log({ selection });
-  useEffect(() => selection && console.log(models[selection]), [selection]);
+  useEffect(
+    () => Object.keys(models).length && selectModel(Object.keys(models)[0]),
+    [models]
+  );
 
-  // console.log(newEntry);
+  // console.log({ selection });
+  // useEffect(() => selection && console.log(models[selection]), [selection]);
+
+  // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
+
+  const updateForm = (field, entry) => {
+    setNewEntry(prev => ({ ...prev, [field]: entry }));
+  };
+
+  // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
 
   const buildForm = () => {
     const { paths: fields } = models[selection];
-    console.log(fields);
+    console.log("fields:", fields);
+    // console.log(
+    //   Object.fromEntries(
+    //     Object.entries(fields).filter(
+    //       ([key, val]) => val.instance === "Array" && !val.caster?.instance
+    //     )
+    //   )
+    // );
 
     return Object.keys(fields)
       .filter(
         field => !["_id", "createdAt", "updatedAt", "__v"].includes(field)
       )
       .map((field, key) => {
-        // console.log({ field, label });
         const data = fields[field];
         const { isRequired: required, enumValues: options } = data;
+
+        // ---------| HANDLE CHANGE |---------
+
+        const handleChange = e => updateForm(field, e.currentTarget.value);
+
+        // ---------| CREATE LABEL |---------
 
         const createLabel = () => {
           let label = field.replace(/([A-Z])/g, " $1").toLowerCase();
           const shorthands = new Map([
             ["pref", "preference"],
-            ["abb", "attribute"],
+            ["attr", "attribute"],
           ]);
+          shorthands.forEach((long, short) => {
+            if (label.includes(short)) label = label.replace(short, long);
+          });
           if (
             data.instance === "Array" &&
             label.charAt(label.length - 1) !== "s"
@@ -95,33 +125,72 @@ export default function AddNew() {
         const label = createLabel();
         // options?.length && console.log(options);
 
+        // console.log({ field, label });
+
         const props = {
           key,
           field,
           label,
           required,
+          value: newEntry[field],
         };
 
         if (options?.length) {
-          return <SelectBox options={options} {...props} />;
+          return (
+            <SelectBox
+              options={options}
+              {...props}
+              handleChange={entry => updateForm(field, entry)}
+            />
+          );
         } else {
           switch (data.instance) {
             case "String":
-              return <TextField {...props} />;
+              return <TextField {...props} handleChange={handleChange} />;
               break;
             case "Number":
               return (
-                <label>
+                <label {...key}>
                   <span>{label}</span>
-                  <input {...props} type="number" min={0} />
+                  <input
+                    type="number"
+                    min={0}
+                    onChange={handleChange}
+                    value={newEntry[field]}
+                  />
                 </label>
               );
               break;
             case "Boolean":
-              return <Toggle {...props} />;
+              return (
+                <Toggle
+                  {...props}
+                  handleChange={e => updateForm(field, e.currentTarget.checked)}
+                />
+              );
               break;
             case "Array":
-              // console.log(data.caster.instance);
+              if (data.caster) {
+                const { instance, options } = data.caster;
+                if (instance === "String")
+                  return (
+                    <WordBank
+                      {...props}
+                      terms={newEntry[field]}
+                      update={entry => {
+                        console.log({ field, entry });
+                        updateForm(field, entry);
+                      }}
+                    />
+                  );
+                if (instance === "ObjectID")
+                  return (
+                    <label {...props}>
+                      <span>{label}</span>
+                      <div>{`[{ ${options.ref} }]`}</div>
+                    </label>
+                  );
+              }
               return (
                 <label {...props}>
                   <span>{label}</span>
@@ -144,12 +213,15 @@ export default function AddNew() {
       });
   };
 
-  const handleSubmit = () => {};
-
-  const handleChange = option => {
-    setSelection(option);
-    initEntry(option);
+  // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
+  const handleSubmit = e => {
+    e.preventDefault();
+    console.log(`New ${selection}:`, newEntry);
   };
+
+  // ============================================
+  // :::::::::::::::::\ RENDER /:::::::::::::::::
+  // ============================================
 
   return (
     <div id="addNew" className="flex">
@@ -158,12 +230,20 @@ export default function AddNew() {
           <Menu
             options={Object.keys(models)}
             label="create"
-            handleChange={handleChange}
+            handleChange={selectModel}
+            value={selection}
           />
           <Form className="flex col" autocomplete={false}>
             <h3>{selection}</h3>
-            {/* <SelectBox options={Object.keys(models)} onChange={handleChange} /> */}
             {selection && buildForm()}
+            <ButtonCache>
+              <button type="submit" onClick={e => handleSubmit(e)}>
+                Save
+              </button>
+              <button type="reset" onClick={e => e.preventDefault()}>
+                Reset
+              </button>
+            </ButtonCache>
           </Form>
         </>
       ) : (

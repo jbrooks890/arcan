@@ -9,7 +9,7 @@ const TextField = ({
   label,
   required = false,
   criteria,
-  onChange,
+  handleChange,
   value,
   validator,
 }) => {
@@ -52,8 +52,8 @@ const TextField = ({
         type="text"
         placeholder={placeholder ?? ""}
         {...{ value }}
-        {...{ onChange }}
-        onBlur={() => required && validator()}
+        onChange={handleChange}
+        // onBlur={() => required && validator()}
       />
     </label>
   );

@@ -1,6 +1,12 @@
 import { useRef } from "react";
 
-const Toggle = ({ classList = [], field, label, onChange, def = false }) => {
+const Toggle = ({
+  classList = [],
+  field,
+  label,
+  handleChange,
+  value = false,
+}) => {
   const input = useRef();
 
   // console.log(props);
@@ -13,8 +19,8 @@ const Toggle = ({ classList = [], field, label, onChange, def = false }) => {
         ref={input}
         type="checkbox"
         id={field}
-        onChange={onChange}
-        // checked={def}
+        onChange={handleChange}
+        checked={value}
       />
       <div className="cb-toggle" />
     </label>

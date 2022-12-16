@@ -7,14 +7,14 @@ export default function SelectBox({
   required,
   label,
   classList = [],
-  onChange,
+  handleChange,
 }) {
   const [selected, setSelected] = useState(options[0]);
   const [open, toggleOpen] = useState(false);
   const list = useRef();
 
   const selectOption = selection => {
-    onChange(selection);
+    handleChange(selection);
     setSelected(selection);
     toggleOpen(false);
   };
