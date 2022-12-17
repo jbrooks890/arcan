@@ -7,7 +7,7 @@ const TextField = ({
   validation,
   error,
   label,
-  required = false,
+  required,
   criteria,
   handleChange,
   value,
@@ -21,13 +21,10 @@ const TextField = ({
   };
 
   return (
-    <label
-      htmlFor={field}
-      data-label={label}
-      className={`${required ? "required" : ""}`}
-    >
+    <label htmlFor={field} data-label={label}>
       <span onClick={criteria ? toggleCriteria : null}>
         {label}
+        {required && <span className={required ? "required" : ""} />}
         {validation && required && <ValidMarker {...{ error }} />}
       </span>
       {criteria && (

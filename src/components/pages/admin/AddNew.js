@@ -8,6 +8,7 @@ import Toggle from "../../form/Toggle";
 import Menu from "../../form/Menu";
 import WordBank from "../../form/WordBank";
 import ButtonCache from "../../form/ButtonCache";
+import ChoiceBox from "../../form/ChoiceBox";
 
 export default function AddNew() {
   const [models, setModels] = useState({});
@@ -78,26 +79,16 @@ export default function AddNew() {
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
-  // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
+  // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
-  const buildForm = () => {
-    const { paths: fields } = models[selection];
-    console.log("fields:", fields);
-    // console.log(
-    //   Object.fromEntries(
-    //     Object.entries(fields).filter(
-    //       ([key, val]) => val.instance === "Array" && !val.caster?.instance
-    //     )
-    //   )
-    // );
-
+  const createFields = fields => {
     return Object.keys(fields)
       .filter(
         field => !["_id", "createdAt", "updatedAt", "__v"].includes(field)
       )
       .map((field, key) => {
         const data = fields[field];
-        const { isRequired: required, enumValues: options } = data;
+        const { isRequired: required, enumValues } = data;
 
         // ---------| HANDLE CHANGE |---------
 
@@ -123,9 +114,6 @@ export default function AddNew() {
           return label;
         };
         const label = createLabel();
-        // options?.length && console.log(options);
-
-        // console.log({ field, label });
 
         const props = {
           key,
@@ -135,10 +123,10 @@ export default function AddNew() {
           value: newEntry[field],
         };
 
-        if (options?.length) {
+        if (enumValues?.length) {
           return (
-            <SelectBox
-              options={options}
+            <ChoiceBox
+              options={enumValues}
               {...props}
               handleChange={entry => updateForm(field, entry)}
             />
@@ -154,7 +142,7 @@ export default function AddNew() {
                   <span>{label}</span>
                   <input
                     type="number"
-                    min={0}
+                    min={data.options?.min ?? 0}
                     onChange={handleChange}
                     value={newEntry[field]}
                   />
@@ -184,6 +172,7 @@ export default function AddNew() {
                     />
                   );
                 if (instance === "ObjectID")
+                  // NEEDS TO BE A MULTI CHOICE BOX OF DATABASE ENTRIES
                   return (
                     <label {...props}>
                       <span>{label}</span>
@@ -200,6 +189,7 @@ export default function AddNew() {
 
               break;
             case "ObjectID":
+              // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
               const { ref } = data.options;
               return (
                 <label {...props}>
@@ -208,9 +198,25 @@ export default function AddNew() {
                 </label>
               );
               break;
+            default:
+              return (
+                <label {...props}>
+                  <span>{label}</span>
+                  <div>?</div>
+                </label>
+              );
           }
         }
       });
+  };
+
+  // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
+
+  const buildForm = () => {
+    const { paths } = models[selection];
+    console.log("fields:", paths);
+
+    return createFields(paths);
   };
 
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::

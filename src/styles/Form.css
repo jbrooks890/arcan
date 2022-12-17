@@ -1,14 +1,24 @@
 input {
   appearance: none;
+  display: block;
   background-color: transparent;
   color: inherit;
-  border: inherit;
+  padding: .5em;
+  font-size: 1rem;
+  box-sizing: border-box;
   outline: inherit;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
 }
 
-.flex input {
+.flex input:not([type="radio"]:not([type="checkbox"])) {
   flex-grow: 1;
   align-self: stretch;
+}
+
+::selection {
+  background-color: var(--green);
+  color: black;
 }
 
 input::placeholder {
@@ -16,6 +26,23 @@ input::placeholder {
   opacity: .5;
   font-family: inherit;
   font-style: italic;
+}
+
+/* form.custom-form input[type="radio"]{
+  border-radius: 50% !important;
+} */
+
+legend {
+  font-size: small;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.required::after {
+  content:"*";
+  color: red;
+  /* font-size: 1rem; */
+  padding-left: .25em;
 }
 
 /* ::::::::\ CHECKBOX /:::::::: */
@@ -232,13 +259,6 @@ input:checked + .cb-toggle::before {
   align-self: flex-start;
 }
 
-.select-menu legend {
-  /* display: block; */
-  /* padding-inline: .25em; */
-  font-size: small;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-}
 
 .select-menu input[type="radio"]{
   position: absolute;
@@ -339,7 +359,83 @@ input:checked + .cb-toggle::before {
   opacity: .5;
 }
 
+/* ::::::::\ CHOICE BOX /:::::::: */
 
+.choice-box {
+  border: inherit;
+  border-radius: var(--outside);
+}
+
+.choice-box label {
+  cursor: pointer;
+  position: relative;
+  padding: .25em;
+}
+
+.choice-box label::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--inside);
+  background-color: var(--green);
+  opacity: 0;
+}
+
+.choice-box label:hover::after{
+  opacity: .1;
+}
+
+/* .choice-box label:not(:last-of-type) {
+  margin-bottom: .25em;
+} */
+
+.custom-form .choice-box input {
+  display: none ;
+}
+
+.custom-form .choice-box .ticker {
+  --size: 1rem;
+  position: relative;
+  flex-grow: 0;
+  margin-right: .5em;
+  width: var(--size);
+  height: var(--size);
+  border: 2px solid var(--green);
+  /* border-radius: 50%; */
+}
+
+.custom-form .choice-box .ticker::before{
+  content: "";
+  position: absolute;
+  display: block;
+  inset: 3px;
+  background-color: var(--green);
+  /* border-radius: inherit; */
+  transform: scale(.5);
+  opacity: 0;
+  transition: .1s ease-out;
+}
+
+.custom-form .choice-box input:checked+.ticker::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.custom-form .choice-box .ticker.radio {
+  border-radius: 50%;
+}
+
+.custom-form .choice-box .ticker.radio::before {
+  border-radius: inherit;
+}
+
+.custom-form .choice-box .ticker.checkbox{
+  border-radius: var(--inside);
+}
+
+.custom-form .choice-box .ticker.checkbox::before {
+  border-radius: 2px;
+}
 
 /* ========================================= *\
 || >> HOVER <<

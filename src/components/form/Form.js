@@ -8,7 +8,7 @@ const Form = ({
 }) => {
   return (
     <form
-      className={className}
+      className={`custom-form ${className}`}
       onSubmit={handleSubmit}
       autoComplete={autocomplete ? "on" : "off"}
     >

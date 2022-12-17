@@ -37,19 +37,19 @@
   margin-top: 2px;
 }
 
-#addNew input {
+/* #addNew input {
   display: block;
   padding: .5em;
   font-size: 1rem;
   box-sizing: border-box;
   border: 2px solid var(--green);
   border-radius: var(--inside);
-}
+} */
 
-#addNew input::selection{
+/* #addNew input::selection{
   background-color: var(--green);
   color: black;
-}
+} */
 
 /* #addNew .select-box {
   
