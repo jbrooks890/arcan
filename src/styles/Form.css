@@ -1,3 +1,4 @@
+
 input {
   appearance: none;
   display: block;
@@ -11,18 +12,21 @@ input {
   border-radius: var(--inside);
 }
 
+input[type="text"],
+input[type="number"]{
+  width: 100%;
+}
+
 .flex input:not([type="radio"]:not([type="checkbox"])) {
   flex-grow: 1;
   align-self: stretch;
 }
 
-::selection {
-  background-color: var(--green);
-  color: black;
-}
 
-input::placeholder {
+
+::placeholder {
   color: inherit;
+  font-family: inherit;
   opacity: .5;
   font-family: inherit;
   font-style: italic;
@@ -36,6 +40,29 @@ legend {
   font-size: small;
   text-transform: uppercase;
   letter-spacing: .1em;
+}
+
+textarea {
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: .5em;
+  resize: vertical;
+  background-color: transparent;
+  color: inherit;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+  outline: inherit;
+  box-sizing: border-box;
+}
+
+textarea::-webkit-resizer {
+  display: none;
+}
+
+::selection {
+  background-color: var(--green);
+  color: black;
 }
 
 .required::after {
@@ -389,7 +416,7 @@ input:checked + .cb-toggle::before {
   margin-bottom: .25em;
 } */
 
-.custom-form .choice-box input {
+.custom-form .choice-box input:not([type="text"]) {
   display: none ;
 }
 
@@ -436,6 +463,9 @@ input:checked + .cb-toggle::before {
 .custom-form .choice-box .ticker.checkbox::before {
   border-radius: 2px;
 }
+
+/* ::::::::\ CHOICE BOX (COMPLEX) /:::::::: */
+
 
 /* ========================================= *\
 || >> HOVER <<

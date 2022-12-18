@@ -9,6 +9,8 @@ import Menu from "../../form/Menu";
 import WordBank from "../../form/WordBank";
 import ButtonCache from "../../form/ButtonCache";
 import ChoiceBox from "../../form/ChoiceBox";
+import FieldSet from "../../form/FieldSet";
+import DataSet from "../../form/DataSet";
 
 export default function AddNew() {
   const [models, setModels] = useState({});
@@ -81,7 +83,7 @@ export default function AddNew() {
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
-  const createFields = fields => {
+  const createFields = (fields, nested = false) => {
     return Object.keys(fields)
       .filter(
         field => !["_id", "createdAt", "updatedAt", "__v"].includes(field)
@@ -99,7 +101,7 @@ export default function AddNew() {
         const createLabel = () => {
           let label = field.replace(/([A-Z])/g, " $1").toLowerCase();
           const shorthands = new Map([
-            ["pref", "preference"],
+            // ["pref", "preference"],
             ["attr", "attribute"],
           ]);
           shorthands.forEach((long, short) => {
@@ -124,7 +126,13 @@ export default function AddNew() {
         };
 
         if (enumValues?.length) {
-          return (
+          return enumValues.length > 3 ? (
+            <SelectBox
+              options={required ? enumValues : ["--", ...enumValues]}
+              {...props}
+              handleChange={entry => updateForm(field, entry)}
+            />
+          ) : (
             <ChoiceBox
               options={enumValues}
               {...props}
@@ -134,7 +142,19 @@ export default function AddNew() {
         } else {
           switch (data.instance) {
             case "String":
-              return <TextField {...props} handleChange={handleChange} />;
+              return field === "description" ? (
+                <label {...key}>
+                  <span className={required ? "required" : ""}>{label}</span>
+                  <textarea
+                    placeholder={`Description for ${selection}`}
+                    onChange={handleChange}
+                    rows={6}
+                    value={newEntry[field]}
+                  />
+                </label>
+              ) : (
+                <TextField {...props} handleChange={handleChange} />
+              );
               break;
             case "Number":
               return (
@@ -157,6 +177,18 @@ export default function AddNew() {
                 />
               );
               break;
+            case "Date":
+              return (
+                <label {...key}>
+                  <span>{label}</span>
+                  <input
+                    type="date"
+                    onChange={handleChange}
+                    value={newEntry[field]}
+                  />
+                </label>
+              );
+              break;
             case "Array":
               if (data.caster) {
                 const { instance, options } = data.caster;
@@ -174,11 +206,39 @@ export default function AddNew() {
                 if (instance === "ObjectID")
                   // NEEDS TO BE A MULTI CHOICE BOX OF DATABASE ENTRIES
                   return (
-                    <label {...props}>
-                      <span>{label}</span>
-                      <div>{`[{ ${options.ref} }]`}</div>
-                    </label>
+                    <ChoiceBox
+                      options={[options.ref + " names"]}
+                      single={false}
+                      {...props}
+                      // handleChange={entry => updateForm(field, entry)}
+                    />
                   );
+              }
+              if (data.schema) {
+                const { paths } = data.schema;
+                const $primary = Object.keys(paths)[0];
+                const primary = paths[$primary]; // "attribute" path
+                const secondaries = Object.fromEntries(
+                  Object.entries(paths).filter(([path]) => path !== $primary)
+                );
+                // console.log("primaries:", primaries);
+                // console.log("secondaries:\n", secondaries);
+
+                return (
+                  <DataSet
+                    {...props}
+                    single={false}
+                    options={
+                      primary.enumValues?.length ? primary.enumValues : null
+                    }
+                    primary={primary}
+                    secondaries={
+                      primary.enumValues?.length
+                        ? createFields(secondaries)
+                        : null
+                    }
+                  />
+                );
               }
               return (
                 <label {...props}>
@@ -192,13 +252,21 @@ export default function AddNew() {
               // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
               const { ref } = data.options;
               return (
-                <label {...props}>
-                  <span>{label}</span>
-                  <div>{`{ ${ref} }`}</div>
-                </label>
+                <ChoiceBox
+                  options={[ref + " name"]}
+                  {...props}
+                  // handleChange={entry => updateForm(field, entry)}
+                />
               );
               break;
             default:
+              if (data.options) {
+                if (data.options?.type?.paths) {
+                  return createFields(data.options.type.paths, true);
+                } else {
+                  console.log({ field });
+                }
+              }
               return (
                 <label {...props}>
                   <span>{label}</span>
