@@ -43,7 +43,7 @@ const DataSet = ({
               option={option}
               secondaries={secondaries}
               field={field}
-              single={true}
+              single={single}
             />
             // <label key={i} htmlFor={option} className="flex start middle">
             //   <input

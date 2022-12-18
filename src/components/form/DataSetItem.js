@@ -1,30 +1,31 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const DataSetItem = ({ option, secondaries, field, single }) => {
   const [open, setOpen] = useState(false);
+  const drawer = useRef();
 
   return (
-    <label htmlFor={option} className="flex start middle">
-      <input
-        id={option}
-        name={field}
-        type={single ? "radio" : "checkbox"}
-        value={option}
-        // checked={option === value}
-        // onChange={() =>
-        //   handleChange(
-        //     single
-        //       ? option
-        //       : inputs.current
-        //           .filter(input => input.checked)
-        //           .map(input => input.value)
-        //   )
-        // }
-      />
-      <div className={`ticker ${single ? "radio" : "checkbox"}`} />
+    <label htmlFor={option} className="flex col">
       <div className="wrapper">
-        <span>{option}</span>
-        <div className={`drawer ${open ? "open" : "closed"}`}>
+        <div
+          className={`entry-header flex middle ${open ? "open" : "closed"}`}
+          onClick={() => setOpen(prev => !prev)}
+        >
+          <input
+            id={option}
+            name={field}
+            type={single ? "radio" : "checkbox"}
+            value={option}
+          />
+          <div className={`ticker ${single ? "radio" : "checkbox"}`} />
+          <span>{option}</span>
+          <button className="arrow" onClick={() => setOpen(prev => !prev)} />
+        </div>
+        <div
+          ref={drawer}
+          className={`drawer ${open ? "open" : "closed"}`}
+          style={{ maxHeight: open && drawer.current.scrollHeight + "px" }}
+        >
           {secondaries}
         </div>
       </div>

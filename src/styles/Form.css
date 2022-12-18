@@ -22,13 +22,11 @@ input[type="number"]{
   align-self: stretch;
 }
 
-
-
 ::placeholder {
   color: inherit;
-  font-family: inherit;
+  /* font-family: var(--bodyFont); */
   opacity: .5;
-  font-family: inherit;
+  font-family: initial;
   font-style: italic;
 }
 
@@ -50,6 +48,7 @@ textarea {
   resize: vertical;
   background-color: transparent;
   color: inherit;
+  font-size: 1rem;
   border: 2px solid var(--green);
   border-radius: var(--inside);
   outline: inherit;
@@ -465,6 +464,63 @@ input:checked + .cb-toggle::before {
 }
 
 /* ::::::::\ CHOICE BOX (COMPLEX) /:::::::: */
+
+.choice-box.complex .entry-header {
+  padding: .25rem;
+  background-color: var(--green);
+  color: var(--dark);
+  box-sizing: border-box;
+  border-radius: var(--inside);
+}
+
+.choice-box.complex .entry-header span {
+  flex-grow: 1;
+}
+
+.choice-box.complex .entry-header .arrow {
+  --size: .75em;
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  margin-right: .5em;
+  box-sizing: border-box;
+  /* background-color: white; */
+}
+
+.choice-box.complex .entry-header .arrow::after {
+  --border: 2px solid black;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-top: var(--border);
+  border-right: var(--border);
+  border-top-right-radius: 3px;
+  /* transform: rotate(45deg); */
+  transition: .2s ease-out;
+  box-sizing: border-box;
+}
+
+.choice-box.complex .entry-header.open .arrow::after {
+  transform: rotate(135deg);
+}
+
+.choice-box.complex .entry-header.closed .arrow::after {
+  transform: rotate(45deg);
+}
+
+.choice-box .ticker {
+  background-color: black;
+  border: none;
+}
+
+.choice-box .drawer {
+  overflow: hidden;
+  transition: .2s ease-out;
+}
+
+.choice-box .drawer.closed {
+  max-height: 0;
+}
 
 
 /* ========================================= *\
