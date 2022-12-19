@@ -1,9 +1,13 @@
-const FieldSet = ({ label, fields }) => {
+import { useEffect } from "react";
+
+const FieldSet = ({ field, label, children, className, required }) => {
   // console.log(fields);
+  // useEffect(() => console.log({ required }), []);
+
   return (
-    <fieldset className="name-section wrapper flex">
-      <legend>{label}</legend>
-      {fields}
+    <fieldset className={`${field}-section wrapper flex ${className}`}>
+      <legend className={required ? "required" : ""}>{label}</legend>
+      {children}
     </fieldset>
   );
 };

@@ -40,6 +40,10 @@ legend {
   letter-spacing: .1em;
 }
 
+label {
+  display: block;
+}
+
 textarea {
   appearance: none;
   display: block;
@@ -230,6 +234,7 @@ textarea::-webkit-resizer {
 }
 
 /* ::::::::\ TOGGLE /:::::::: */
+
 .toggle input[type="checkbox"]{
   position: absolute;
   visibility: hidden;
@@ -465,12 +470,28 @@ input:checked + .cb-toggle::before {
 
 /* ::::::::\ CHOICE BOX (COMPLEX) /:::::::: */
 
+.choice-box.complex .wrapper {
+  position: relative;
+  margin-bottom: .25rem;
+  box-sizing: border-box;
+  /* border: 1px solid red; */
+}
+
 .choice-box.complex .entry-header {
+  cursor: pointer;
   padding: .25rem;
   background-color: var(--green);
   color: var(--dark);
   box-sizing: border-box;
   border-radius: var(--inside);
+}
+
+.choice-box.complex .entry-header.flex {
+  justify-content: space-between;
+}
+
+.choice-box.complex .entry-header > label {
+  padding: 0;
 }
 
 .choice-box.complex .entry-header span {
@@ -479,7 +500,9 @@ input:checked + .cb-toggle::before {
 
 .choice-box.complex .entry-header .arrow {
   --size: .75em;
+  cursor: pointer;
   position: relative;
+  padding: 0;
   width: var(--size);
   height: var(--size);
   margin-right: .5em;
@@ -520,6 +543,18 @@ input:checked + .cb-toggle::before {
 
 .choice-box .drawer.closed {
   max-height: 0;
+}
+
+/* ::::::::\ FIELDSET /:::::::: */
+
+.custom-form fieldset.wrapper {
+  border-radius: var(--outside);
+  border-color: inherit;
+  box-sizing: border-box;
+}
+
+.custom-form fieldset.wrapper > *:not(legend) {
+  margin-bottom: .5em;
 }
 
 

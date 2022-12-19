@@ -17,43 +17,59 @@ export default function AddNew() {
   const [selection, setSelection] = useState();
   const [newEntry, setNewEntry] = useState({});
 
+  const createFormFields = paths =>
+    Object.fromEntries(
+      Object.entries(paths)
+        .filter(
+          ([field]) =>
+            !["_id", "createdAt", "updatedAt", "__v"].includes(field) &&
+            !field.endsWith(".$*")
+        )
+        .map(([field, path]) => {
+          const { instance, defaultValue } = path;
+          let dataType = () => {
+            switch (instance) {
+              case "String":
+                return "";
+                break;
+              case "Number":
+                return 0;
+                break;
+              case "Boolean":
+                return false;
+                break;
+              case "Array":
+                return [];
+                break;
+              case "Date":
+                return new Date();
+                break;
+              case "Map":
+                return {};
+                break;
+              case "ObjectID":
+                return "< OBJECT ID >";
+                break;
+              default:
+                return createFormFields(path.options.type.paths);
+            }
+          };
+          return [field, defaultValue ? defaultValue : dataType()];
+        })
+    );
+
   const initEntry = entry => {
     const data = models[entry];
     const { paths } = data;
-    const fields = Object.fromEntries(
-      Object.entries(paths)
-        .filter(
-          ([field]) => !["_id", "createdAt", "updatedAt", "__v"].includes(field)
-        )
-        .map(([field, data]) => {
-          const { instance, defaultValue } = data;
-          let dataType;
-          switch (instance) {
-            case "String":
-              dataType = "";
-              break;
-            case "Number":
-              dataType = 0;
-              break;
-            case "Boolean":
-              dataType = false;
-              break;
-            case "Array":
-              dataType = [];
-              break;
-            case "ObjectID":
-              dataType = "0000000000";
-              break;
-          }
-          return [field, defaultValue ? defaultValue : dataType];
-        })
-    );
+    const fields = createFormFields(paths);
     // console.log("fields", fields);
+    console.log("\ndata:", data);
     setNewEntry(fields);
   };
 
   // :::::::::::::\ SELECT MODEL /:::::::::::::
   const selectModel = option => {
+    console.clear(); // TODO
     setSelection(option);
     initEntry(option);
   };
@@ -83,10 +99,12 @@ export default function AddNew() {
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
-  const createFields = (fields, nested = false) => {
+  const createFields = (fields, parent) => {
     return Object.keys(fields)
       .filter(
-        field => !["_id", "createdAt", "updatedAt", "__v"].includes(field)
+        field =>
+          !["_id", "createdAt", "updatedAt", "__v"].includes(field) &&
+          !field.endsWith(".$*")
       )
       .map((field, key) => {
         const data = fields[field];
@@ -94,7 +112,14 @@ export default function AddNew() {
 
         // ---------| HANDLE CHANGE |---------
 
-        const handleChange = e => updateForm(field, e.currentTarget.value);
+        const handleChange = e => {
+          const parentField = parent ? parent[field] : null;
+          const { value } = e.currentTarget;
+
+          console.log({ parent, field, parentField });
+
+          return updateForm(field, value);
+        };
 
         // ---------| CREATE LABEL |---------
 
@@ -108,7 +133,7 @@ export default function AddNew() {
             if (label.includes(short)) label = label.replace(short, long);
           });
           if (
-            data.instance === "Array" &&
+            (data.instance === "Array" || data.instance === "Map") &&
             label.charAt(label.length - 1) !== "s"
           )
             label += "(s)";
@@ -234,7 +259,7 @@ export default function AddNew() {
                     primary={primary}
                     secondaries={
                       primary.enumValues?.length
-                        ? createFields(secondaries)
+                        ? createFields(secondaries, field)
                         : null
                     }
                   />
@@ -247,6 +272,17 @@ export default function AddNew() {
                 </label>
               );
 
+              break;
+            case "Map":
+              const $data = fields[field + ".$*"];
+              return (
+                <DataSet
+                  {...props}
+                  single={false}
+                  options={data.options.enum}
+                  secondaries={createFields($data.options.type.paths, field)}
+                />
+              );
               break;
             case "ObjectID":
               // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
@@ -262,7 +298,11 @@ export default function AddNew() {
             default:
               if (data.options) {
                 if (data.options?.type?.paths) {
-                  return createFields(data.options.type.paths, true);
+                  return (
+                    <FieldSet {...props}>
+                      {createFields(data.options.type.paths, field)}
+                    </FieldSet>
+                  );
                 } else {
                   console.log({ field });
                 }
@@ -290,6 +330,7 @@ export default function AddNew() {
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
   const handleSubmit = e => {
     e.preventDefault();
+    console.log(`%cSUBMIT`, "color: lime");
     console.log(`New ${selection}:`, newEntry);
   };
 
