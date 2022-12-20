@@ -10,7 +10,7 @@ import WordBank from "../../form/WordBank";
 import ButtonCache from "../../form/ButtonCache";
 import ChoiceBox from "../../form/ChoiceBox";
 import FieldSet from "../../form/FieldSet";
-import DataSet from "../../form/DataSet";
+import DataSetEntry from "../../form/DataSetEntry";
 
 export default function AddNew() {
   const [models, setModels] = useState({});
@@ -112,13 +112,16 @@ export default function AddNew() {
 
         // ---------| HANDLE CHANGE |---------
 
-        const handleChange = e => {
+        const handleChange = value => {
           const parentField = parent ? parent[field] : null;
-          const { value } = e.currentTarget;
+          // const { value } = e.currentTarget;
 
-          console.log({ parent, field, parentField });
+          // console.log({ parent, field, parentField });
 
-          return updateForm(field, value);
+          return updateForm(
+            parent ? parent : field,
+            parent ? { ...newEntry[parent], [field]: value } : value
+          );
         };
 
         // ---------| CREATE LABEL |---------
@@ -128,10 +131,14 @@ export default function AddNew() {
           const shorthands = new Map([
             // ["pref", "preference"],
             ["attr", "attribute"],
+            ["org", "organization"],
           ]);
+
           shorthands.forEach((long, short) => {
             if (label.includes(short)) label = label.replace(short, long);
           });
+          if (parent && label.includes(parent))
+            label = label.replace(parent, "").trim();
           if (
             (data.instance === "Array" || data.instance === "Map") &&
             label.charAt(label.length - 1) !== "s"
@@ -151,17 +158,17 @@ export default function AddNew() {
         };
 
         if (enumValues?.length) {
-          return enumValues.length > 3 ? (
+          return enumValues.length > 3 || !required ? (
             <SelectBox
-              options={required ? enumValues : ["--", ...enumValues]}
+              options={required ? enumValues : ["", ...enumValues]}
               {...props}
-              handleChange={entry => updateForm(field, entry)}
+              handleChange={entry => handleChange(entry)}
             />
           ) : (
             <ChoiceBox
               options={enumValues}
               {...props}
-              handleChange={entry => updateForm(field, entry)}
+              handleChange={entry => handleChange(entry)}
             />
           );
         } else {
@@ -172,13 +179,16 @@ export default function AddNew() {
                   <span className={required ? "required" : ""}>{label}</span>
                   <textarea
                     placeholder={`Description for ${selection}`}
-                    onChange={handleChange}
+                    onChange={e => handleChange(e.currentTarget.value)}
                     rows={6}
                     value={newEntry[field]}
                   />
                 </label>
               ) : (
-                <TextField {...props} handleChange={handleChange} />
+                <TextField
+                  {...props}
+                  handleChange={e => handleChange(e.currentTarget.value)}
+                />
               );
               break;
             case "Number":
@@ -188,7 +198,7 @@ export default function AddNew() {
                   <input
                     type="number"
                     min={data.options?.min ?? 0}
-                    onChange={handleChange}
+                    onChange={e => handleChange(e.currentTarget.value)}
                     value={newEntry[field]}
                   />
                 </label>
@@ -198,7 +208,7 @@ export default function AddNew() {
               return (
                 <Toggle
                   {...props}
-                  handleChange={e => updateForm(field, e.currentTarget.checked)}
+                  handleChange={e => handleChange(e.currentTarget.checked)}
                 />
               );
               break;
@@ -208,7 +218,7 @@ export default function AddNew() {
                   <span>{label}</span>
                   <input
                     type="date"
-                    onChange={handleChange}
+                    onChange={e => handleChange(e.currentTarget.value)}
                     value={newEntry[field]}
                   />
                 </label>
@@ -250,7 +260,7 @@ export default function AddNew() {
                 // console.log("secondaries:\n", secondaries);
 
                 return (
-                  <DataSet
+                  <DataSetEntry
                     {...props}
                     single={false}
                     options={
@@ -262,6 +272,7 @@ export default function AddNew() {
                         ? createFields(secondaries, field)
                         : null
                     }
+                    createFormFields={createFormFields}
                   />
                 );
               }
@@ -276,11 +287,16 @@ export default function AddNew() {
             case "Map":
               const $data = fields[field + ".$*"];
               return (
-                <DataSet
+                <DataSetEntry
                   {...props}
                   single={false}
                   options={data.options.enum}
                   secondaries={createFields($data.options.type.paths, field)}
+                  values={newEntry[field]}
+                  secondaryFormFields={createFormFields(
+                    $data.options.type.paths
+                  )}
+                  handleChange={handleChange}
                 />
               );
               break;

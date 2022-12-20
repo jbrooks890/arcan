@@ -2,22 +2,24 @@ import { useRef, useState } from "react";
 // import "../../styles/SelectBox.css";
 
 export default function SelectBox({
+  required,
   options,
   field,
-  required,
   label,
   classList = [],
   handleChange,
 }) {
   const [selected, setSelected] = useState(options[0]);
-  const [open, toggleOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const list = useRef();
 
   const selectOption = selection => {
     handleChange(selection);
     setSelected(selection);
-    toggleOpen(false);
+    setOpen(false);
   };
+
+  const toggle = () => setOpen(prev => !prev);
 
   return (
     <label
@@ -39,18 +41,20 @@ export default function SelectBox({
       <div className="wrapper">
         <div
           className={`option-display flex ${open ? "open" : ""}`}
-          onClick={() => toggleOpen(prev => !prev)}
+          onClick={toggle}
+          // onMouseLeave={() => setOpen(false)}
         >
-          {selected}
+          {selected || "--"}
         </div>
         <ul
           className={`option-list ${open ? "open" : ""}`}
           ref={list}
           style={open ? { maxHeight: list.current.scrollHeight + "px" } : null}
+          onMouseLeave={() => setOpen(false)}
         >
           {options.map((option, i) => (
             <li key={i} onClick={() => selectOption(option)}>
-              {option}
+              {!option ? "--" : option === "other" ? <i>{option}</i> : option}
             </li>
           ))}
         </ul>

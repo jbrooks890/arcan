@@ -3,7 +3,7 @@ import DataSetItem from "./DataSetItem";
 import TermInput from "./TermInput";
 import WordBank from "./WordBank";
 
-const DataSet = ({
+const DataSetEntry = ({
   field,
   required,
   options,
@@ -15,9 +15,12 @@ const DataSet = ({
   primary,
   secondaries,
   handleChange,
+  values,
+  secondaryFormFields,
 }) => {
   const [entry, setEntry] = useState("");
   const inputs = useRef([]);
+  const primaries = useRef([]);
 
   // console.log("\nTEST:\n", props);
   // console.log("options:\n", options);
@@ -26,6 +29,22 @@ const DataSet = ({
   // secondaries?.length && console.log(secondaries);
 
   const BANK = options ? options : cache;
+
+  const updateForm = option => {
+    // console.log("\nTEST:", { option });
+    handleChange(
+      Object.keys(values).includes(option)
+        ? Object.fromEntries(
+            Object.entries(values).filter(([option]) =>
+              primaries.current
+                .filter(option => option.checked)
+                .map(input => input.value)
+                .includes(option)
+            )
+          )
+        : { ...values, [option]: secondaryFormFields }
+    );
+  };
 
   return (
     <fieldset
@@ -40,32 +59,14 @@ const DataSet = ({
           {options.map((option, i) => (
             <DataSetItem
               key={i}
+              setRef={element => (primaries.current[i] = element)}
               option={option}
               secondaries={secondaries}
               field={field}
               single={single}
+              checked={Object.keys(values).includes(option)}
+              handleChange={() => updateForm(option)}
             />
-            // <label key={i} htmlFor={option} className="flex start middle">
-            //   <input
-            //     ref={element => (inputs.current[i] = element)}
-            //     id={option}
-            //     name={field}
-            //     type={single ? "radio" : "checkbox"}
-            //     value={option}
-            //     // checked={option === value}
-            //     onChange={() =>
-            //       handleChange(
-            //         single
-            //           ? option
-            //           : inputs.current
-            //               .filter(input => input.checked)
-            //               .map(input => input.value)
-            //       )
-            //     }
-            //   />
-            //   <div className={`ticker ${single ? "radio" : "checkbox"}`} />
-            //   <div>{option}</div>
-            // </label>
           ))}
         </ul>
       ) : (
@@ -75,4 +76,4 @@ const DataSet = ({
   );
 };
 
-export default DataSet;
+export default DataSetEntry;
