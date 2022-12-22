@@ -15,10 +15,11 @@ const DataSetEntry = ({
   primary,
   secondaries,
   handleChange,
-  values,
+  value,
+  createFields,
+  createFormFields,
   secondaryFormFields,
 }) => {
-  const [entry, setEntry] = useState("");
   const inputs = useRef([]);
   const primaries = useRef([]);
 
@@ -31,20 +32,35 @@ const DataSetEntry = ({
   const BANK = options ? options : cache;
 
   const updateForm = option => {
-    // console.log("\nTEST:", { option });
+    console.log("\nTEST:", value);
+
     handleChange(
-      Object.keys(values).includes(option)
+      Object.keys(value).includes(option)
         ? Object.fromEntries(
-            Object.entries(values).filter(([option]) =>
+            Object.entries(value).filter(([option]) =>
               primaries.current
                 .filter(option => option.checked)
                 .map(input => input.value)
                 .includes(option)
             )
           )
-        : { ...values, [option]: secondaryFormFields }
+        : { ...value, [option]: secondaryFormFields }
     );
   };
+
+  const addEntry = entry => !value[entry] && updateForm(entry);
+
+  const removeEntry = entry =>
+    Object.fromEntries(
+      Object.entries(value).filter(([option]) =>
+        primaries.current
+          .filter(option => option.checked)
+          .map(input => input.value)
+          .includes(entry)
+      )
+    );
+
+  // const updateEntry =
 
   return (
     <fieldset
@@ -53,7 +69,7 @@ const DataSetEntry = ({
       } flex col`}
     >
       <legend className={required ? "required" : ""}>{label}</legend>
-      {inputText && <TermInput entry={entry} />}
+      {inputText && <TermInput add={updateForm} />}
       {BANK.length ? (
         <ul className="entry-cache flex col">
           {options.map((option, i) => (
@@ -61,10 +77,10 @@ const DataSetEntry = ({
               key={i}
               setRef={element => (primaries.current[i] = element)}
               option={option}
-              secondaries={secondaries}
+              secondaries={createFields(option)}
               field={field}
               single={single}
-              checked={Object.keys(values).includes(option)}
+              checked={Object.keys(value).includes(option)}
               handleChange={() => updateForm(option)}
             />
           ))}

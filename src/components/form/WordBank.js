@@ -16,7 +16,7 @@ const WordBank = ({ terms = [], label, field, required, update }) => {
 
   return (
     <fieldset className="word-bank">
-      <legend>{label}</legend>
+      <legend className={required ? "required" : ""}>{label}</legend>
       <div className="new-entry-wrap flex middle">
         <input
           type="text"

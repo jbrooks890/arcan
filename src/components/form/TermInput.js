@@ -1,11 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
-const TermInput = ({
-  entry,
-  placeholder,
-  addTerm = () => console.log("TODO:REMOVE THIS"),
-  handleChange,
-}) => {
+const TermInput = ({ placeholder, add, onChange }) => {
+  const [entry, setEntry] = useState("");
   const submit = useRef();
 
   return (
@@ -15,10 +11,14 @@ const TermInput = ({
         className="new-entry"
         placeholder={placeholder ? `New ${placeholder}` : "cheese"}
         value={entry}
-        // onChange={handleChange}
+        onChange={e => setEntry(e.currentTarget.value)}
         onKeyDown={e => e.key === "Enter" && submit.current.click()}
       />
-      <button ref={submit} className="add-word flex center" onClick={addTerm} />
+      <button
+        ref={submit}
+        className="add-word flex center"
+        onClick={() => add(entry)}
+      />
     </div>
   );
 };

@@ -94,12 +94,17 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
+    console.log(`%c\nTEST:`, "color:coral");
+    console.log({ field }, entry);
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
-  const createFields = (fields, parent) => {
+  const createFields = (fields, parent, set = newEntry, ancestry = []) => {
+    const $parent = ancestry.length && ancestry[0];
+    const $set = ancestry.reduce((obj, prop) => obj[prop], newEntry);
+
     return Object.keys(fields)
       .filter(
         field =>
@@ -110,19 +115,16 @@ export default function AddNew() {
         const data = fields[field];
         const { isRequired: required, enumValues } = data;
 
+        parent && console.log({ field, parent }, set);
+        // field = parent ? parent : field;
+
         // ---------| HANDLE CHANGE |---------
 
-        const handleChange = value => {
-          const parentField = parent ? parent[field] : null;
-          // const { value } = e.currentTarget;
-
-          // console.log({ parent, field, parentField });
-
-          return updateForm(
+        const handleChange = value =>
+          updateForm(
             parent ? parent : field,
-            parent ? { ...newEntry[parent], [field]: value } : value
+            parent ? { ...set[parent], [field]: value } : value
           );
-        };
 
         // ---------| CREATE LABEL |---------
 
@@ -132,6 +134,7 @@ export default function AddNew() {
             // ["pref", "preference"],
             ["attr", "attribute"],
             ["org", "organization"],
+            ["diffr", "differential"],
           ]);
 
           shorthands.forEach((long, short) => {
@@ -198,7 +201,9 @@ export default function AddNew() {
                   <input
                     type="number"
                     min={data.options?.min ?? 0}
-                    onChange={e => handleChange(e.currentTarget.value)}
+                    onChange={e =>
+                      handleChange(parseInt(e.currentTarget.value))
+                    }
                     value={newEntry[field]}
                   />
                 </label>
@@ -291,11 +296,17 @@ export default function AddNew() {
                   {...props}
                   single={false}
                   options={data.options.enum}
-                  secondaries={createFields($data.options.type.paths, field)}
-                  values={newEntry[field]}
                   secondaryFormFields={createFormFields(
                     $data.options.type.paths
                   )}
+                  createFields={option =>
+                    createFields(
+                      $data.options.type.paths,
+                      option,
+                      set[field][option]
+                      // newEntry.lockedAttr.name.unlock
+                    )
+                  }
                   handleChange={handleChange}
                 />
               );
@@ -316,7 +327,11 @@ export default function AddNew() {
                 if (data.options?.type?.paths) {
                   return (
                     <FieldSet {...props}>
-                      {createFields(data.options.type.paths, field)}
+                      {createFields(
+                        data.options.type.paths,
+                        parent ? parent : field,
+                        set[parent]
+                      )}
                     </FieldSet>
                   );
                 } else {
@@ -346,6 +361,7 @@ export default function AddNew() {
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
   const handleSubmit = e => {
     e.preventDefault();
+    console.clear();
     console.log(`%cSUBMIT`, "color: lime");
     console.log(`New ${selection}:`, newEntry);
   };
