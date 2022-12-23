@@ -11,6 +11,7 @@ import ButtonCache from "../../form/ButtonCache";
 import ChoiceBox from "../../form/ChoiceBox";
 import FieldSet from "../../form/FieldSet";
 import DataSetEntry from "../../form/DataSetEntry";
+import NumField from "../../form/NumField";
 
 export default function AddNew() {
   const [models, setModels] = useState({});
@@ -94,36 +95,54 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
-    console.log(`%c\nTEST:`, "color:coral");
+    console.log(`%c\nUPDATE FORM:`, "color:coral");
     console.log({ field }, entry);
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
-  const createFields = (paths, parent, set = newEntry, ancestry = []) => {
-    const $parent = ancestry.length && ancestry[0];
-    const $set = ancestry.reduce((obj, prop) => obj[prop], newEntry);
-
-    return Object.keys(paths)
+  const createFields = (paths, ancestors = []) => {
+    return Object.entries(paths)
       .filter(
-        path =>
+        ([path]) =>
           !["_id", "createdAt", "updatedAt", "__v"].includes(path) &&
           !path.endsWith(".$*")
       )
-      .map((path, key) => {
-        const data = paths[path];
+      .map(([path, data], key) => {
         const { isRequired: required, enumValues } = data;
+        const parent = ancestors[0];
 
-        parent && console.log({ path, parent }, set);
-        // path = parent ? parent : path;
+        // console.log(`%cANCESTRY:`, "color:lime", { path }, ancestors);
+
+        let chain = [];
+
+        const set = [...ancestors, path].reduce((obj, prop, i, arr) => {
+          // chain = [...chain, obj];
+          console.log((i === 0 ? ":" : "-").repeat(20));
+          i === 0 && console.log(arr);
+          console.log({ prop });
+          console.log(`%cobj:`, "color:cyan", obj);
+
+          return obj[prop];
+        }, newEntry);
+
+        // const set = [...ancestors, path].reduce(
+        //   (obj, prop) => obj[prop],
+        //   newEntry
+        // );
+
+        parent && console.log(`%cSET:`, "color:coral", `${path}:`, set);
+        // parent && console.log(`%cCHAIN:`, "color:coral", chain);
+        // parent && console.log({ path, parent }, set);
 
         // ---------| HANDLE CHANGE |---------
 
         const handleChange = value =>
           updateForm(
-            parent ? parent : path,
-            parent ? { ...set[parent], [path]: value } : value
+            parent ?? path,
+            parent ? { ...set, [path]: value } : value // TODO
+            // CHANGE HAS TO BE AT LOWEST LEVEL, RETURNED VALUE HAS TO BE AT HIGHEST LEVEL
           );
 
         // ---------| CREATE LABEL |---------
@@ -196,17 +215,14 @@ export default function AddNew() {
               break;
             case "Number":
               return (
-                <label {...key}>
-                  <span>{label}</span>
-                  <input
-                    type="number"
-                    min={data.options?.min ?? 0}
-                    onChange={e =>
-                      handleChange(parseInt(e.currentTarget.value))
-                    }
-                    value={newEntry[path]}
-                  />
-                </label>
+                <NumField
+                  {...props}
+                  min={data.options?.min}
+                  max={data.options?.max}
+                  handleChange={e =>
+                    handleChange(parseInt(e.currentTarget.value))
+                  }
+                />
               );
               break;
             case "Boolean":
@@ -302,8 +318,7 @@ export default function AddNew() {
                   createFields={option =>
                     createFields(
                       $data.options.type.paths,
-                      option,
-                      set[path][option]
+                      [...ancestors, path, option]
                       // newEntry.lockedAttr.name.unlock
                     )
                   }
@@ -327,11 +342,10 @@ export default function AddNew() {
                 if (data.options?.type?.paths) {
                   return (
                     <FieldSet {...props}>
-                      {createFields(
-                        data.options.type.paths,
-                        parent ? parent : path,
-                        set[parent]
-                      )}
+                      {createFields(data.options.type.paths, [
+                        ...ancestors,
+                        path,
+                      ])}
                     </FieldSet>
                   );
                 } else {
@@ -353,7 +367,7 @@ export default function AddNew() {
 
   const buildForm = () => {
     const { paths } = models[selection];
-    console.log("paths:", paths);
+    // console.log("paths:", paths);
 
     return createFields(paths);
   };
