@@ -113,35 +113,30 @@ export default function AddNew() {
         const { isRequired: required, enumValues } = data;
         const parent = ancestors[0];
 
-        // console.log(`%cANCESTRY:`, "color:lime", { path }, ancestors);
+        let chain = {};
 
-        let chain = [];
-
-        const set = [...ancestors, path].reduce((obj, prop, i, arr) => {
-          // chain = [...chain, obj];
-          console.log((i === 0 ? ":" : "-").repeat(20));
-          i === 0 && console.log(arr);
-          console.log({ prop });
-          console.log(`%cobj:`, "color:cyan", obj);
+        const set = ancestors.reduce((obj, prop) => {
+          chain = { ...chain, [prop]: obj };
 
           return obj[prop];
         }, newEntry);
-
-        // const set = [...ancestors, path].reduce(
-        //   (obj, prop) => obj[prop],
-        //   newEntry
-        // );
-
-        parent && console.log(`%cSET:`, "color:coral", `${path}:`, set);
-        // parent && console.log(`%cCHAIN:`, "color:coral", chain);
-        // parent && console.log({ path, parent }, set);
 
         // ---------| HANDLE CHANGE |---------
 
         const handleChange = value =>
           updateForm(
             parent ?? path,
-            parent ? { ...set, [path]: value } : value // TODO
+            parent
+              ? Object.entries(chain)
+                  .slice(1) // EXCLUDE OVERALL FORM
+                  .reduceRight(
+                    (child, [path, parent]) => ({ ...parent, [path]: child }),
+                    {
+                      ...set,
+                      [path]: value,
+                    }
+                  )
+              : value
             // CHANGE HAS TO BE AT LOWEST LEVEL, RETURNED VALUE HAS TO BE AT HIGHEST LEVEL
           );
 
