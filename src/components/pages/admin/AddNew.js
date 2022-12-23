@@ -101,35 +101,35 @@ export default function AddNew() {
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
-  const createFields = (fields, parent, set = newEntry, ancestry = []) => {
+  const createFields = (paths, parent, set = newEntry, ancestry = []) => {
     const $parent = ancestry.length && ancestry[0];
     const $set = ancestry.reduce((obj, prop) => obj[prop], newEntry);
 
-    return Object.keys(fields)
+    return Object.keys(paths)
       .filter(
-        field =>
-          !["_id", "createdAt", "updatedAt", "__v"].includes(field) &&
-          !field.endsWith(".$*")
+        path =>
+          !["_id", "createdAt", "updatedAt", "__v"].includes(path) &&
+          !path.endsWith(".$*")
       )
-      .map((field, key) => {
-        const data = fields[field];
+      .map((path, key) => {
+        const data = paths[path];
         const { isRequired: required, enumValues } = data;
 
-        parent && console.log({ field, parent }, set);
-        // field = parent ? parent : field;
+        parent && console.log({ path, parent }, set);
+        // path = parent ? parent : path;
 
         // ---------| HANDLE CHANGE |---------
 
         const handleChange = value =>
           updateForm(
-            parent ? parent : field,
-            parent ? { ...set[parent], [field]: value } : value
+            parent ? parent : path,
+            parent ? { ...set[parent], [path]: value } : value
           );
 
         // ---------| CREATE LABEL |---------
 
         const createLabel = () => {
-          let label = field.replace(/([A-Z])/g, " $1").toLowerCase();
+          let label = path.replace(/([A-Z])/g, " $1").toLowerCase();
           const shorthands = new Map([
             // ["pref", "preference"],
             ["attr", "attribute"],
@@ -154,10 +154,10 @@ export default function AddNew() {
 
         const props = {
           key,
-          field,
+          field: path,
           label,
           required,
-          value: newEntry[field],
+          value: newEntry[path],
         };
 
         if (enumValues?.length) {
@@ -177,14 +177,14 @@ export default function AddNew() {
         } else {
           switch (data.instance) {
             case "String":
-              return field === "description" ? (
+              return path === "description" ? (
                 <label {...key}>
                   <span className={required ? "required" : ""}>{label}</span>
                   <textarea
                     placeholder={`Description for ${selection}`}
                     onChange={e => handleChange(e.currentTarget.value)}
                     rows={6}
-                    value={newEntry[field]}
+                    value={newEntry[path]}
                   />
                 </label>
               ) : (
@@ -204,7 +204,7 @@ export default function AddNew() {
                     onChange={e =>
                       handleChange(parseInt(e.currentTarget.value))
                     }
-                    value={newEntry[field]}
+                    value={newEntry[path]}
                   />
                 </label>
               );
@@ -224,7 +224,7 @@ export default function AddNew() {
                   <input
                     type="date"
                     onChange={e => handleChange(e.currentTarget.value)}
-                    value={newEntry[field]}
+                    value={newEntry[path]}
                   />
                 </label>
               );
@@ -236,10 +236,10 @@ export default function AddNew() {
                   return (
                     <WordBank
                       {...props}
-                      terms={newEntry[field]}
+                      terms={newEntry[path]}
                       update={entry => {
-                        console.log({ field, entry });
-                        updateForm(field, entry);
+                        console.log({ path, entry });
+                        updateForm(path, entry);
                       }}
                     />
                   );
@@ -250,7 +250,7 @@ export default function AddNew() {
                       options={[options.ref + " names"]}
                       single={false}
                       {...props}
-                      // handleChange={entry => updateForm(field, entry)}
+                      // handleChange={entry => updateForm(path, entry)}
                     />
                   );
               }
@@ -274,7 +274,7 @@ export default function AddNew() {
                     primary={primary}
                     secondaries={
                       primary.enumValues?.length
-                        ? createFields(secondaries, field)
+                        ? createFields(secondaries, path)
                         : null
                     }
                     createFormFields={createFormFields}
@@ -284,13 +284,13 @@ export default function AddNew() {
               return (
                 <label {...props}>
                   <span>{label}</span>
-                  <div>[{field}]</div>
+                  <div>[{path}]</div>
                 </label>
               );
 
               break;
             case "Map":
-              const $data = fields[field + ".$*"];
+              const $data = paths[path + ".$*"];
               return (
                 <DataSetEntry
                   {...props}
@@ -303,7 +303,7 @@ export default function AddNew() {
                     createFields(
                       $data.options.type.paths,
                       option,
-                      set[field][option]
+                      set[path][option]
                       // newEntry.lockedAttr.name.unlock
                     )
                   }
@@ -318,7 +318,7 @@ export default function AddNew() {
                 <ChoiceBox
                   options={[ref + " name"]}
                   {...props}
-                  // handleChange={entry => updateForm(field, entry)}
+                  // handleChange={entry => updateForm(path, entry)}
                 />
               );
               break;
@@ -329,13 +329,13 @@ export default function AddNew() {
                     <FieldSet {...props}>
                       {createFields(
                         data.options.type.paths,
-                        parent ? parent : field,
+                        parent ? parent : path,
                         set[parent]
                       )}
                     </FieldSet>
                   );
                 } else {
-                  console.log({ field });
+                  console.log({ path });
                 }
               }
               return (
@@ -353,7 +353,7 @@ export default function AddNew() {
 
   const buildForm = () => {
     const { paths } = models[selection];
-    console.log("fields:", paths);
+    console.log("paths:", paths);
 
     return createFields(paths);
   };
