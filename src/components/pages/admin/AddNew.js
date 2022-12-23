@@ -115,7 +115,7 @@ export default function AddNew() {
         const data = fields[field];
         const { isRequired: required, enumValues } = data;
 
-        parent && console.log({ field, parent }, set);
+        // parent && console.log({ field, parent }, set);
         // field = parent ? parent : field;
 
         // ---------| HANDLE CHANGE |---------
@@ -304,7 +304,6 @@ export default function AddNew() {
                       $data.options.type.paths,
                       option,
                       set[field][option]
-                      // newEntry.lockedAttr.name.unlock
                     )
                   }
                   handleChange={handleChange}
