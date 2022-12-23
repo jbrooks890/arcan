@@ -94,11 +94,8 @@ export default function AddNew() {
 
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
-  const updateForm = (field, entry) => {
-    console.log(`%c\nUPDATE FORM:`, "color:coral");
-    console.log({ field }, entry);
+  const updateForm = (field, entry) =>
     setNewEntry(prev => ({ ...prev, [field]: entry }));
-  };
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
@@ -149,6 +146,7 @@ export default function AddNew() {
             ["attr", "attribute"],
             ["org", "organization"],
             ["diffr", "differential"],
+            ["intro", "introduction"],
           ]);
 
           shorthands.forEach((long, short) => {
@@ -216,6 +214,19 @@ export default function AddNew() {
                   max={data.options?.max}
                   handleChange={e =>
                     handleChange(parseInt(e.currentTarget.value))
+                  }
+                />
+              );
+              break;
+            case "Decimal128":
+              return (
+                <NumField
+                  {...props}
+                  min={data.options?.min}
+                  max={data.options?.max}
+                  step={0.01}
+                  handleChange={e =>
+                    handleChange(parseFloat(e.currentTarget.value))
                   }
                 />
               );
