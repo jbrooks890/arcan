@@ -304,6 +304,7 @@ export default function AddNew() {
                       $data.options.type.paths,
                       option,
                       set[path][option]
+                      // newEntry.lockedAttr.name.unlock
                     )
                   }
                   handleChange={handleChange}
