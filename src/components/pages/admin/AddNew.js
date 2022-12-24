@@ -100,6 +100,8 @@ export default function AddNew() {
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
   const createFields = (paths, ancestors = []) => {
+    const dependencies = new Set();
+
     return Object.entries(paths)
       .filter(
         ([path]) =>
@@ -265,16 +267,27 @@ export default function AddNew() {
                       }}
                     />
                   );
-                if (instance === "ObjectID")
+                if (instance === "ObjectID") {
                   // NEEDS TO BE A MULTI CHOICE BOX OF DATABASE ENTRIES
+                  const { ref, refPath } = options;
+                  const references = refPath ? paths[refPath].enumValues : ref;
+                  // console.log({ path }, references);
+
+                  refPath
+                    ? references.forEach(reference =>
+                        dependencies.add(reference)
+                      )
+                    : dependencies.add(ref);
+
                   return (
                     <ChoiceBox
-                      options={[options.ref + " names"]}
+                      options={[ref + " names"]}
                       single={false}
                       {...props}
                       // handleChange={entry => updateForm(path, entry)}
                     />
                   );
+                }
               }
               if (data.schema) {
                 const { paths } = data.schema;
@@ -334,7 +347,14 @@ export default function AddNew() {
               break;
             case "ObjectID":
               // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
-              const { ref } = data.options;
+              const { ref, refPath } = data.options;
+              const references = refPath ? paths[refPath].enumValues : ref;
+              // console.log({ path }, references);
+
+              refPath
+                ? references.forEach(reference => dependencies.add(reference))
+                : dependencies.add(ref);
+
               return (
                 <ChoiceBox
                   options={[ref + " name"]}
