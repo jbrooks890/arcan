@@ -20,7 +20,7 @@ const NumField = ({
       <input
         ref={input}
         type="number"
-        id={field}
+        // id={field}
         name={field}
         min={min}
         max={max}
