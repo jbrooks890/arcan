@@ -109,7 +109,7 @@ export default function AddNew() {
           !path.endsWith(".$*")
       )
       .map(([path, data], key) => {
-        const { isRequired: required, enumValues } = data;
+        const { isRequired: required, defaultValue, enumValues } = data;
         const parent = ancestors[0];
 
         let chain = {};
@@ -149,6 +149,7 @@ export default function AddNew() {
             ["org", "organization"],
             ["diffr", "differential"],
             ["intro", "introduction"],
+            ["avg", "average"],
           ]);
 
           shorthands.forEach((long, short) => {
@@ -171,7 +172,7 @@ export default function AddNew() {
           field: path,
           label,
           required,
-          value: newEntry[path],
+          value: set[path] ?? defaultValue,
         };
 
         if (enumValues?.length) {

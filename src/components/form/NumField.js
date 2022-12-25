@@ -25,7 +25,7 @@ const NumField = ({
         min={min}
         max={max}
         onChange={handleChange}
-        onMouseEnter={e => e.currentTarget.focus()}
+        // onMouseEnter={e => e.currentTarget.focus()}
         step={step}
         value={value}
       />
