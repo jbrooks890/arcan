@@ -8,10 +8,13 @@ export default function SelectBox({
   label,
   classList = [],
   handleChange,
+  value,
 }) {
-  const [selected, setSelected] = useState(options[0]);
+  const [selected, setSelected] = useState(value ?? options[0]);
   const [open, setOpen] = useState(false);
   const list = useRef();
+
+  // console.log({ value });
 
   const selectOption = selection => {
     handleChange(selection);

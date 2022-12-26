@@ -167,12 +167,14 @@ export default function AddNew() {
         };
         const label = createLabel();
 
+        console.log("TEST:", set[path], { defaultValue });
+
         const props = {
           key,
           field: path,
           label,
           required,
-          value: set[path] ?? defaultValue,
+          value: newEntry[path] ?? defaultValue,
         };
 
         if (enumValues?.length) {
