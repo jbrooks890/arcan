@@ -11,10 +11,7 @@ export default function ChoiceBox({
   value,
   handleChange,
 }) {
-  // const [selections, setSelections] = useState([]); // TODO
   const inputs = useRef([]);
-
-  // useEffect(() => console.table(inputs.current), []); // TODO
 
   return (
     <fieldset className={`choice-box ${className ? className : ""} flex col`}>

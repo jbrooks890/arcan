@@ -19,8 +19,11 @@ export default function AddNew() {
   const [selection, setSelection] = useState();
   const [newEntry, setNewEntry] = useState({});
 
+  // :::::::::::::\ FETCH MODELS /:::::::::::::
+
   const fetchModels = async () => {
     const response = await axios.get("/models");
+    console.log("DATA:", response.data);
 
     let [models, dependencies] = Object.entries(response.data)
       .map(([name, { schema, collection }]) => [
@@ -51,6 +54,34 @@ export default function AddNew() {
   //   [arcanData]
   // );
 
+  // :::::::::::::\ CREATE FORM FIELDS /:::::::::::::
+
+  const createFormDefault = instance => {
+    switch (instance) {
+      case "String":
+        return "";
+        break;
+      case "Number":
+        return 0;
+        break;
+      case "Boolean":
+        return false;
+        break;
+      case "Array":
+        return [];
+        break;
+      case "Date":
+        return new Date();
+        break;
+      case "Map":
+        return {};
+        break;
+      case "ObjectID":
+        return "< OBJECT ID >";
+        break;
+    }
+  };
+
   const createFormFields = paths =>
     Object.fromEntries(
       Object.entries(paths)
@@ -61,34 +92,15 @@ export default function AddNew() {
         )
         .map(([field, path]) => {
           const { instance, defaultValue } = path;
-          let dataType = () => {
-            switch (instance) {
-              case "String":
-                return "";
-                break;
-              case "Number":
-                return 0;
-                break;
-              case "Boolean":
-                return false;
-                break;
-              case "Array":
-                return [];
-                break;
-              case "Date":
-                return new Date();
-                break;
-              case "Map":
-                return {};
-                break;
-              case "ObjectID":
-                return "< OBJECT ID >";
-                break;
-              default:
-                return createFormFields(path.options.type.paths);
-            }
-          };
-          return [field, defaultValue ? defaultValue : dataType()];
+
+          return [
+            field,
+            defaultValue
+              ? defaultValue
+              : instance
+              ? createFormDefault(instance)
+              : createFormFields(path.options.type.paths),
+          ];
         })
     );
 
@@ -122,7 +134,7 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
-    console.log({ field, entry });
+    console.log("UPDATE FORM:\n", { field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
@@ -139,10 +151,17 @@ export default function AddNew() {
           !path.endsWith(".$*")
       )
       .map(([path, data], key) => {
-        const { isRequired: required, enumValues } = data;
+        const {
+          instance,
+          isRequired: required,
+          defaultValue,
+          enumValues,
+        } = data;
         const parent = ancestors[0];
 
         let chain = {};
+
+        // console.log({ path, ancestry: ancestors.join(".") });
 
         const set = ancestors.reduce((obj, prop) => {
           chain = { ...chain, [prop]: obj };
@@ -188,7 +207,7 @@ export default function AddNew() {
           if (parent && label.includes(parent))
             label = label.replace(parent, "").trim();
           if (
-            (data.instance === "Array" || data.instance === "Map") &&
+            (instance === "Array" || instance === "Map") &&
             label.charAt(label.length - 1) !== "s"
           )
             label += "(s)";
@@ -197,14 +216,42 @@ export default function AddNew() {
         };
         const label = createLabel();
 
-        console.log("TEST:", { path, current: set[path] });
+        // console.log("TEST:", { path, current: set[path] });
+        // console.log("TEST:", { path, data, paths });
+
+        // ancestors.length > 1 &&
+        //   console.log("TEST:", {
+        //     path,
+        //     parent: ancestors[ancestors.length - 1],
+        //     data,
+        //     // current: set,
+        //     set: Boolean(set),
+        //     default:
+        //       set?.[path] ??
+        //       defaultValue ??
+        //       enumValues[0] ??
+        //       createFormDefault(instance),
+        //   });
+
+        // ancestors.length > 1 &&
+        //   console.log("TEST:", {
+        //     path,
+        //     SET: set?.[path],
+        //     DEFAULT: defaultValue,
+        //     ENUM_DEF: enumValues?.[0],
+        //     NEW_DEF: createFormDefault(instance),
+        //   });
 
         const props = {
           key,
           field: path,
           label,
           required,
-          value: set[path],
+          value:
+            set?.[path] ??
+            defaultValue ??
+            enumValues?.[0] ??
+            createFormDefault(instance),
         };
 
         if (enumValues?.length) {
@@ -222,7 +269,7 @@ export default function AddNew() {
             />
           );
         } else {
-          switch (data.instance) {
+          switch (instance) {
             case "String":
               return path === "description" ? (
                 <label {...key}>
@@ -305,12 +352,20 @@ export default function AddNew() {
 
                   const { ref, refPath } = data.caster.options;
                   const reference = refPath
-                    ? paths[refPath].enumValues[0]
+                    ? set?.[refPath] || paths[refPath].enumValues[0]
                     : ref;
+                  const dependency = dependencies[reference];
+
+                  // const { ref, refPath } = data.caster.options;
+                  // const reference = refPath
+                  //   ? set[refPath] ?? paths[refPath]?.enumValues?.[0]
+                  //   : ref;
+                  // const dependency = dependencies[reference];
+                  // console.log({ path, refPath: paths[refPath], dependency });
 
                   return (
                     <ChoiceBox
-                      options={dependencies[ref]}
+                      options={dependency.map(entry => entry._id)}
                       single={false}
                       {...props}
                       // handleChange={entry => updateForm(path, entry)}
@@ -355,6 +410,8 @@ export default function AddNew() {
               break;
             case "Map":
               const $data = paths[path + ".$*"];
+              console.log($data.options.type.paths);
+
               return (
                 <DataSetEntry
                   {...props}
@@ -378,13 +435,22 @@ export default function AddNew() {
               // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
               const { ref, refPath } = data.options;
               const reference = refPath
-                ? set[refPath] || paths[refPath].enumValues[0]
+                ? set?.[refPath] || paths[refPath].enumValues[0]
                 : ref;
+              const dependency = dependencies[reference];
+
+              // refPath &&
+              //   console.log({
+              //     path,
+              //     refPath,
+              //     reference,
+              //     dependency,
+              //   });
 
               return (
                 <ChoiceBox
-                  options={dependencies[reference]}
                   {...props}
+                  options={dependency.map(entry => entry._id)}
                   // handleChange={entry => updateForm(path, entry)}
                 />
               );
