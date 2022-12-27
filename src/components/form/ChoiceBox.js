@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 export default function ChoiceBox({
   options,
+  display,
   field,
   required,
   single = true,
@@ -12,6 +13,8 @@ export default function ChoiceBox({
   handleChange,
 }) {
   const inputs = useRef([]);
+
+  display && console.log({ field, display });
 
   return (
     <fieldset className={`choice-box ${className ? className : ""} flex col`}>
@@ -37,7 +40,7 @@ export default function ChoiceBox({
               }
             />
             <div className={`ticker ${single ? "radio" : "checkbox"}`} />
-            <div>{option}</div>
+            <div>{display ? display[option] : option}</div>
           </label>
         ))
       ) : (

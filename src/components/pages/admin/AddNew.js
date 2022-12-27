@@ -108,15 +108,13 @@ export default function AddNew() {
     const data = arcanData.models[entry];
     const { paths } = data;
     const fields = createFormFields(paths);
-    // console.log("fields", fields);
-    // console.log("\ndata:", data);
     console.log("\nPATHS:", paths);
     setNewEntry(fields);
   };
 
   // :::::::::::::\ SELECT MODEL /:::::::::::::
   const selectModel = option => {
-    console.clear(); // TODO
+    // console.clear(); // TODO
     setSelection(option);
     initEntry(option);
   };
@@ -133,10 +131,8 @@ export default function AddNew() {
 
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
-  const updateForm = (field, entry) => {
-    console.log("UPDATE FORM:\n", { field, entry });
+  const updateForm = (field, entry) =>
     setNewEntry(prev => ({ ...prev, [field]: entry }));
-  };
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
@@ -215,32 +211,6 @@ export default function AddNew() {
           return label;
         };
         const label = createLabel();
-
-        // console.log("TEST:", { path, current: set[path] });
-        // console.log("TEST:", { path, data, paths });
-
-        // ancestors.length > 1 &&
-        //   console.log("TEST:", {
-        //     path,
-        //     parent: ancestors[ancestors.length - 1],
-        //     data,
-        //     // current: set,
-        //     set: Boolean(set),
-        //     default:
-        //       set?.[path] ??
-        //       defaultValue ??
-        //       enumValues[0] ??
-        //       createFormDefault(instance),
-        //   });
-
-        // ancestors.length > 1 &&
-        //   console.log("TEST:", {
-        //     path,
-        //     SET: set?.[path],
-        //     DEFAULT: defaultValue,
-        //     ENUM_DEF: enumValues?.[0],
-        //     NEW_DEF: createFormDefault(instance),
-        //   });
 
         const props = {
           key,
@@ -356,19 +326,18 @@ export default function AddNew() {
                     : ref;
                   const dependency = dependencies[reference];
 
-                  // const { ref, refPath } = data.caster.options;
-                  // const reference = refPath
-                  //   ? set[refPath] ?? paths[refPath]?.enumValues?.[0]
-                  //   : ref;
-                  // const dependency = dependencies[reference];
-                  // console.log({ path, refPath: paths[refPath], dependency });
-
                   return (
                     <ChoiceBox
-                      options={dependency.map(entry => entry._id)}
-                      single={false}
                       {...props}
-                      // handleChange={entry => updateForm(path, entry)}
+                      single={false}
+                      options={dependency.map(entry => entry._id)}
+                      display={Object.fromEntries(
+                        dependency.map(entry => {
+                          const { _id, name } = entry;
+                          return [_id, name ?? "TEST"];
+                        })
+                      )}
+                      handleChange={entry => handleChange(entry)}
                     />
                   );
                 }
@@ -439,19 +408,17 @@ export default function AddNew() {
                 : ref;
               const dependency = dependencies[reference];
 
-              // refPath &&
-              //   console.log({
-              //     path,
-              //     refPath,
-              //     reference,
-              //     dependency,
-              //   });
-
               return (
                 <ChoiceBox
                   {...props}
                   options={dependency.map(entry => entry._id)}
-                  // handleChange={entry => updateForm(path, entry)}
+                  display={Object.fromEntries(
+                    dependency.map(entry => {
+                      const { _id, name } = entry;
+                      return [_id, name ?? "TEST"];
+                    })
+                  )}
+                  handleChange={entry => handleChange(entry)}
                 />
               );
               break;
@@ -496,6 +463,7 @@ export default function AddNew() {
     console.clear();
     console.log(`%cSUBMIT`, "color: lime");
     console.log(`New ${selection}:`, newEntry);
+    // await axios.post("/" + selection);
   };
 
   // ============================================
