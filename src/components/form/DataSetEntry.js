@@ -17,7 +17,6 @@ const DataSetEntry = ({
   handleChange,
   value,
   createFields,
-  createFormFields,
   secondaryFormFields,
 }) => {
   const inputs = useRef([]);

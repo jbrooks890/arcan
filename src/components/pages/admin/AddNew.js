@@ -14,9 +14,42 @@ import DataSetEntry from "../../form/DataSetEntry";
 import NumField from "../../form/NumField";
 
 export default function AddNew() {
-  const [models, setModels] = useState({});
+  // const [models, setModels] = useState({});
+  const [arcanData, setArcanData] = useState({});
   const [selection, setSelection] = useState();
   const [newEntry, setNewEntry] = useState({});
+
+  const fetchModels = async () => {
+    const response = await axios.get("/models");
+
+    let [models, dependencies] = Object.entries(response.data)
+      .map(([name, { schema, collection }]) => [
+        [name, schema],
+        [name, collection],
+      ])
+      .reduce(
+        ([$schemata, $collections], [schema, collection]) => [
+          [...$schemata, schema],
+          [...$collections, collection],
+        ],
+        [[], []]
+      );
+
+    models = Object.fromEntries(models);
+    dependencies = Object.fromEntries(dependencies);
+
+    // console.log({ schemata, dependencies });
+
+    // setModels(schemata);
+    setArcanData({ models, dependencies });
+  };
+
+  useEffect(async () => fetchModels(), []);
+
+  // useEffect(
+  //   () => Object.keys(arcanData).length && console.log(arcanData),
+  //   [arcanData]
+  // );
 
   const createFormFields = paths =>
     Object.fromEntries(
@@ -59,49 +92,28 @@ export default function AddNew() {
         })
     );
 
-  useEffect(async () => {
-    const response = await axios.get("/models");
-
-    let [schemata, dependencies] = Object.entries(response.data)
-      .map(([name, { schema, collection }]) => [
-        [name, schema],
-        [name, collection],
-      ])
-      .reduce(
-        ([$schemata, collections], [schema, collection]) => [
-          [...$schemata, schema],
-          [...collections, collection],
-        ],
-        [[], []]
-      );
-
-    schemata = Object.fromEntries(schemata);
-    dependencies = Object.fromEntries(dependencies);
-
-    // console.log({ schemata, dependencies });
-
-    setModels(schemata);
-  }, []);
-
   const initEntry = entry => {
-    const data = models[entry];
+    const data = arcanData.models[entry];
     const { paths } = data;
     const fields = createFormFields(paths);
     // console.log("fields", fields);
     // console.log("\ndata:", data);
+    console.log("\nPATHS:", paths);
     setNewEntry(fields);
   };
 
   // :::::::::::::\ SELECT MODEL /:::::::::::::
   const selectModel = option => {
-    // console.clear(); // TODO
+    console.clear(); // TODO
     setSelection(option);
     initEntry(option);
   };
 
   useEffect(
-    () => Object.keys(models).length && selectModel(Object.keys(models)[0]),
-    [models]
+    () =>
+      Object.keys(arcanData).length &&
+      selectModel(Object.keys(arcanData.models)[0]),
+    [arcanData.models]
   );
 
   // console.log({ selection });
@@ -109,13 +121,16 @@ export default function AddNew() {
 
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
-  const updateForm = (field, entry) =>
+  const updateForm = (field, entry) => {
+    console.log({ field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
+  };
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
   const createFields = (paths, ancestors = []) => {
-    const dependencies = new Set();
+    const { dependencies } = arcanData;
+    // console.log({ dependencies });
 
     return Object.entries(paths)
       .filter(
@@ -124,7 +139,7 @@ export default function AddNew() {
           !path.endsWith(".$*")
       )
       .map(([path, data], key) => {
-        const { isRequired: required, defaultValue, enumValues } = data;
+        const { isRequired: required, enumValues } = data;
         const parent = ancestors[0];
 
         let chain = {};
@@ -182,14 +197,14 @@ export default function AddNew() {
         };
         const label = createLabel();
 
-        // console.log("TEST:", set[path], { defaultValue });
+        console.log("TEST:", { path, current: set[path] });
 
         const props = {
           key,
           field: path,
           label,
           required,
-          value: newEntry[path],
+          value: set[path],
         };
 
         if (enumValues?.length) {
@@ -287,19 +302,15 @@ export default function AddNew() {
                   );
                 if (instance === "ObjectID") {
                   // NEEDS TO BE A MULTI CHOICE BOX OF DATABASE ENTRIES
-                  const { ref, refPath } = options;
-                  const references = refPath ? paths[refPath].enumValues : ref;
-                  // console.log({ path }, references);
 
-                  refPath
-                    ? references.forEach(reference =>
-                        dependencies.add(reference)
-                      )
-                    : dependencies.add(ref);
+                  const { ref, refPath } = data.caster.options;
+                  const reference = refPath
+                    ? paths[refPath].enumValues[0]
+                    : ref;
 
                   return (
                     <ChoiceBox
-                      options={[ref + " names"]}
+                      options={dependencies[ref]}
                       single={false}
                       {...props}
                       // handleChange={entry => updateForm(path, entry)}
@@ -353,11 +364,11 @@ export default function AddNew() {
                     $data.options.type.paths
                   )}
                   createFields={option =>
-                    createFields(
-                      $data.options.type.paths,
-                      [...ancestors, path, option]
-                      // newEntry.lockedAttr.name.unlock
-                    )
+                    createFields($data.options.type.paths, [
+                      ...ancestors,
+                      path,
+                      option,
+                    ])
                   }
                   handleChange={handleChange}
                 />
@@ -366,16 +377,13 @@ export default function AddNew() {
             case "ObjectID":
               // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
               const { ref, refPath } = data.options;
-              const references = refPath ? paths[refPath].enumValues : ref;
-              // console.log({ path }, references);
-
-              refPath
-                ? references.forEach(reference => dependencies.add(reference))
-                : dependencies.add(ref);
+              const reference = refPath
+                ? set[refPath] || paths[refPath].enumValues[0]
+                : ref;
 
               return (
                 <ChoiceBox
-                  options={[ref + " name"]}
+                  options={dependencies[reference]}
                   {...props}
                   // handleChange={entry => updateForm(path, entry)}
                 />
@@ -410,7 +418,7 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
 
   const buildForm = () => {
-    const { paths } = models[selection];
+    const { paths } = arcanData.models[selection];
     // console.log("paths:", paths);
 
     return createFields(paths);
@@ -430,10 +438,10 @@ export default function AddNew() {
 
   return (
     <div id="addNew" className="flex">
-      {Object.keys(models).length ? (
+      {Object.keys(arcanData).length ? (
         <>
           <Menu
-            options={Object.keys(models)}
+            options={Object.keys(arcanData.models)}
             label="create"
             handleChange={selectModel}
             value={selection}
