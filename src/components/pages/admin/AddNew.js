@@ -59,30 +59,45 @@ export default function AddNew() {
         })
     );
 
+  useEffect(async () => {
+    const response = await axios.get("/models");
+
+    let [schemata, dependencies] = Object.entries(response.data)
+      .map(([name, { schema, collection }]) => [
+        [name, schema],
+        [name, collection],
+      ])
+      .reduce(
+        ([$schemata, collections], [schema, collection]) => [
+          [...$schemata, schema],
+          [...collections, collection],
+        ],
+        [[], []]
+      );
+
+    schemata = Object.fromEntries(schemata);
+    dependencies = Object.fromEntries(dependencies);
+
+    // console.log({ schemata, dependencies });
+
+    setModels(schemata);
+  }, []);
+
   const initEntry = entry => {
     const data = models[entry];
     const { paths } = data;
     const fields = createFormFields(paths);
     // console.log("fields", fields);
-    console.log("\ndata:", data);
+    // console.log("\ndata:", data);
     setNewEntry(fields);
   };
 
   // :::::::::::::\ SELECT MODEL /:::::::::::::
   const selectModel = option => {
-    console.clear(); // TODO
+    // console.clear(); // TODO
     setSelection(option);
     initEntry(option);
   };
-
-  useEffect(async () => {
-    try {
-      const response = await axios.get("/models");
-      setModels(response.data);
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
 
   useEffect(
     () => Object.keys(models).length && selectModel(Object.keys(models)[0]),
@@ -167,14 +182,14 @@ export default function AddNew() {
         };
         const label = createLabel();
 
-        console.log("TEST:", set[path], { defaultValue });
+        // console.log("TEST:", set[path], { defaultValue });
 
         const props = {
           key,
           field: path,
           label,
           required,
-          value: newEntry[path] ?? defaultValue,
+          value: newEntry[path],
         };
 
         if (enumValues?.length) {

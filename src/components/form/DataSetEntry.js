@@ -32,7 +32,7 @@ const DataSetEntry = ({
   const BANK = options ? options : cache;
 
   const updateForm = option => {
-    console.log("\nTEST:", value);
+    // console.log("\nTEST:", value);
 
     handleChange(
       Object.keys(value).includes(option)
