@@ -14,7 +14,7 @@ export default function ChoiceBox({
 }) {
   const inputs = useRef([]);
 
-  display && console.log({ field, display });
+  // display && console.log({ field, display });
 
   return (
     <fieldset className={`choice-box ${className ? className : ""} flex col`}>

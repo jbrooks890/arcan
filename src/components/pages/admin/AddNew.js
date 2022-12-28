@@ -114,7 +114,7 @@ export default function AddNew() {
 
   // :::::::::::::\ SELECT MODEL /:::::::::::::
   const selectModel = option => {
-    // console.clear(); // TODO
+    console.clear(); // TODO
     setSelection(option);
     initEntry(option);
   };
@@ -131,8 +131,10 @@ export default function AddNew() {
 
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
-  const updateForm = (field, entry) =>
+  const updateForm = (field, entry) => {
+    console.log("UPDATE FORM:", { field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
+  };
 
   // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
 
