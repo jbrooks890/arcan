@@ -49,11 +49,6 @@ export default function AddNew() {
 
   useEffect(async () => fetchModels(), []);
 
-  // useEffect(
-  //   () => Object.keys(arcanData).length && console.log(arcanData),
-  //   [arcanData]
-  // );
-
   // :::::::::::::\ CREATE FORM FIELDS /:::::::::::::
 
   const createFormDefault = instance => {
@@ -92,11 +87,13 @@ export default function AddNew() {
         )
         .map(([field, path]) => {
           const { instance, defaultValue } = path;
+          const $default =
+            instance !== "Array" ? defaultValue : path.options.default;
 
           return [
             field,
-            defaultValue
-              ? defaultValue
+            $default
+              ? $default
               : instance
               ? createFormDefault(instance)
               : createFormFields(path.options.type.paths),
@@ -114,7 +111,7 @@ export default function AddNew() {
 
   // :::::::::::::\ SELECT MODEL /:::::::::::::
   const selectModel = option => {
-    console.clear(); // TODO
+    // console.clear(); // TODO
     setSelection(option);
     initEntry(option);
   };
@@ -151,10 +148,12 @@ export default function AddNew() {
       .map(([path, data], key) => {
         const {
           instance,
+          options,
           isRequired: required,
           defaultValue,
           enumValues,
         } = data;
+
         const parent = ancestors[0];
 
         let chain = {};
@@ -188,8 +187,8 @@ export default function AddNew() {
 
         // ---------| CREATE LABEL |---------
 
-        const createLabel = () => {
-          let label = path.replace(/([A-Z])/g, " $1").toLowerCase();
+        const createLabel = (str = path) => {
+          let label = str.replace(/([A-Z])/g, " $1").toLowerCase();
           const shorthands = new Map([
             // ["pref", "preference"],
             ["attr", "attribute"],
@@ -335,8 +334,11 @@ export default function AddNew() {
                       options={dependency.map(entry => entry._id)}
                       display={Object.fromEntries(
                         dependency.map(entry => {
-                          const { _id, name } = entry;
-                          return [_id, name ?? "TEST"];
+                          const { _id, name, title, subtitle } = entry;
+                          return [
+                            _id,
+                            name ?? subtitle ?? title ?? `${selection}: ${_id}`,
+                          ];
                         })
                       )}
                       handleChange={entry => handleChange(entry)}
@@ -416,8 +418,11 @@ export default function AddNew() {
                   options={dependency.map(entry => entry._id)}
                   display={Object.fromEntries(
                     dependency.map(entry => {
-                      const { _id, name } = entry;
-                      return [_id, name ?? "TEST"];
+                      const { _id, name, title, subtitle } = entry;
+                      return [
+                        _id,
+                        name ?? subtitle ?? title ?? `${selection}: ${_id}`,
+                      ];
                     })
                   )}
                   handleChange={entry => handleChange(entry)}

@@ -1,9 +1,18 @@
 import { useRef, useState } from "react";
 
-const WordBank = ({ terms = [], label, field, required, update }) => {
+const WordBank = ({
+  value,
+  terms = [...value],
+  label,
+  field,
+  required,
+  update,
+}) => {
   const [entry, setEntry] = useState("");
   const placeholder = field.replace(/([A-Z])/g, " $1");
   const submit = useRef();
+
+  console.log("VALUE:", { value });
 
   const addTerm = () => {
     if (entry.length && !terms.includes(entry)) {
