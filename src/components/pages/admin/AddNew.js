@@ -12,6 +12,7 @@ import ChoiceBox from "../../form/ChoiceBox";
 import FieldSet from "../../form/FieldSet";
 import DataSetEntry from "../../form/DataSetEntry";
 import NumField from "../../form/NumField";
+import ArraySet from "../../form/ArraySet";
 
 export default function AddNew() {
   // const [models, setModels] = useState({});
@@ -129,7 +130,7 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
-    console.log("UPDATE FORM:", { field, entry });
+    console.log("UPDATE FORM:\n", { field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
@@ -166,16 +167,30 @@ export default function AddNew() {
           return obj[prop];
         }, newEntry);
 
+        // parent === "affiliations" &&
+        // ancestors.length > 0 &&
+        //   ancestors.length <= 2 &&
+        //   console.log({ path, ancestors, set, VALUE: set[path], chain });
+        // parent === "affiliations" && console.log({ path, parent });
+
+        // parent === "affiliations" &&
+        //   console.log({ path, ancestors, set, VALUE: set[path], chain });
+
         // ---------| HANDLE CHANGE |---------
 
-        const handleChange = value =>
+        const handleChange = value => {
+          console.log("%cCHAIN:\n", "color:lime", { path, chain });
           updateForm(
             parent ?? path,
             parent
               ? Object.entries(chain)
                   .slice(1) // EXCLUDE OVERALL FORM
                   .reduceRight(
-                    (child, [path, parent]) => ({ ...parent, [path]: child }),
+                    (val, [prop, obj], _, arr) => {
+                      console.log("%cTEST", "color:red");
+                      console.log({ arr, obj, prop, val });
+                      return { ...obj, [prop]: val };
+                    },
                     {
                       ...set,
                       [path]: value,
@@ -184,13 +199,14 @@ export default function AddNew() {
               : value
             // CHANGE HAS TO BE AT LOWEST LEVEL, RETURNED VALUE HAS TO BE AT HIGHEST LEVEL
           );
+        };
 
         // ---------| CREATE LABEL |---------
 
         const createLabel = (str = path) => {
           let label = str.replace(/([A-Z])/g, " $1").toLowerCase();
           const shorthands = new Map([
-            // ["pref", "preference"],
+            ["pref", "preference"],
             ["attr", "attribute"],
             ["org", "organization"],
             ["diffr", "differential"],
@@ -199,12 +215,14 @@ export default function AddNew() {
           ]);
 
           shorthands.forEach((long, short) => {
-            if (label.includes(short)) label = label.replace(short, long);
+            const regex = new RegExp(`\\b${short}\\b`);
+            if (label.match(regex)) label = label.replace(regex, long);
           });
           if (parent && label.includes(parent))
             label = label.replace(parent, "").trim();
           if (
             (instance === "Array" || instance === "Map") &&
+            label.charAt(label.length - 1) !== "y" &&
             label.charAt(label.length - 1) !== "s"
           )
             label += "(s)";
@@ -225,6 +243,25 @@ export default function AddNew() {
             createFormDefault(instance),
         };
 
+        // ---------| CREATE DATASET ENTRY |---------
+
+        const createDataSetEntry = (single = false, options, secondaries) => {
+          return (
+            <DataSetEntry
+              {...props}
+              single={single}
+              options={options}
+              secondaryFormFields={createFormFields(secondaries)}
+              createFields={option =>
+                createFields(secondaries, [...ancestors, path, option])
+              }
+              handleChange={handleChange}
+            />
+          );
+        };
+
+        // ===========================================
+
         if (enumValues?.length) {
           return enumValues.length > 3 || !required ? (
             <SelectBox
@@ -243,7 +280,7 @@ export default function AddNew() {
           switch (instance) {
             case "String":
               return path === "description" ? (
-                <label {...key}>
+                <label key={key}>
                   <span className={required ? "required" : ""}>{label}</span>
                   <textarea
                     placeholder={`Description for ${selection}`}
@@ -294,7 +331,7 @@ export default function AddNew() {
               break;
             case "Date":
               return (
-                <label {...key}>
+                <label key={key}>
                   <span>{label}</span>
                   <input
                     type="date"
@@ -311,11 +348,8 @@ export default function AddNew() {
                   return (
                     <WordBank
                       {...props}
-                      terms={newEntry[path]}
-                      update={entry => {
-                        console.log({ path, entry });
-                        updateForm(path, entry);
-                      }}
+                      terms={set[path]}
+                      update={entry => handleChange(entry)}
                     />
                   );
                 if (instance === "ObjectID") {
@@ -353,28 +387,38 @@ export default function AddNew() {
                 const secondaries = Object.fromEntries(
                   Object.entries(paths).filter(([path]) => path !== $primary)
                 );
+
                 // console.log("primaries:", primaries);
                 // console.log("secondaries:\n", secondaries);
 
                 return (
-                  <DataSetEntry
+                  <ArraySet
                     {...props}
-                    single={false}
-                    options={
-                      primary.enumValues?.length ? primary.enumValues : null
+                    createElements={index =>
+                      createFields(paths, [...ancestors, path, index])
                     }
-                    primary={primary}
-                    secondaries={
-                      primary.enumValues?.length
-                        ? createFields(secondaries, path)
-                        : null
-                    }
-                    createFormFields={createFormFields}
+                    newEntry={createFormFields(paths)}
+                    handleChange={handleChange}
                   />
+                  // <DataSetEntry
+                  //   {...props}
+                  //   single={false}
+                  //   options={
+                  //     primary.enumValues?.length ? primary.enumValues : null
+                  //   }
+                  //   primary={primary}
+                  //   secondaries={
+                  //     primary.enumValues?.length
+                  //       ? createFields(secondaries, path)
+                  //       : null
+                  //   }
+                  //   createFormFields={createFormFields}
+                  //   handleChange={entry => handleChange(entry)}
+                  // />
                 );
               }
               return (
-                <label {...props}>
+                <label key={key} {...props}>
                   <span>{label}</span>
                   <div>[{path}]</div>
                 </label>
@@ -383,7 +427,7 @@ export default function AddNew() {
               break;
             case "Map":
               const $data = paths[path + ".$*"];
-              console.log($data.options.type.paths);
+              // console.log($data.options.type.paths);
 
               return (
                 <DataSetEntry
@@ -445,7 +489,7 @@ export default function AddNew() {
                 }
               }
               return (
-                <label {...props}>
+                <label key={key} {...props}>
                   <span>{label}</span>
                   <div>?</div>
                 </label>

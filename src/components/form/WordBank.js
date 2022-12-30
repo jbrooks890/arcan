@@ -12,7 +12,7 @@ const WordBank = ({
   const placeholder = field.replace(/([A-Z])/g, " $1");
   const submit = useRef();
 
-  console.log("VALUE:", { value });
+  // console.log("VALUE:", { value });
 
   const addTerm = () => {
     if (entry.length && !terms.includes(entry)) {

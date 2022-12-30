@@ -7,13 +7,12 @@ const DataSetEntry = ({
   field,
   required,
   options,
+  display,
   inputText = !options?.length,
   single = true,
   label,
   className,
   cache = [],
-  primary,
-  secondaries,
   handleChange,
   value,
   createFields,
@@ -30,7 +29,7 @@ const DataSetEntry = ({
 
   const BANK = options ? options : cache;
 
-  const updateForm = option => {
+  const update = option => {
     // console.log("\nTEST:", value);
 
     handleChange(
@@ -47,7 +46,7 @@ const DataSetEntry = ({
     );
   };
 
-  const addEntry = entry => !value[entry] && updateForm(entry);
+  const addEntry = entry => !value[entry] && update(entry);
 
   const removeEntry = entry =>
     Object.fromEntries(
@@ -68,7 +67,7 @@ const DataSetEntry = ({
       } flex col`}
     >
       <legend className={required ? "required" : ""}>{label}</legend>
-      {inputText && <TermInput add={updateForm} />}
+      {inputText && <TermInput add={addEntry} />}
       {BANK.length ? (
         <ul className="entry-cache flex col">
           {options.map((option, i) => (
@@ -80,7 +79,7 @@ const DataSetEntry = ({
               field={field}
               single={single}
               checked={Object.keys(value).includes(option)}
-              handleChange={() => updateForm(option)}
+              handleChange={() => update(option)}
             />
           ))}
         </ul>
