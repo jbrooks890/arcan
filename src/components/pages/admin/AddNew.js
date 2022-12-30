@@ -202,6 +202,7 @@ export default function AddNew() {
             ["intro", "introduction"],
             ["avg", "average"],
           ]);
+          const nonPlurals = ["s", "y"];
 
           shorthands.forEach((long, short) => {
             const regex = new RegExp(`\\b${short}\\b`);
@@ -211,8 +212,7 @@ export default function AddNew() {
             label = label.replace(parent, "").trim();
           if (
             (instance === "Array" || instance === "Map") &&
-            label.charAt(label.length - 1) !== "y" &&
-            label.charAt(label.length - 1) !== "s"
+            nonPlurals.includes(label.charAt(label.length - 1))
           )
             label += "(s)";
           if (label.split(" ")[0] === "is") label = label.slice(2) + "?";
