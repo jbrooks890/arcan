@@ -42,9 +42,6 @@ export default function AddNew() {
     models = Object.fromEntries(models);
     dependencies = Object.fromEntries(dependencies);
 
-    // console.log({ schemata, dependencies });
-
-    // setModels(schemata);
     setArcanData({ models, dependencies });
   };
 
@@ -130,7 +127,7 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
-    console.log("UPDATE FORM:\n", { field, entry });
+    console.log("%cUPDATE FORM:%c\n", "color:cyan", { field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
@@ -156,40 +153,32 @@ export default function AddNew() {
         } = data;
 
         const parent = ancestors[0];
-
-        let chain = {};
-
-        // console.log({ path, ancestry: ancestors.join(".") });
+        const chain = new Map();
 
         const set = ancestors.reduce((obj, prop) => {
-          chain = { ...chain, [prop]: obj };
+          chain.set(prop, obj);
 
           return obj[prop];
         }, newEntry);
 
-        // parent === "affiliations" &&
-        // ancestors.length > 0 &&
-        //   ancestors.length <= 2 &&
-        //   console.log({ path, ancestors, set, VALUE: set[path], chain });
-        // parent === "affiliations" && console.log({ path, parent });
-
-        // parent === "affiliations" &&
-        //   console.log({ path, ancestors, set, VALUE: set[path], chain });
-
         // ---------| HANDLE CHANGE |---------
 
         const handleChange = value => {
-          console.log("%cCHAIN:\n", "color:lime", { path, chain });
+          console.log("%cCHAIN:\n", "color:lime", {
+            path,
+            chain,
+          });
           updateForm(
             parent ?? path,
             parent
-              ? Object.entries(chain)
+              ? // ? Object.entries(chain)
+                [...chain.entries()]
                   .slice(1) // EXCLUDE OVERALL FORM
                   .reduceRight(
-                    (val, [prop, obj], _, arr) => {
-                      console.log("%cTEST", "color:red");
-                      console.log({ arr, obj, prop, val });
-                      return { ...obj, [prop]: val };
+                    (val, [child, parent]) => {
+                      parent[child] = val;
+
+                      return parent;
                     },
                     {
                       ...set,
@@ -400,21 +389,6 @@ export default function AddNew() {
                     newEntry={createFormFields(paths)}
                     handleChange={handleChange}
                   />
-                  // <DataSetEntry
-                  //   {...props}
-                  //   single={false}
-                  //   options={
-                  //     primary.enumValues?.length ? primary.enumValues : null
-                  //   }
-                  //   primary={primary}
-                  //   secondaries={
-                  //     primary.enumValues?.length
-                  //       ? createFields(secondaries, path)
-                  //       : null
-                  //   }
-                  //   createFormFields={createFormFields}
-                  //   handleChange={entry => handleChange(entry)}
-                  // />
                 );
               }
               return (
@@ -509,12 +483,16 @@ export default function AddNew() {
   };
 
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     console.clear();
     console.log(`%cSUBMIT`, "color: lime");
     console.log(`New ${selection}:`, newEntry);
-    // await axios.post("/" + selection);
+    // try {
+    //   await axios.post("/" + selection);
+    // } catch (err) {
+    //   console.error(err);
+    // }
   };
 
   // ============================================

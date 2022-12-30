@@ -319,7 +319,7 @@ input:checked + .cb-toggle::before {
 /* ::::::::\ WORD BANK /:::::::: */
 
 .word-bank {
-  border: 1px solid var(--green);
+  border: 2px solid var(--green);
   box-sizing: border-box;
   border-radius: var(--outside);
 }
