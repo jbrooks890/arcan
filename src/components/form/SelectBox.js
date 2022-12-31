@@ -28,7 +28,7 @@ export default function SelectBox({
     <label
       className={`select-box ${classList.length ? classList.join(" ") : ""}`}
     >
-      <span>{label}</span>
+      <span className={required ? "required" : ""}>{label}</span>
       <select name={label} style={{ display: "none" }} defaultValue={selected}>
         {options.map((option, i) => (
           <option

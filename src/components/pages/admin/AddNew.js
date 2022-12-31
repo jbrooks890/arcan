@@ -114,12 +114,14 @@ export default function AddNew() {
     initEntry(option);
   };
 
-  useEffect(
-    () =>
-      Object.keys(arcanData).length &&
-      selectModel(Object.keys(arcanData.models)[0]),
-    [arcanData.models]
-  );
+  useEffect(() => {
+    Object.keys(arcanData).length &&
+      selectModel(
+        Object.keys(arcanData.models)[
+          Object.keys(arcanData.models).indexOf("Character")
+        ]
+      );
+  }, [arcanData.models]);
 
   // console.log({ selection });
   // useEffect(() => selection && console.log(models[selection]), [selection]);
@@ -151,6 +153,13 @@ export default function AddNew() {
           defaultValue,
           enumValues,
         } = data;
+
+        const { enum: $enum, suggestions } = options;
+        const choices = enumValues ?? suggestions;
+
+        // choices?.length && console.log({ path, choices });
+        // suggestions && console.log({ path, suggestions });
+        // $enum && console.log({ path, $enum });
 
         const parent = ancestors[0];
         const chain = new Map();
@@ -212,7 +221,7 @@ export default function AddNew() {
             label = label.replace(parent, "").trim();
           if (
             (instance === "Array" || instance === "Map") &&
-            nonPlurals.includes(label.charAt(label.length - 1))
+            !nonPlurals.includes(label.charAt(label.length - 1))
           )
             label += "(s)";
           if (label.split(" ")[0] === "is") label = label.slice(2) + "?";
@@ -251,17 +260,38 @@ export default function AddNew() {
 
         // ===========================================
 
-        if (enumValues?.length) {
-          return enumValues.length > 3 || !required ? (
+        if (choices?.length) {
+          const { selfRef } = options;
+          // selfRef && console.log({ path, selfRef });
+          // const fields = selfRef && Object.keys(set);
+          // const selfRefOptions =
+          //   selfRef &&
+          //   enumValues
+          //     .filter(entry =>
+          //       fields.reduce((prev, curr) => {
+          //         console.log({ prev, curr });
+          //         return prev && entry.includes(curr);
+          //       }, true)
+          //     )
+          //     .map(entry => {
+          //       let newEntry = entry;
+          //       fields.forEach(
+          //         field => (newEntry = newEntry.replace(field, set[field]))
+          //       );
+          //       return { [entry]: newEntry.replaceAll(/\s{2}/g, " ").trim() };
+          //     });
+          // selfRef && console.log({ path, selfRefOptions });
+
+          return choices.length > 3 || !required ? (
             <SelectBox
-              options={required ? enumValues : ["", ...enumValues]}
               {...props}
+              options={required ? choices : ["", ...choices]}
               handleChange={entry => handleChange(entry)}
             />
           ) : (
             <ChoiceBox
-              options={enumValues}
               {...props}
+              options={choices}
               handleChange={entry => handleChange(entry)}
             />
           );
@@ -448,14 +478,11 @@ export default function AddNew() {
               );
               break;
             default:
-              if (data.options) {
-                if (data.options?.type?.paths) {
+              if (options) {
+                if (options?.type?.paths) {
                   return (
                     <FieldSet {...props}>
-                      {createFields(data.options.type.paths, [
-                        ...ancestors,
-                        path,
-                      ])}
+                      {createFields(options.type.paths, [...ancestors, path])}
                     </FieldSet>
                   );
                 } else {

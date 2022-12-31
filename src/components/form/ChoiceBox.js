@@ -28,7 +28,7 @@ export default function ChoiceBox({
               name={field}
               type={single ? "radio" : "checkbox"}
               value={option}
-              // checked={option === value}
+              checked={option === value}
               onChange={() =>
                 handleChange(
                   single
