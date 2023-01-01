@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 export default function SelectBox({
   required,
   options,
+  display,
   field,
   label,
   classList = [],
@@ -13,8 +14,6 @@ export default function SelectBox({
   const [selected, setSelected] = useState(value ?? options[0]);
   const [open, setOpen] = useState(false);
   const list = useRef();
-
-  // console.log({ value });
 
   const selectOption = selection => {
     handleChange(selection);
@@ -41,23 +40,42 @@ export default function SelectBox({
           </option>
         ))}
       </select>
-      <div className="wrapper">
+      <div
+        className="wrapper"
+        onMouseLeave={() => open && toggle()}
+        onBlur={() => open && toggle()}
+      >
         <div
           className={`option-display flex ${open ? "open" : ""}`}
           onClick={toggle}
           // onMouseLeave={() => setOpen(false)}
         >
-          {selected || "--"}
+          {selected && display ? display[selected] : "--"}
         </div>
         <ul
           className={`option-list ${open ? "open" : ""}`}
           ref={list}
           style={open ? { maxHeight: list.current.scrollHeight + "px" } : null}
-          onMouseLeave={() => setOpen(false)}
+          // onMouseLeave={() => open && toggle()}
+          // onBlur={() => setOpen(false)}
         >
           {options.map((option, i) => (
-            <li key={i} onClick={() => selectOption(option)}>
-              {!option ? "--" : option === "other" ? <i>{option}</i> : option}
+            <li
+              key={i}
+              className={display ? "display" : ""}
+              data-choice={option}
+              data-choice-display={display?.[option]}
+              onClick={() => selectOption(option)}
+            >
+              {!option ? (
+                "--"
+              ) : option === "other" ? (
+                <i>{option}</i>
+              ) : display ? (
+                display[option]
+              ) : (
+                option
+              )}
             </li>
           ))}
         </ul>

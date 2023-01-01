@@ -93,7 +93,7 @@ export default function AddNew() {
             $default
               ? $default
               : instance
-              ? createFormDefault(instance)
+              ? undefined
               : createFormFields(path.options.type.paths),
           ];
         })
@@ -109,7 +109,7 @@ export default function AddNew() {
 
   // :::::::::::::\ SELECT MODEL /:::::::::::::
   const selectModel = option => {
-    // console.clear(); // TODO
+    console.clear(); // TODO
     setSelection(option);
     initEntry(option);
   };
@@ -129,11 +129,13 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
-    console.log("%cUPDATE FORM:%c\n", "color:cyan", { field, entry });
+    // console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
-  // %%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%
+  // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
+  // %%%%%%%%%%%%%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%%%%%%%%%%%%
+  // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
 
   const createFields = (paths, ancestors = []) => {
     const { dependencies } = arcanData;
@@ -154,12 +156,10 @@ export default function AddNew() {
           enumValues,
         } = data;
 
-        const { enum: $enum, suggestions } = options;
-        const choices = enumValues ?? suggestions;
-
-        // choices?.length && console.log({ path, choices });
-        // suggestions && console.log({ path, suggestions });
-        // $enum && console.log({ path, $enum });
+        const { suggestions } = options;
+        let choices = enumValues?.length
+          ? enumValues
+          : suggestions?.length && [...suggestions, "other"];
 
         const parent = ancestors[0];
         const chain = new Map();
@@ -173,10 +173,6 @@ export default function AddNew() {
         // ---------| HANDLE CHANGE |---------
 
         const handleChange = value => {
-          console.log("%cCHAIN:\n", "color:lime", {
-            path,
-            chain,
-          });
           updateForm(
             parent ?? path,
             parent
@@ -202,7 +198,10 @@ export default function AddNew() {
         // ---------| CREATE LABEL |---------
 
         const createLabel = (str = path) => {
-          let label = str.replace(/([A-Z])/g, " $1").toLowerCase();
+          let label = str;
+          if (/[a-z]/.test(label.charAt(0)))
+            label = label.replace(/([A-Z])/g, " $1").toLowerCase();
+
           const shorthands = new Map([
             ["pref", "preference"],
             ["attr", "attribute"],
@@ -228,17 +227,18 @@ export default function AddNew() {
           return label;
         };
         const label = createLabel();
+        const value =
+          set?.[path] ??
+          defaultValue ??
+          enumValues?.[0] ??
+          createFormDefault(instance);
 
         const props = {
           key,
           field: path,
           label,
           required,
-          value:
-            set?.[path] ??
-            defaultValue ??
-            enumValues?.[0] ??
-            createFormDefault(instance),
+          value,
         };
 
         // ---------| CREATE DATASET ENTRY |---------
@@ -262,38 +262,35 @@ export default function AddNew() {
 
         if (choices?.length) {
           const { selfRef } = options;
-          // selfRef && console.log({ path, selfRef });
-          // const fields = selfRef && Object.keys(set);
-          // const selfRefOptions =
-          //   selfRef &&
-          //   enumValues
-          //     .filter(entry =>
-          //       fields.reduce((prev, curr) => {
-          //         console.log({ prev, curr });
-          //         return prev && entry.includes(curr);
-          //       }, true)
-          //     )
-          //     .map(entry => {
-          //       let newEntry = entry;
-          //       fields.forEach(
-          //         field => (newEntry = newEntry.replace(field, set[field]))
-          //       );
-          //       return { [entry]: newEntry.replaceAll(/\s{2}/g, " ").trim() };
-          //     });
-          // selfRef && console.log({ path, selfRefOptions });
+
+          if (selfRef) {
+            choices = choices.filter(choice => {
+              let fields = Object.keys(set);
+
+              return set?.[choice];
+            });
+          }
+
+          const display = Object.fromEntries(
+            choices.map(choice => {
+              const value = set?.[choice];
+              return [choice, selfRef && value ? value : createLabel(choice)];
+            })
+          );
+
+          const choiceProps = {
+            ...props,
+            options: required ? choices : ["", ...choices],
+            display,
+            handleChange: entry => handleChange(entry),
+          };
+
+          // selfRef && console.log({ display: choiceProps.display });
 
           return choices.length > 3 || !required ? (
-            <SelectBox
-              {...props}
-              options={required ? choices : ["", ...choices]}
-              handleChange={entry => handleChange(entry)}
-            />
+            <SelectBox {...choiceProps} />
           ) : (
-            <ChoiceBox
-              {...props}
-              options={choices}
-              handleChange={entry => handleChange(entry)}
-            />
+            <ChoiceBox {...choiceProps} />
           );
         } else {
           switch (instance) {
@@ -379,6 +376,7 @@ export default function AddNew() {
                     ? set?.[refPath] || paths[refPath].enumValues[0]
                     : ref;
                   const dependency = dependencies[reference];
+                  // console.log({ path, dependency });
 
                   return (
                     <ChoiceBox
@@ -437,7 +435,7 @@ export default function AddNew() {
                 <DataSetEntry
                   {...props}
                   single={false}
-                  options={data.options.enum}
+                  options={options.enum}
                   secondaryFormFields={createFormFields(
                     $data.options.type.paths
                   )}
@@ -459,6 +457,7 @@ export default function AddNew() {
                 ? set?.[refPath] || paths[refPath].enumValues[0]
                 : ref;
               const dependency = dependencies[reference];
+              // console.log({ path, dependency });
 
               return (
                 <ChoiceBox
@@ -509,17 +508,27 @@ export default function AddNew() {
     return createFields(paths);
   };
 
+  // :::::::::::::\ HANDLE RESET /:::::::::::::
+  const handleReset = e => {
+    e.preventDefault();
+    console.clear();
+    console.log(`%cFORM`, "color: lime");
+    console.log(`New ${selection}:`, newEntry);
+    console.log("%cJSON:", JSON.stringify(newEntry));
+  };
+
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
   const handleSubmit = async e => {
     e.preventDefault();
     console.clear();
-    console.log(`%cSUBMIT`, "color: lime");
-    console.log(`New ${selection}:`, newEntry);
-    // try {
-    //   await axios.post("/" + selection);
-    // } catch (err) {
-    //   console.error(err);
-    // }
+    // console.log(`%cSUBMIT`, "color: lime");
+    // console.log(`New ${selection}:`, newEntry);
+    try {
+      await axios.post("/" + selection, newEntry);
+      initEntry(selection);
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   // ============================================
@@ -543,7 +552,14 @@ export default function AddNew() {
               <button type="submit" onClick={e => handleSubmit(e)}>
                 Save
               </button>
-              <button type="reset" onClick={e => e.preventDefault()}>
+              <button
+                type="reset"
+                onClick={e => {
+                  e.preventDefault();
+                  console.log(`%cFORM`, "color: lime");
+                  console.log(`New ${selection}:`, newEntry);
+                }}
+              >
                 Reset
               </button>
             </ButtonCache>
