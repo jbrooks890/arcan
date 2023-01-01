@@ -129,7 +129,7 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
-    // console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
+    console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
@@ -346,13 +346,17 @@ export default function AddNew() {
               );
               break;
             case "Date":
+              // console.log("DATE:", set[path] instanceof Date);
+              set[path] instanceof Date &&
+                console.log("DATE:", set[path].toDateString());
               return (
                 <label key={key}>
                   <span>{label}</span>
                   <input
                     type="date"
                     onChange={e => handleChange(e.currentTarget.value)}
-                    value={newEntry[path]}
+                    // value={set[path].toDateString()}
+                    value={set[path]}
                   />
                 </label>
               );
