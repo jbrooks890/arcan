@@ -42,8 +42,8 @@ export default function SelectBox({
       </select>
       <div
         className="wrapper"
-        onMouseLeave={() => open && toggle()}
-        onBlur={() => open && toggle()}
+        // onMouseLeave={() => open && toggle()}
+        // onBlur={() => open && toggle()}
       >
         <div
           className={`option-display flex ${open ? "open" : ""}`}
@@ -56,7 +56,7 @@ export default function SelectBox({
           className={`option-list ${open ? "open" : ""}`}
           ref={list}
           style={open ? { maxHeight: list.current.scrollHeight + "px" } : null}
-          // onMouseLeave={() => open && toggle()}
+          onMouseLeave={() => open && toggle()}
           // onBlur={() => setOpen(false)}
         >
           {options.map((option, i) => (

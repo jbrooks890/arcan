@@ -204,11 +204,13 @@ export default function AddNew() {
 
           const shorthands = new Map([
             ["pref", "preference"],
+            ["ref", "reference"],
             ["attr", "attribute"],
             ["org", "organization"],
             ["diffr", "differential"],
             ["intro", "introduction"],
             ["avg", "average"],
+            ["dob", "date of birth"],
           ]);
           const nonPlurals = ["s", "y"];
 
@@ -227,11 +229,8 @@ export default function AddNew() {
           return label;
         };
         const label = createLabel();
-        const value =
-          set?.[path] ??
-          defaultValue ??
-          enumValues?.[0] ??
-          createFormDefault(instance);
+        const value = set?.[path] ?? defaultValue ?? enumValues?.[0];
+        // createFormDefault(instance);
 
         const props = {
           key,
@@ -254,6 +253,34 @@ export default function AddNew() {
                 createFields(secondaries, [...ancestors, path, option])
               }
               handleChange={handleChange}
+            />
+          );
+        };
+
+        // ---------| CREATE OBJECT ID BOX |---------
+
+        const createObjIdBox = ({ ref, refPath }, single = true) => {
+          const reference = refPath
+            ? set?.[refPath] || paths[refPath].enumValues[0]
+            : ref;
+          const dependency = dependencies[reference];
+          // console.log({ path, dependency });
+
+          return (
+            <ChoiceBox
+              {...props}
+              single={single}
+              options={dependency.map(entry => entry._id)}
+              display={Object.fromEntries(
+                dependency.map(entry => {
+                  const { _id, name, title, subtitle } = entry;
+                  return [
+                    _id,
+                    name ?? subtitle ?? title ?? `${selection}: ${_id}`,
+                  ];
+                })
+              )}
+              handleChange={entry => handleChange(entry)}
             />
           );
         };
@@ -351,7 +378,7 @@ export default function AddNew() {
                 console.log("DATE:", set[path].toDateString());
               return (
                 <label key={key}>
-                  <span>{label}</span>
+                  <span className={required ? "required" : ""}>{label}</span>
                   <input
                     type="date"
                     onChange={e => handleChange(e.currentTarget.value)}
@@ -373,44 +400,11 @@ export default function AddNew() {
                     />
                   );
                 if (instance === "ObjectID") {
-                  // NEEDS TO BE A MULTI CHOICE BOX OF DATABASE ENTRIES
-
-                  const { ref, refPath } = data.caster.options;
-                  const reference = refPath
-                    ? set?.[refPath] || paths[refPath].enumValues[0]
-                    : ref;
-                  const dependency = dependencies[reference];
-                  // console.log({ path, dependency });
-
-                  return (
-                    <ChoiceBox
-                      {...props}
-                      single={false}
-                      options={dependency.map(entry => entry._id)}
-                      display={Object.fromEntries(
-                        dependency.map(entry => {
-                          const { _id, name, title, subtitle } = entry;
-                          return [
-                            _id,
-                            name ?? subtitle ?? title ?? `${selection}: ${_id}`,
-                          ];
-                        })
-                      )}
-                      handleChange={entry => handleChange(entry)}
-                    />
-                  );
+                  return createObjIdBox(data.caster.options, false);
                 }
               }
               if (data.schema) {
                 const { paths } = data.schema;
-                const $primary = Object.keys(paths)[0];
-                const primary = paths[$primary]; // "attribute" path
-                const secondaries = Object.fromEntries(
-                  Object.entries(paths).filter(([path]) => path !== $primary)
-                );
-
-                // console.log("primaries:", primaries);
-                // console.log("secondaries:\n", secondaries);
 
                 return (
                   <ArraySet
@@ -456,29 +450,14 @@ export default function AddNew() {
               break;
             case "ObjectID":
               // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
-              const { ref, refPath } = data.options;
-              const reference = refPath
-                ? set?.[refPath] || paths[refPath].enumValues[0]
-                : ref;
-              const dependency = dependencies[reference];
-              // console.log({ path, dependency });
+              // const { ref, refPath } = data.options;
+              // const reference = refPath
+              //   ? set?.[refPath] || paths[refPath].enumValues[0]
+              //   : ref;
+              // const dependency = dependencies[reference];
+              // // console.log({ path, dependency });
 
-              return (
-                <ChoiceBox
-                  {...props}
-                  options={dependency.map(entry => entry._id)}
-                  display={Object.fromEntries(
-                    dependency.map(entry => {
-                      const { _id, name, title, subtitle } = entry;
-                      return [
-                        _id,
-                        name ?? subtitle ?? title ?? `${selection}: ${_id}`,
-                      ];
-                    })
-                  )}
-                  handleChange={entry => handleChange(entry)}
-                />
-              );
+              return createObjIdBox(options);
               break;
             default:
               if (options) {
@@ -556,14 +535,7 @@ export default function AddNew() {
               <button type="submit" onClick={e => handleSubmit(e)}>
                 Save
               </button>
-              <button
-                type="reset"
-                onClick={e => {
-                  e.preventDefault();
-                  console.log(`%cFORM`, "color: lime");
-                  console.log(`New ${selection}:`, newEntry);
-                }}
-              >
+              <button type="reset" onClick={e => handleReset(e)}>
                 Reset
               </button>
             </ButtonCache>

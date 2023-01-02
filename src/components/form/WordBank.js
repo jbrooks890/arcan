@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 const WordBank = ({
-  value,
+  value = [],
   terms = [...value],
   label,
   field,

@@ -13,6 +13,7 @@ const NumField = ({
   const input = useRef();
   const isFloat = step > 0 && step < 1;
   // console.log({ field, required });
+  // console.log({ field, value });
 
   return (
     <label htmlFor={field} data-label={label}>
@@ -27,7 +28,7 @@ const NumField = ({
         onChange={handleChange}
         // onMouseEnter={e => e.currentTarget.focus()}
         step={step}
-        value={value}
+        value={value ?? min}
       />
     </label>
   );

@@ -9,7 +9,7 @@ export default function ChoiceBox({
   single = true,
   label,
   className,
-  value,
+  value = [],
   handleChange,
 }) {
   const inputs = useRef([]);
