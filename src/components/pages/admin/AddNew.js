@@ -156,7 +156,7 @@ export default function AddNew() {
           enumValues,
         } = data;
 
-        const { suggestions } = options;
+        const { suggestions, enumRef } = options;
         let choices = enumValues?.length
           ? enumValues
           : suggestions?.length && [...suggestions, "other"];
@@ -293,10 +293,13 @@ export default function AddNew() {
           if (selfRef) {
             choices = choices.filter(choice => {
               let fields = Object.keys(set);
-
-              return set?.[choice];
+              return typeof set?.[choice] === "object"
+                ? Object.values(set[choice]).join(", ")
+                : set?.[choice];
             });
           }
+
+          selfRef && console.log({ choices });
 
           const display = Object.fromEntries(
             choices.map(choice => {
@@ -389,8 +392,9 @@ export default function AddNew() {
               );
               break;
             case "Array":
-              if (data.caster) {
-                const { instance, options } = data.caster;
+              const { schema, caster } = data;
+              if (caster) {
+                const { instance, options } = caster;
                 if (instance === "String")
                   return (
                     <WordBank
@@ -399,12 +403,11 @@ export default function AddNew() {
                       update={entry => handleChange(entry)}
                     />
                   );
-                if (instance === "ObjectID") {
-                  return createObjIdBox(data.caster.options, false);
-                }
+                if (instance === "ObjectID")
+                  return createObjIdBox(caster.options, false);
               }
-              if (data.schema) {
-                const { paths } = data.schema;
+              if (schema) {
+                const { paths } = schema;
 
                 return (
                   <ArraySet
@@ -449,21 +452,13 @@ export default function AddNew() {
               );
               break;
             case "ObjectID":
-              // NEEDS TO BE A SINGLE CHOICE BOX OF DATABASE ENTRIES
-              // const { ref, refPath } = data.options;
-              // const reference = refPath
-              //   ? set?.[refPath] || paths[refPath].enumValues[0]
-              //   : ref;
-              // const dependency = dependencies[reference];
-              // // console.log({ path, dependency });
-
               return createObjIdBox(options);
               break;
             default:
               if (options) {
                 if (options?.type?.paths) {
                   return (
-                    <FieldSet {...props}>
+                    <FieldSet {...props} className="col">
                       {createFields(options.type.paths, [...ancestors, path])}
                     </FieldSet>
                   );
@@ -530,15 +525,17 @@ export default function AddNew() {
           />
           <Form className="flex col" autocomplete={false}>
             <h3>{selection}</h3>
-            {selection && buildForm()}
-            <ButtonCache>
-              <button type="submit" onClick={e => handleSubmit(e)}>
-                Save
-              </button>
-              <button type="reset" onClick={e => handleReset(e)}>
-                Reset
-              </button>
-            </ButtonCache>
+            <div className="form-wrapper flex col">
+              {selection && buildForm()}
+              <ButtonCache>
+                <button type="submit" onClick={e => handleSubmit(e)}>
+                  Save
+                </button>
+                <button type="reset" onClick={e => handleReset(e)}>
+                  Reset
+                </button>
+              </ButtonCache>
+            </div>
           </Form>
         </>
       ) : (

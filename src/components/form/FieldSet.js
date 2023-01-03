@@ -5,7 +5,9 @@ const FieldSet = ({ field, label, children, className, required }) => {
   // useEffect(() => console.log({ required }), []);
 
   return (
-    <fieldset className={`${field}-section wrapper flex ${className}`}>
+    <fieldset
+      className={`${field}-section wrapper flex ${className ? className : ""}`}
+    >
       <legend className={required ? "required" : ""}>{label}</legend>
       {children}
     </fieldset>

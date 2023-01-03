@@ -1,3 +1,6 @@
+nav {
+  box-sizing: border-box;
+}
 nav a {
   text-transform: uppercase;
 }

@@ -393,7 +393,7 @@ input:checked + .cb-toggle::before {
 /* ::::::::\ CHOICE BOX /:::::::: */
 
 .choice-box {
-  border: inherit;
+  border: 2px solid var(--green);
   border-radius: var(--outside);
 }
 
