@@ -225,7 +225,7 @@ export default function AddNew() {
             !nonPlurals.includes(label.charAt(label.length - 1))
           )
             label += "(s)";
-          if (label.split(" ")[0] === "is") label = label.slice(2) + "?";
+          if (label.startsWith("is")) label = label.slice(2) + "?";
           return label;
         };
         const label = createLabel();
