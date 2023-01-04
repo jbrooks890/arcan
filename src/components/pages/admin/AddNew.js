@@ -129,7 +129,7 @@ export default function AddNew() {
   // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
-    console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
+    // console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
     setNewEntry(prev => ({ ...prev, [field]: entry }));
   };
 
@@ -156,10 +156,10 @@ export default function AddNew() {
           enumValues,
         } = data;
 
-        const { suggestions, enumRef } = options;
-        let choices = enumValues?.length
-          ? enumValues
-          : suggestions?.length && [...suggestions, "other"];
+        // const { suggestions, enumRef } = options;
+        // let choices = enumValues?.length
+        //   ? enumValues
+        //   : suggestions?.length && [...suggestions, "other"];
 
         const parent = ancestors[0];
         const chain = new Map();
@@ -225,7 +225,7 @@ export default function AddNew() {
             !nonPlurals.includes(label.charAt(label.length - 1))
           )
             label += "(s)";
-          if (label.startsWith("is")) label = label.slice(2) + "?";
+          if (label.startsWith("is ")) label = label.slice(2) + "?";
           return label;
         };
         const label = createLabel();
@@ -286,10 +286,18 @@ export default function AddNew() {
         };
 
         // ===========================================
+        const { suggestions, selfRef, enumRef } = options;
+        const pathRef = enumRef ? set[enumRef] : [];
+
+        let choices = enumValues?.length
+          ? enumValues
+          : suggestions?.length
+          ? [...suggestions, "other"]
+          : enumRef && pathRef;
+
+        enumRef && console.log({ path, choices });
 
         if (choices?.length) {
-          const { selfRef } = options;
-
           if (selfRef) {
             choices = choices.filter(choice => {
               let fields = Object.keys(set);
@@ -299,12 +307,12 @@ export default function AddNew() {
             });
           }
 
-          selfRef && console.log({ choices });
+          // pathRef && console.log({ choices });
 
           const display = Object.fromEntries(
             choices.map(choice => {
               const value = set?.[choice];
-              return [choice, selfRef && value ? value : createLabel(choice)];
+              return [choice, pathRef && value ? value : createLabel(choice)];
             })
           );
 
@@ -492,7 +500,7 @@ export default function AddNew() {
     console.clear();
     console.log(`%cFORM`, "color: lime");
     console.log(`New ${selection}:`, newEntry);
-    console.log("%cJSON:", JSON.stringify(newEntry));
+    console.log("%cJSON:", "color:cyan", JSON.stringify(newEntry));
   };
 
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::

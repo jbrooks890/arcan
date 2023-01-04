@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import ValidMarker from "./ValidMarker";
+// import ValidMarker from "./ValidMarker";
 
 const TextField = ({
   field,
@@ -25,7 +25,7 @@ const TextField = ({
       <span onClick={criteria ? toggleCriteria : null}>
         {label}
         {required && <span className={required ? "required" : ""} />}
-        {validation && required && <ValidMarker {...{ error }} />}
+        {/* {validation && required && <ValidMarker {...{ error }} />} */}
       </span>
       {criteria && (
         <ul
@@ -48,7 +48,7 @@ const TextField = ({
         name={field}
         type="text"
         placeholder={placeholder ?? ""}
-        {...{ value }}
+        value={value}
         onChange={handleChange}
         // onBlur={() => required && validator()}
       />
