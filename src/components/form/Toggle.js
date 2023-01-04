@@ -18,7 +18,8 @@ const Toggle = ({
       <input
         ref={input}
         type="checkbox"
-        // id={field}
+        id={field}
+        name={field}
         onChange={handleChange}
         checked={value}
       />

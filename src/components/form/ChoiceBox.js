@@ -24,7 +24,7 @@ export default function ChoiceBox({
           <label key={i} htmlFor={option} className="flex start middle">
             <input
               ref={element => (inputs.current[i] = element)}
-              id={option}
+              // id={option}
               name={field}
               type={single ? "radio" : "checkbox"}
               value={option}

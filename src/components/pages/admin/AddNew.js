@@ -47,6 +47,8 @@ export default function AddNew() {
 
   useEffect(async () => fetchModels(), []);
 
+  useEffect(() => arcanData && console.log({ arcanData }), [arcanData]);
+
   // :::::::::::::\ CREATE FORM FIELDS /:::::::::::::
 
   const createFormDefault = instance => {
@@ -295,7 +297,7 @@ export default function AddNew() {
           ? [...suggestions, "other"]
           : enumRef && pathRef;
 
-        enumRef && console.log({ path, choices });
+        // enumRef && console.log({ path, choices });
 
         if (choices?.length) {
           if (selfRef) {
@@ -310,11 +312,18 @@ export default function AddNew() {
           // pathRef && console.log({ choices });
 
           const display = Object.fromEntries(
-            choices.map(choice => {
-              const value = set?.[choice];
-              return [choice, pathRef && value ? value : createLabel(choice)];
-            })
+            choices
+              .map(choice => {
+                const value = set?.[choice];
+                return [choice, pathRef && value ? value : createLabel(choice)];
+              })
+              .sort((a, b) => {
+                // console.log({ previous: a[1], current: b[1] });
+                return b[1] > a[1];
+              })
           );
+
+          // console.log({ display });
 
           const choiceProps = {
             ...props,
@@ -340,7 +349,7 @@ export default function AddNew() {
                     placeholder={`Description for ${selection}`}
                     onChange={e => handleChange(e.currentTarget.value)}
                     rows={6}
-                    value={newEntry[path]}
+                    value={set[path] ?? ""}
                   />
                 </label>
               ) : (
@@ -510,10 +519,33 @@ export default function AddNew() {
     // console.log(`%cSUBMIT`, "color: lime");
     // console.log(`New ${selection}:`, newEntry);
     try {
-      await axios.post("/" + selection, newEntry);
+      const response = await axios.post("/" + selection, newEntry);
       initEntry(selection);
+      response?.data &&
+        setArcanData(prev => {
+          const { _id, name, subtitle, title, username } = response.data;
+          return {
+            ...prev,
+            dependencies: {
+              ...prev.dependencies,
+              [selection]: [
+                ...prev.dependencies[selection],
+                {
+                  _id,
+                  name:
+                    name ??
+                    subtitle ??
+                    title ??
+                    username ??
+                    `${selection}: ${_id}`,
+                },
+              ],
+            },
+          };
+        });
     } catch (err) {
       console.error(err.message);
+      console.error(err.response.data.error.split(", ").join("\n"));
     }
   };
 

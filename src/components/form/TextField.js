@@ -48,7 +48,7 @@ const TextField = ({
         name={field}
         type="text"
         placeholder={placeholder ?? ""}
-        value={value}
+        value={value ?? ""}
         onChange={handleChange}
         // onBlur={() => required && validator()}
       />
