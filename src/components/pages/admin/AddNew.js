@@ -13,6 +13,7 @@ import FieldSet from "../../form/FieldSet";
 import DataSetEntry from "../../form/DataSetEntry";
 import NumField from "../../form/NumField";
 import ArraySet from "../../form/ArraySet";
+import FormPreview from "../../form/FormPreview";
 
 export default function AddNew() {
   // const [models, setModels] = useState({});
@@ -117,18 +118,13 @@ export default function AddNew() {
   };
 
   useEffect(() => {
-    Object.keys(arcanData).length &&
-      selectModel(
-        Object.keys(arcanData.models)[
-          Object.keys(arcanData.models).indexOf("Character")
-        ]
-      );
+    Object.keys(arcanData).length && selectModel("Character");
   }, [arcanData.models]);
 
   // console.log({ selection });
   // useEffect(() => selection && console.log(models[selection]), [selection]);
 
-  // %%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%
+  // %%%%%%%%%%%%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
     // console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
@@ -577,6 +573,18 @@ export default function AddNew() {
               </ButtonCache>
             </div>
           </Form>
+          <FormPreview
+            name={
+              typeof newEntry.name === "object"
+                ? Object.values(newEntry.name)[0]
+                : newEntry.name ||
+                  newEntry.subtitle ||
+                  newEntry.title ||
+                  newEntry.username ||
+                  `New ${selection}`
+            }
+            form={newEntry}
+          />
         </>
       ) : (
         "Loading..."

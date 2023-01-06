@@ -281,6 +281,8 @@ input:checked + .cb-toggle::before {
   left: 0;
   margin-right: 1em;
   padding-block: 1em;
+  max-height: 100vh;
+  overflow-y: scroll;
   border: 2px solid var(--green);
   border-radius: var(--outside);
   transition: .2s ease-out;

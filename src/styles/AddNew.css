@@ -6,6 +6,10 @@
   /* height: 100vh; */
 }
 
+#addNew > * {
+  margin-right: 1rem;
+}
+
 #addNew form {
   position: relative;
   width: 75vw;
