@@ -1,7 +1,7 @@
 import "../../styles/FormPreview.css";
 
-const FormPreview = ({ name, form, className }) => {
-  console.log({ name, form });
+const FormPreview = ({ name, form, className, handleSubmit }) => {
+  // console.log({ name, form });
 
   const buildList = (obj = {}) => {
     return (
@@ -38,7 +38,7 @@ const FormPreview = ({ name, form, className }) => {
     );
   };
 
-  const handleSubmit = e => e.preventDefault();
+  // const handleSubmit = e => e.preventDefault();
 
   return (
     <div className={`form-preview flex col ${className ?? ""}`}>

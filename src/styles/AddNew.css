@@ -6,6 +6,10 @@
   /* height: 100vh; */
 }
 
+#addNew.flex {
+  justify-content: center;
+}
+
 #addNew > * {
   margin-right: 1rem;
 }

@@ -233,6 +233,7 @@ export default function AddNew() {
         const props = {
           key,
           field: path,
+          fieldPath: [...ancestors, path].join("-"),
           label,
           required,
           value,
@@ -576,7 +577,11 @@ export default function AddNew() {
           <FormPreview
             name={
               typeof newEntry.name === "object"
-                ? Object.values(newEntry.name)[0]
+                ? Object.values(newEntry.name)[0] ||
+                  newEntry.subtitle ||
+                  newEntry.title ||
+                  newEntry.username ||
+                  `New ${selection}`
                 : newEntry.name ||
                   newEntry.subtitle ||
                   newEntry.title ||
@@ -584,6 +589,7 @@ export default function AddNew() {
                   `New ${selection}`
             }
             form={newEntry}
+            handleSubmit={e => handleSubmit(e)}
           />
         </>
       ) : (

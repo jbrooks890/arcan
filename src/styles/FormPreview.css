@@ -3,7 +3,8 @@
   top:1rem;
   background-color: var(--green);
   color: var(--dark);
-  min-width: 480px;
+  width: 480px;
+  overflow-x: hidden;
   border-radius: var(--outside);
   padding-bottom: 2em;
   text-align: left;
