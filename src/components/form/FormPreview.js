@@ -8,6 +8,7 @@ const FormPreview = ({ name, form, className }) => {
       <ul>
         {Object.entries(obj).map(([key, value], i) => {
           const isObject = typeof value === "object";
+          const hasValue = value !== null && value !== undefined;
           return (
             <li key={i} className={isObject ? "dropdown" : ""}>
               <label style={{ display: "inline-block" }}>
@@ -22,10 +23,12 @@ const FormPreview = ({ name, form, className }) => {
 
                 {isObject ? (
                   buildList(value)
-                ) : value !== null && value !== undefined ? (
-                  String(value)
                 ) : (
-                  <span className="fade">no entry</span>
+                  <span
+                    className={`form-preview-entry ${!hasValue ? "fade" : ""}`}
+                  >
+                    {hasValue ? String(value) : "no entry"}
+                  </span>
                 )}
               </label>
             </li>

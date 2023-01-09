@@ -61,10 +61,12 @@
 }
 
 .form-preview .wrapper ul li strong {
+  /* color: var(--mint);
+  text-shadow: 1px 1px 1px var(--shadow); */
   font-size: .9rem;
   font-weight: normal;
   font-variant: small-caps;
-  opacity: .75;
+  /* opacity: .75; */
   letter-spacing: normal;
 }
 
@@ -88,6 +90,13 @@
   border: 2px solid var(--dark);
   border-radius: var(--inside);
   transition: .1s ease-out;
+}
+
+#addNew .form-preview .form-preview-entry:not(.fade) {
+  color: var(--mint);
+  text-transform: none;
+  font-size: 1rem;
+  text-shadow: 1px 1px 1px var(--shadow);
 }
 
 @media(hover:hover){

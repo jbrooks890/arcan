@@ -6,9 +6,12 @@
 :root{
   /* ========== COLORS ========== */
   --green: #00bfa7;
+  /* --mint: #8ee3d8; */
+  --mint: #adebe2;
   /* ---------------------------- */
   --pop: var(--green);
   --lite: white;
+  --brite: var(--mint);
   --pop-alt: red;
   --dark: black;
   --shadow: hsla(0,0%,0%,0.1);
