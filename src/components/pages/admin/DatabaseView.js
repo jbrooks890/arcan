@@ -44,8 +44,29 @@ const DatabaseView = () => {
 
   // :::::::::::::\ GET PATH DATA /:::::::::::::
 
-  const getPathData = (path, collection = selection) => {
-    return arcanData.models[collection].paths[path];
+  const getPathData = (ancestors, collection = selection) => {
+    // Navigate to the appropriate schema path
+    const model = arcanData.models[collection];
+
+    // SET=
+    const set = ancestors.reduce((paths, pathName) => {
+      const current = paths[pathName];
+      // console.log({ pathName, paths, current });
+
+      if (current) {
+        if (current.instance) {
+          const { instance } = current;
+          if (instance === "Array")
+            return current.caster || current.schema.paths;
+          if (instance === "Map")
+            return current.$__schemaType.options.type.paths;
+        }
+        return current.options?.type?.paths || current;
+      }
+      return paths;
+    }, model.paths);
+
+    return set;
   };
 
   // :::::::::::::\ BUILD LIST /:::::::::::::
@@ -62,19 +83,22 @@ const DatabaseView = () => {
         {Object.entries(obj).map(([key, value], i) => {
           const isObject = typeof value === "object";
           const hasValue = value !== null && value !== undefined;
+          const isArray = Array.isArray(obj[key]);
 
-          // console.log({ key, ancestors });
+          // console.log({ key, ancestors: ancestors.join(" > ") });
           const root = ancestors[0] ?? key;
           const parent = ancestors[ancestors.length - 1];
-          const pathData = getPathData(root);
-          const { instance, options } = pathData;
-          instance === "ObjectID" &&
-            console.log({
-              key,
-              value,
-              ref: arcanData.dependencies[options.ref],
-            });
-          // console.log({ key, parent, root });
+
+          const renderEntry = () => {
+            const pathData = getPathData([...ancestors, key]);
+            const { instance, options } = pathData;
+
+            return instance === "ObjectID"
+              ? arcanData.dependencies[options.ref].find(
+                  entry => entry._id === value
+                ).name
+              : String(value);
+          };
 
           return (
             <li key={i} className={!isObject ? "flex" : ""}>
@@ -82,6 +106,7 @@ const DatabaseView = () => {
                 <Accordion
                   field={key}
                   list={buildList(value, [...ancestors, key])}
+                  defOpen={isArray}
                 />
               ) : (
                 <>
@@ -89,11 +114,8 @@ const DatabaseView = () => {
                     {key}
                   </strong>
                   <span>
-                    {instance === "ObjectID"
-                      ? arcanData.dependencies[options.ref].find(
-                          entry => entry._id === value
-                        ).name
-                      : String(value)}
+                    {renderEntry()}
+                    {/* {String(value)} */}
                   </span>
                 </>
               )}
@@ -119,6 +141,7 @@ const DatabaseView = () => {
   // :::::::::::::\ SELECT COLLECTION /:::::::::::::
 
   const selectCollection = name => {
+    console.clear();
     setSelection(name);
     setEntrySelection("");
   };
@@ -133,7 +156,7 @@ const DatabaseView = () => {
         <div id="database-view-wrapper" className="grid">
           {/* ------- COLLECTION SELECTOR ------- */}
           <div id="collection-select" className="fieldset flex middle">
-            <div className="legend">Collections</div>
+            <div className="legend">Collection</div>
             <Dropdown
               options={Object.keys(arcanData.models)}
               value={selection}
@@ -151,9 +174,7 @@ const DatabaseView = () => {
 
           {/* ------- ENTRY MENU ------- */}
           <Menu
-            label={`Entries (${
-              Object.keys(arcanData.dependencies[selection]).length
-            })`}
+            label="Entries"
             options={Object.values(arcanData.dependencies[selection]).map(
               entry => entry._id
             )}
@@ -170,7 +191,19 @@ const DatabaseView = () => {
           {/* ------- ENTRY DATA ------- */}
           <div id="entry-data">
             {entrySelection ? (
-              buildList(entrySelection)
+              <>
+                <div id="entry-header" className="flex col">
+                  <h3 id="entry-name" data-entry-id={entrySelection._id}>
+                    {
+                      arcanData.dependencies[selection].find(
+                        entry => entry._id === entrySelection._id
+                      ).name
+                    }
+                  </h3>
+                  <h4 id="entry-id">{entrySelection._id}</h4>
+                </div>
+                {buildList(entrySelection)}
+              </>
             ) : (
               <span className="fade">No selection</span>
             )}

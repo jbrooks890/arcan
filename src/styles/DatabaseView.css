@@ -48,6 +48,30 @@
   overflow-y: scroll;
 }
 
+#entry-header {
+  border-bottom: 1px solid var(--green);
+}
+
+#entry-header > *{
+  margin: 0;
+}
+
+#entry-name {
+  font-size: larger;
+}
+
+#entry-id {
+  font-weight: normal;
+  font-size: .9rem;
+}
+
+#entry-id::before {
+  content: "id: ";
+  text-transform: uppercase;
+  font-size: small;
+  color: var(--mint);
+}
+
 #entry-data ul {
   padding-left: 1em;
 }
