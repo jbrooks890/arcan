@@ -1,11 +1,10 @@
 import { useRef, useState } from "react";
-// import "../../styles/SelectBox.css";
+import "../../styles/form/Dropdown.css";
 
-export default function SelectBox({
-  required,
+export default function Dropdown({
+  required = false,
   options,
   display,
-  field,
   label,
   classList = [],
   handleChange,
@@ -50,7 +49,7 @@ export default function SelectBox({
           onClick={toggle}
           // onMouseLeave={() => setOpen(false)}
         >
-          {selected && display ? display[selected] : "--"}
+          {selected ?? display?.[selected] ?? "--"}
         </div>
         <ul
           className={`option-list ${open ? "open" : ""}`}

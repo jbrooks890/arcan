@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import "../../styles/form/WordBank.css";
 
 const WordBank = ({
   value = [],

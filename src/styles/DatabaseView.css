@@ -1,0 +1,100 @@
+
+#database-view-wrapper {
+  position: relative;
+  box-sizing: border-box;
+  width: 75vw;
+  padding: 1rem;
+}
+
+.flex #database-view-wrapper {
+  flex-grow: 1;
+}
+
+#database-view-wrapper.grid {
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 3rem 1fr;
+  gap: 1rem;
+}
+
+#database-view-wrapper > * {
+  /* background-color: var(--mint);
+  color: var(--dark); */
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+  box-sizing: border-box;
+}
+
+/* --------- COLLECTION SELECTOR --------- */
+
+#collection-select .select-box{
+  flex-grow: 1;
+}
+
+#collection-select .select-box .wrapper {
+  border: none;
+}
+
+/* ----------- COLLECTION DATA ----------- */
+
+#database-view-wrapper #collection-data {
+  padding-inline: 1em;
+}
+
+/* ----------- ENTRY DATA ----------- */
+
+#entry-data {
+  padding: 1rem;
+  text-align: left;
+  overflow-y: scroll;
+}
+
+#entry-data ul {
+  padding-left: 1em;
+}
+
+#entry-data li {
+  max-width: 480px;
+}
+
+#entry-data li strong {
+  margin-right: .5em;
+  font-weight: 400;
+  font-variant: small-caps;
+  color: var(--mint);
+}
+
+#entry-data li strong::after{
+  content:":"
+}
+
+#entry-data ul input[type="checkbox"]+ul{
+  max-height: 0;
+  overflow: hidden;
+}
+
+#entry-data ul input[type="checkbox"]:checked+ul{
+  max-height: none;
+}
+
+#entry-data .dropdown>label>strong {
+  cursor: pointer;
+  position: relative;
+  height: 1em;
+}
+
+#entry-data .dropdown>label>strong::before {
+  --size: .5em;
+  --border: 2px solid var(--green);
+  content:"";
+  display: block;
+  position: absolute;
+  left: -1em;
+  top: 50%;
+  width: var(--size);
+  height: var(--size);
+  border-top: var(--border);
+  border-right: var(--border);
+  border-top-right-radius: 2px;
+  transform: translateY(-50%) rotate(45deg);
+  box-sizing: border-box;
+}

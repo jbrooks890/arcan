@@ -1,0 +1,36 @@
+.accordion.closed ul {
+  max-height: 0;
+  overflow: hidden;
+}
+
+.accordion strong {
+  cursor: pointer;
+  position: relative;
+}
+
+.accordion strong .arrow {
+  --size: 1em;
+  position: absolute;
+  left: calc(var(--size)*-1);
+  top: 0;
+  bottom: 0;
+  transform: rotate(45deg);
+  transition: .1s ease-out
+}
+
+.accordion.open > strong > .arrow {
+  transform: rotate(135deg);
+}
+
+.accordion strong .arrow::before{
+  --size: .5em;
+  --border: 2px solid var(--pop);
+  content: "";
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  border-top: var(--border);
+  border-right: var(--border);
+  box-sizing: border-box;
+  border-top-right-radius: 2px;
+}

@@ -27,12 +27,15 @@
   /* ========== BORDERS ========== */
   --inside: 5px;
   --outside: 10px;
+  /* ========== ELEMENTS ========== */
+  --header-ht: 3rem;
   /* ============================= */
   background-color: var(--dark);
+
 }
 
 .App {
-  min-height: 100vh;
+  height: 100vh;
   box-sizing: border-box;
   background-color: var(--dark);
   color: var(--pop);
@@ -49,6 +52,12 @@ header, footer {
   font-weight: bold;
   font-size: 12px;
 }
+
+/* main {
+  height: 100%;
+  padding-top: var(--header-ht);
+  box-sizing: border-box;
+} */
 
 .flex main {
   flex-grow: 1;
@@ -102,6 +111,11 @@ h3 {
 .flex.center {
   justify-content: center;
   align-items: center;
+}
+
+/* ::::::::::\ GRID /:::::::::: */
+.grid {
+  display: grid;
 }
 
 /* ::::::::::\ OTHER /:::::::::: */

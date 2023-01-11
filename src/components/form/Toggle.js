@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import "../../styles/form/Toggle.css";
 
 const Toggle = ({
   classList = [],

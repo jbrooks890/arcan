@@ -1,0 +1,39 @@
+/* ::::::::\ TOGGLE /:::::::: */
+
+.toggle input[type="checkbox"] {
+  position: absolute;
+  visibility: hidden;
+}
+
+.cb-toggle {
+  --size: 1.25rem;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid var(--green);
+  padding: 3px;
+  width: calc(var(--size)*2);
+  height: var(--size);
+  border-radius: 100px;
+  transition: 0.2s ease-out;
+}
+
+.cb-toggle::before {
+  --size: inherit;
+  content: "";
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  transition: inherit;
+  background-color: var(--green);
+  border-radius: 50%;
+}
+
+input:checked+.cb-toggle {
+  background-color: var(--green);
+}
+
+input:checked+.cb-toggle::before {
+  --size: inherit;
+  background-color: var(--dark);
+  transform: translateX(var(--size));
+}

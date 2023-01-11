@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import "../../styles/form/FieldSet.css";
 
 const FieldSet = ({ field, label, children, className, required }) => {
   // console.log(fields);

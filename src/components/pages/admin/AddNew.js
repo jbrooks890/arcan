@@ -1,7 +1,7 @@
-import axios from "../../../apis/axios";
 import "../../../styles/AddNew.css";
+import axios from "../../../apis/axios";
 import { useState, useEffect } from "react";
-import SelectBox from "../../form/SelectBox";
+import Dropdown from "../../form/Dropdown";
 import Form from "../../form/Form";
 import TextField from "../../form/TextField";
 import Toggle from "../../form/Toggle";
@@ -332,7 +332,7 @@ export default function AddNew() {
           // selfRef && console.log({ display: choiceProps.display });
 
           return choices.length > 3 || !required ? (
-            <SelectBox {...choiceProps} />
+            <Dropdown {...choiceProps} />
           ) : (
             <ChoiceBox {...choiceProps} />
           );
@@ -551,7 +551,7 @@ export default function AddNew() {
   // ============================================
 
   return (
-    <div id="addNew" className="flex">
+    <main id="addNew" className="flex">
       {Object.keys(arcanData).length ? (
         <>
           <Menu
@@ -595,6 +595,6 @@ export default function AddNew() {
       ) : (
         "Loading..."
       )}
-    </div>
+    </main>
   );
 }

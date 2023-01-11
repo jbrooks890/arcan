@@ -6,12 +6,18 @@
   /* height: 100vh; */
 }
 
+.flex #addNew {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
 #addNew.flex {
   justify-content: center;
 }
 
 #addNew > * {
   margin-right: 1rem;
+  /* overflow-y: scroll; */
 }
 
 #addNew form {
@@ -23,7 +29,7 @@
   box-sizing: border-box;
   border: 2px solid var(--green);
   border-radius: var(--outside);
-  overflow: hidden;
+  overflow-y: scroll;
 }
 
 #addNew form .form-wrapper{

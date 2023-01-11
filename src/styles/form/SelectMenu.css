@@ -1,0 +1,45 @@
+/* ::::::::\ MENU /:::::::: */
+
+.select-menu {
+  overflow-y: scroll;
+  border: 2px solid var(--green);
+  box-sizing: border-box;
+  border-radius: var(--outside);
+  transition: .2s ease-out;
+}
+
+.select-menu input[type="radio"] {
+  position: absolute;
+  visibility: hidden;
+}
+
+.select-menu input[type="radio"]+label {
+  cursor: pointer;
+  border: 2px solid var(--green);
+  margin-bottom: .5em;
+  padding: .5em;
+  font-family: var(--keyFont2);
+  font-size: smaller;
+  font-weight: bold;
+  line-height: 1em;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  border-radius: var(--inside);
+  transition: .1s ease-out;
+}
+
+.select-menu input[type="radio"]:checked+label {
+  background-color: var(--green);
+  color: var(--dark);
+}
+
+/* ========================================= *\
+|| >> HOVER <<
+\* ========================================= */
+
+@media (hover:hover) {
+  .select-menu input[type="radio"]:hover+label {
+    background-color: var(--green);
+    color: var(--dark);
+  }
+}

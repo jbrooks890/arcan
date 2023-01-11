@@ -1,0 +1,11 @@
+/* ::::::::\ FIELDSET /:::::::: */
+
+.custom-form fieldset.wrapper {
+  border-radius: var(--outside);
+  border-color: inherit;
+  box-sizing: border-box;
+}
+
+.custom-form fieldset.wrapper>*:not(legend) {
+  margin-bottom: .5em;
+}

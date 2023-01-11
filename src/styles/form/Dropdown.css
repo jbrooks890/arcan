@@ -1,0 +1,108 @@
+/* ::::::::\ SELECT BOX /:::::::: */
+
+.select-box {
+  position: relative;
+  box-sizing: border-box;
+}
+
+.select-box .wrapper {
+  position: relative;
+  padding: .5em;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+  box-sizing: border-box;
+}
+
+.option-display {
+  cursor: pointer;
+  position: relative;
+  line-height: 1em;
+  z-index: 2;
+}
+
+.option-display::after {
+  content: var(--cancel);
+  display: block;
+  /* justify-content: center; */
+  /* align-items: center; */
+  /* margin-left: .5em; */
+  /* background-color: red; */
+  color: inherit;
+  /* font-family: monospace; */
+  font-size: 1rem;
+  line-height: 1em;
+  transform-origin: center;
+  /* transform: rotate(45deg); */
+  /* border: 1px solid red; */
+  opacity: 0.25;
+  transition: 0.1s ease-out;
+  box-sizing: border-box;
+}
+
+.option-display.open::after {
+  transform: rotate(45deg);
+  opacity: 1;
+}
+
+.option-display:hover::after {
+  opacity: 1;
+}
+
+.option-display.flex {
+  justify-content: space-between;
+}
+
+.option-display svg {
+  --size: 0.75rem;
+  width: var(--size);
+  height: var(--size);
+  stroke: var(--lavender);
+  stroke-width: 8;
+  transform: rotate(90deg);
+}
+
+.option-list {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  background-color: var(--dark);
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.1s ease-out;
+  box-sizing: border-box;
+  overflow: hidden;
+
+}
+
+.option-list.open {
+  opacity: 1;
+  z-index: 10000;
+}
+
+.option-list li {
+  cursor: pointer;
+  padding: 0.5em 1em;
+  font-size: 0.8rem;
+  line-height: 1em;
+  /* border: 1px solid cyan; */
+}
+
+.option-list li:focus {
+  background-color: var(--mid);
+}
+
+/* ========================================= *\
+|| >> HOVER <<
+\* ========================================= */
+
+@media (hover:hover) {
+  .option-list li:hover {
+    background-color: var(--green);
+    color: var(--dark);
+  }
+}
