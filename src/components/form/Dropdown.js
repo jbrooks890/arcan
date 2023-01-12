@@ -49,7 +49,7 @@ export default function Dropdown({
           onClick={toggle}
           // onMouseLeave={() => setOpen(false)}
         >
-          {selected ?? display?.[selected] ?? "--"}
+          {String(selected) || display?.[selected] || "--"}
         </div>
         <ul
           className={`option-list ${open ? "open" : ""}`}

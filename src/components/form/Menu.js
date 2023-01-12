@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import "../../styles/form/SelectMenu.css";
+import Search from "./Search";
 
 const Menu = ({
   options,
@@ -9,6 +10,7 @@ const Menu = ({
   className,
   field = "selectMenu",
   value,
+  searchable = true,
   handleChange,
 }) => {
   return (
@@ -17,6 +19,7 @@ const Menu = ({
       className={`select-menu ${className ? className : ""} flex col`}
     >
       <legend>{label}</legend>
+      {searchable && <Search />}
       {options.map((option, i) => (
         <Fragment key={i}>
           <input

@@ -5,6 +5,7 @@ input {
   background-color: transparent;
   color: inherit;
   padding: .5em;
+  font-family: var(--bodyFont);
   font-size: 1rem;
   box-sizing: border-box;
   outline: inherit;
@@ -26,7 +27,7 @@ input[type="number"]{
   color: inherit;
   /* font-family: var(--bodyFont); */
   opacity: .5;
-  font-family: initial;
+  /* font-family: initial; */
   font-style: italic;
 }
 

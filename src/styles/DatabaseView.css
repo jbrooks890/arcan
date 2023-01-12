@@ -1,9 +1,13 @@
+#database-view {
+  overflow: hidden;
+}
 
 #database-view-wrapper {
   position: relative;
   box-sizing: border-box;
   width: 75vw;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .flex #database-view-wrapper {
@@ -22,6 +26,7 @@
   border: 2px solid var(--green);
   border-radius: var(--inside);
   box-sizing: border-box;
+  /* overflow: hidden; */
 }
 
 /* --------- COLLECTION SELECTOR --------- */
@@ -40,13 +45,44 @@
   padding-inline: 1em;
 }
 
+#collection-data .data-cache {
+  flex-grow: 1;
+  text-align: left;
+}
+
+#collection-data .data-cache > * {
+  margin-right: 1em;
+}
+
+#collection-data .add-new {
+  align-self: stretch;
+  margin-block: .5em;
+  padding-inline: 1em;
+  /* background-color: var(--green);
+  color: var(--dark); */
+  text-transform: uppercase;
+  border: 1.5px solid transparent;
+  border-radius: var(--inside);
+  box-sizing: border-box;
+  transition: .1s ease-out;
+}
+
+#collection-data .add-new::before {
+  content: var(--cancel);
+  margin-right: .5em;
+}
+
 /* ----------- ENTRY DATA ----------- */
 
 #entry-data {
   padding: 1rem;
   text-align: left;
   overflow-y: scroll;
+  /* overflow: hidden; */
+  box-sizing: border-box;
 }
+
+/* ========== ENTRY HEADER ========== */
 
 #entry-header {
   border-bottom: 1px solid var(--green);
@@ -70,6 +106,23 @@
   text-transform: uppercase;
   font-size: small;
   color: var(--mint);
+}
+
+#entry-header .button-cache button{
+  cursor: pointer;
+  transition: .1s ease-out;
+  margin-right: 1em;
+  padding: 0;
+  opacity: 0;
+  transition: .1s ease-out;
+}
+
+/* ========== ENTRY FIELDS ========== */
+
+#entry-fields {
+  padding-left: 1ch;
+  overflow-y: scroll;
+  box-sizing: border-box;
 }
 
 #entry-data ul {
@@ -121,4 +174,21 @@
   border-top-right-radius: 2px;
   transform: translateY(-50%) rotate(45deg);
   box-sizing: border-box;
+}
+
+/* ====================================== **
+|| HOVER
+** ====================================== */
+@media (hover:hover){
+  #collection-data .add-new:hover {
+    border-color: var(--green);
+  }
+
+  #entry-header:hover .button-cache button {
+    opacity: .75;
+  }
+
+  #entry-header .button-cache button:hover {
+    opacity: 1;
+  }
 }

@@ -1,8 +1,8 @@
 import "../../styles/form/Accordion.css";
 import { useRef, useState } from "react";
 
-const Accordion = ({ field, list, defOpen = false }) => {
-  const [open, setOpen] = useState(defOpen);
+const Accordion = ({ field, list, mode = false }) => {
+  const [open, setOpen] = useState(mode);
   const listEm = useRef();
 
   const toggle = () => setOpen(prev => !prev);

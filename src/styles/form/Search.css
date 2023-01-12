@@ -1,0 +1,28 @@
+.search-bar {
+  margin-bottom: 1em;
+  padding: .5em 1em;
+  border: 2px solid var(--pop);
+  border-radius: 100px;
+  box-sizing: border-box;
+}
+
+.search-bar input {
+  padding: 0;
+  border: none;
+  /* outline: 1px solid red; */
+}
+
+.search-bar .search-icon {
+  --size: 1em;
+  width: var(--size);
+  height: var(--size);
+  margin-right: .5em;
+}
+
+.search-bar .search-icon svg {
+  stroke: var(--green);
+  stroke-width: .75px;
+  fill: none;
+  width: 100%;
+  height: 100%;
+}

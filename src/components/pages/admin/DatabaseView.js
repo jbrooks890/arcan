@@ -106,7 +106,7 @@ const DatabaseView = () => {
                 <Accordion
                   field={key}
                   list={buildList(value, [...ancestors, key])}
-                  defOpen={isArray}
+                  mode={Object.keys(value).length < 6}
                 />
               ) : (
                 <>
@@ -167,9 +167,13 @@ const DatabaseView = () => {
           {/* ------- COLLECTION DATA ------- */}
           <div id="collection-data" className="fieldset flex middle">
             <div className="legend">Collection Data</div>
-            <div>
-              Entries: {Object.keys(arcanData.dependencies[selection]).length}
+            <div className="data-cache flex middle">
+              <div>
+                Entries: {Object.keys(arcanData.dependencies[selection]).length}
+              </div>
+              <div>Filter</div>
             </div>
+            <button className="add-new flex middle">New</button>
           </div>
 
           {/* ------- ENTRY MENU ------- */}
@@ -189,7 +193,7 @@ const DatabaseView = () => {
           />
 
           {/* ------- ENTRY DATA ------- */}
-          <div id="entry-data">
+          <div id="entry-data" className="flex col">
             {entrySelection ? (
               <>
                 <div id="entry-header" className="flex col">
@@ -201,8 +205,14 @@ const DatabaseView = () => {
                     }
                   </h3>
                   <h4 id="entry-id">{entrySelection._id}</h4>
+                  <div className="button-cache">
+                    <button>Edit</button>
+                    <button>Delete</button>
+                  </div>
                 </div>
-                {buildList(entrySelection)}
+                <div id="entry-fields" className="flex col">
+                  {buildList(entrySelection)}
+                </div>
               </>
             ) : (
               <span className="fade">No selection</span>

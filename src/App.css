@@ -71,6 +71,7 @@ a, a:visited, a:focus, a:hover {
 
 button {
   appearance: none;
+  cursor: pointer;
   background-color: inherit;
   color: inherit;
   border: none;
