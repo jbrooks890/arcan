@@ -4,7 +4,6 @@ import axios from "../../../apis/axios";
 import { useState, useEffect } from "react";
 import Dropdown from "../../form/Dropdown";
 import Menu from "../../form/Menu";
-import AccordionNest from "../../form/AccordionNest";
 import Accordion from "../../form/Accordion";
 
 const DatabaseView = () => {

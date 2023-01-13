@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import "../../styles/form/SelectMenu.css";
 import Search from "./Search";
 
@@ -13,6 +13,8 @@ const Menu = ({
   searchable = true,
   handleChange,
 }) => {
+  const [filter, setFilter] = useState();
+
   return (
     <fieldset
       id={id}
