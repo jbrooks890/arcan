@@ -8,7 +8,7 @@ const Search = ({ className, handleChange }) => {
           <use href="#search-icon" />
         </svg>
       </div>
-      <input placeholder="Search" />
+      <input placeholder="Search" size={1} />
     </div>
   );
 };

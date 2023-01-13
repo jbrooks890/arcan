@@ -5,7 +5,8 @@
 #database-view-wrapper {
   position: relative;
   box-sizing: border-box;
-  width: 75vw;
+  width: 100vw;
+  max-width: 1012px;
   padding: 1rem;
   overflow: hidden;
 }
@@ -42,7 +43,8 @@
 /* ----------- COLLECTION DATA ----------- */
 
 #database-view-wrapper #collection-data {
-  padding-inline: 1em;
+  /* padding-inline: 1em; */
+  padding: .5em;
 }
 
 #collection-data .data-cache {
@@ -56,13 +58,13 @@
 
 #collection-data .add-new {
   align-self: stretch;
-  margin-block: .5em;
+  /* margin-block: .5em; */
   padding-inline: 1em;
   /* background-color: var(--green);
   color: var(--dark); */
   text-transform: uppercase;
   border: 1.5px solid transparent;
-  border-radius: var(--inside);
+  border-radius: 2px;
   box-sizing: border-box;
   transition: .1s ease-out;
 }

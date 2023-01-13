@@ -10,6 +10,7 @@
   padding: 0;
   border: none;
   /* outline: 1px solid red; */
+  flex-shrink: 1;
 }
 
 .search-bar .search-icon {

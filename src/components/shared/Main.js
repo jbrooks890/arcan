@@ -17,7 +17,11 @@ export default function Main() {
       <Route path="/lore" element={<Lore />} />
       <Route path="/read" element={<Read />} />
       <Route path="/add" element={<AddNew />} />
-      <Route path="/database" element={<DatabaseView />} />
+      {/* <Route path="/database" element={<DatabaseView />} /> */}
+      <Route path="/database">
+        <Route index element={<DatabaseView />} />
+        <Route path="add" element={<AddNew />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

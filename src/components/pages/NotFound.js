@@ -1,12 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
 
 export default function NotFound() {
+  const navigate = useNavigate();
+
   return (
-    <div id="notFound-page">
+    <main id="notFound-page">
       <h1>404</h1>
       <h2>Not Found</h2>
-      <a>Back</a>
+      <p>
+        You appear to have had a misadventure and have wandered into a region
+        beyond the map.
+      </p>
+      <a onClick={navigate("/")}>Back</a>
       <Link to="/">Home</Link>
-    </div>
+    </main>
   );
 }
