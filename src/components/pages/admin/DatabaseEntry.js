@@ -280,25 +280,26 @@ export default function DatabaseEntry({
         } else {
           switch (instance) {
             case "String":
-              return path === "description" ? (
-                <label key={key}>
-                  <span className={required ? "required" : ""}>{label}</span>
-                  <textarea
-                    placeholder={`Description for ${selection}`}
-                    onChange={e => handleChange(e.currentTarget.value)}
-                    rows={6}
-                    value={set[path] ?? ""}
+              element =
+                path === "description" ? (
+                  <label key={key}>
+                    <span className={required ? "required" : ""}>{label}</span>
+                    <textarea
+                      placeholder={`Description for ${selection}`}
+                      onChange={e => handleChange(e.currentTarget.value)}
+                      rows={6}
+                      value={set[path] ?? ""}
+                    />
+                  </label>
+                ) : (
+                  <TextField
+                    {...props}
+                    handleChange={e => handleChange(e.currentTarget.value)}
                   />
-                </label>
-              ) : (
-                <TextField
-                  {...props}
-                  handleChange={e => handleChange(e.currentTarget.value)}
-                />
-              );
+                );
               break;
             case "Number":
-              return (
+              element = (
                 <NumField
                   {...props}
                   min={data.options?.min}
@@ -310,7 +311,7 @@ export default function DatabaseEntry({
               );
               break;
             case "Decimal128":
-              return (
+              element = (
                 <NumField
                   {...props}
                   min={data.options?.min}
@@ -323,7 +324,7 @@ export default function DatabaseEntry({
               );
               break;
             case "Boolean":
-              return (
+              element = (
                 <Toggle
                   {...props}
                   handleChange={e => handleChange(e.currentTarget.checked)}
@@ -334,7 +335,7 @@ export default function DatabaseEntry({
               // console.log("DATE:", set[path] instanceof Date);
               set[path] instanceof Date &&
                 console.log("DATE:", set[path].toDateString());
-              return (
+              element = (
                 <label key={key}>
                   <span className={required ? "required" : ""}>{label}</span>
                   <input
@@ -351,7 +352,7 @@ export default function DatabaseEntry({
               if (caster) {
                 const { instance, options } = caster;
                 if (instance === "String")
-                  return (
+                  element = (
                     <WordBank
                       {...props}
                       terms={set[path]}
@@ -359,12 +360,12 @@ export default function DatabaseEntry({
                     />
                   );
                 if (instance === "ObjectID")
-                  return createObjIdBox(caster.options, false);
+                  element = createObjIdBox(caster.options, false);
               }
               if (schema) {
                 const { paths } = schema;
 
-                return (
+                element = (
                   <ArraySet
                     {...props}
                     createElements={index =>
@@ -375,7 +376,7 @@ export default function DatabaseEntry({
                   />
                 );
               }
-              return (
+              element = (
                 <label key={key} {...props}>
                   <span>{label}</span>
                   <div>[{path}]</div>
@@ -387,7 +388,7 @@ export default function DatabaseEntry({
               const $data = paths[path + ".$*"];
               // console.log($data.options.type.paths);
 
-              return (
+              element = (
                 <DataSetEntry
                   {...props}
                   single={false}
@@ -407,12 +408,12 @@ export default function DatabaseEntry({
               );
               break;
             case "ObjectID":
-              return createObjIdBox(options);
+              element = createObjIdBox(options);
               break;
             default:
               if (options) {
                 if (options?.type?.paths) {
-                  return (
+                  element = (
                     <FieldSet {...props} className="col">
                       {createFields(options.type.paths, [...ancestors, path])}
                     </FieldSet>
@@ -421,7 +422,7 @@ export default function DatabaseEntry({
                   console.log({ path });
                 }
               }
-              return (
+              element = (
                 <label key={key} {...props}>
                   <span>{label}</span>
                   <div>?</div>
