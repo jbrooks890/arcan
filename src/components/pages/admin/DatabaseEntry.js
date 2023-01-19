@@ -33,7 +33,7 @@ export default function DatabaseEntry({
 
   // :::::::::::::\ CREATE FORM FIELDS /:::::::::::::
 
-  const createFormFields = paths =>
+  /* const createFormFields = paths =>
     Object.fromEntries(
       Object.entries(paths)
         .filter(
@@ -55,13 +55,12 @@ export default function DatabaseEntry({
               : createFormFields(path.options.type.paths),
           ];
         })
-    );
+    ); */
 
   const initEntry = entry => {
-    const data = arcanData.models[entry];
-    const { paths } = data;
+    const { paths } = SCHEMA;
     const fields = createFormFields(paths);
-    console.log("\nPATHS:", paths);
+    // console.log("\nPATHS:", paths);
     setEntryData(fields);
   };
 
@@ -434,7 +433,7 @@ export default function DatabaseEntry({
   // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
 
   const buildForm = () => {
-    const { paths } = arcanData.models[schemaName];
+    const { paths } = SCHEMA;
     // console.log("paths:", paths);
 
     return createFields(paths);
@@ -455,7 +454,7 @@ export default function DatabaseEntry({
     console.clear();
     try {
       const response = await axios.post("/" + schemaName, entryData);
-      initEntry(schemaName);
+      !record && initEntry(schemaName);
       response?.data && updateArcanData(response.data);
     } catch (err) {
       console.error(err.message);
