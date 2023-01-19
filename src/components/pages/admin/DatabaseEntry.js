@@ -93,7 +93,10 @@ export default function DatabaseEntry({
 
         let label, element;
         // let field = instance !== "Array" ? defaultValue : path.options.default;
-        let field = record?.[path] ?? defaultValue ?? undefined;
+        let field =
+          record?.[path] ??
+          defaultValue ??
+          (required && enumValues ? enumValues[0] : undefined);
 
         const parent = ancestors[0];
         const chain = new Map();
