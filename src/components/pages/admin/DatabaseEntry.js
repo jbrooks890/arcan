@@ -1,11 +1,11 @@
 import "../../../styles/AddNew.css";
 import axios from "../../../apis/axios";
 import { useState, useEffect } from "react";
+// import { useParams, useLocation } from "react-router-dom";
 import Dropdown from "../../form/Dropdown";
 import Form from "../../form/Form";
 import TextField from "../../form/TextField";
 import Toggle from "../../form/Toggle";
-import Menu from "../../form/Menu";
 import WordBank from "../../form/WordBank";
 import ButtonCache from "../../form/ButtonCache";
 import ChoiceBox from "../../form/ChoiceBox";
@@ -16,17 +16,14 @@ import ArraySet from "../../form/ArraySet";
 import FormPreview from "../../form/FormPreview";
 
 export default function DatabaseEntry({
-  // mode,
-  entry,
+  record,
   schemaName,
   arcanData,
   updateArcanData,
 }) {
-  // const [newEntry, setNewEntry] = useState({});
   const [entryData, setEntryData] = useState();
-
   const { models, dependencies } = arcanData;
-  const schema = models[schemaName];
+  const SCHEMA = models[schemaName];
 
   // :::::::::::::\ GROOM DATA /:::::::::::::
 
@@ -65,14 +62,14 @@ export default function DatabaseEntry({
     const { paths } = data;
     const fields = createFormFields(paths);
     console.log("\nPATHS:", paths);
-    setNewEntry(fields);
+    setEntryData(fields);
   };
 
   // %%%%%%%%%%%%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%%%%%%%%%%%
 
   const updateForm = (field, entry) => {
     // console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
-    setNewEntry(prev => ({ ...prev, [field]: entry }));
+    setEntryData(prev => ({ ...prev, [field]: entry }));
   };
 
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
@@ -80,9 +77,6 @@ export default function DatabaseEntry({
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
 
   const createFields = (paths, ancestors = []) => {
-    // const { dependencies } = arcanData;
-    // console.log({ dependencies });
-
     return Object.entries(paths)
       .filter(
         ([path]) =>
@@ -98,7 +92,9 @@ export default function DatabaseEntry({
           enumValues,
         } = data;
 
-        let label, field, element;
+        let label, element;
+        // let field = instance !== "Array" ? defaultValue : path.options.default;
+        let field = record?.[path] ?? defaultValue ?? undefined;
 
         const parent = ancestors[0];
         const chain = new Map();
@@ -107,13 +103,13 @@ export default function DatabaseEntry({
           chain.set(prop, obj);
 
           return obj[prop];
-        }, newEntry);
+        }, entryData);
 
         // ---------| CREATE LABEL |---------
 
         const createLabel = (str = path) => {
           let label = str;
-          if (/[a-z]/.test(label.charAt(0)))
+          if (/[a-z]/.test(label.charAt()))
             label = label.replace(/([A-Z])/g, " $1").toLowerCase();
 
           const shorthands = new Map([
@@ -216,7 +212,7 @@ export default function DatabaseEntry({
                   const { _id, name, title, subtitle } = entry;
                   return [
                     _id,
-                    name ?? subtitle ?? title ?? `${selection}: ${_id}`,
+                    name ?? subtitle ?? title ?? `${schemaName}: ${_id}`,
                   ];
                 })
               )}
@@ -285,7 +281,7 @@ export default function DatabaseEntry({
                   <label key={key}>
                     <span className={required ? "required" : ""}>{label}</span>
                     <textarea
-                      placeholder={`Description for ${selection}`}
+                      placeholder={`Description for ${schemaName}`}
                       onChange={e => handleChange(e.currentTarget.value)}
                       rows={6}
                       value={set[path] ?? ""}
@@ -311,6 +307,8 @@ export default function DatabaseEntry({
               );
               break;
             case "Decimal128":
+              if (record?.[path])
+                field = parseFloat(record[path].$numberDecimal);
               element = (
                 <NumField
                   {...props}
@@ -371,7 +369,7 @@ export default function DatabaseEntry({
                     createElements={index =>
                       createFields(paths, [...ancestors, path, index])
                     }
-                    newEntry={createFormFields(paths)}
+                    entryData={createFormFields(paths)}
                     handleChange={handleChange}
                   />
                 );
@@ -436,7 +434,7 @@ export default function DatabaseEntry({
   // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
 
   const buildForm = () => {
-    const { paths } = arcanData.models[selection];
+    const { paths } = arcanData.models[schemaName];
     // console.log("paths:", paths);
 
     return createFields(paths);
@@ -447,41 +445,18 @@ export default function DatabaseEntry({
     e.preventDefault();
     console.clear();
     console.log(`%cFORM`, "color: lime");
-    console.log(`New ${selection}:`, newEntry);
-    console.log("%cJSON:", "color:cyan", JSON.stringify(newEntry));
+    console.log(`New ${schemaName}:`, entryData);
+    console.log("%cJSON:", "color:cyan", JSON.stringify(entryData));
   };
 
   // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
   const handleSubmit = async e => {
     e.preventDefault();
     console.clear();
-    // console.log(`%cSUBMIT`, "color: lime");
-    // console.log(`New ${selection}:`, newEntry);
     try {
-      const response = await axios.post("/" + selection, newEntry);
-      initEntry(selection);
-      response?.data &&
-        setArcanData(prev => {
-          const { _id, name, subtitle, title, username } = response.data;
-          return {
-            ...prev,
-            dependencies: {
-              ...prev.dependencies,
-              [selection]: [
-                ...prev.dependencies[selection],
-                {
-                  _id,
-                  name:
-                    name ??
-                    subtitle ??
-                    title ??
-                    username ??
-                    `${selection}: ${_id}`,
-                },
-              ],
-            },
-          };
-        });
+      const response = await axios.post("/" + schemaName, entryData);
+      initEntry(schemaName);
+      response?.data && updateArcanData(response.data);
     } catch (err) {
       console.error(err.message);
       console.error(err.response.data.error.split(", ").join("\n"));
@@ -495,9 +470,9 @@ export default function DatabaseEntry({
   return (
     <div id="database-entry" className="flex">
       <Form className="flex col" autocomplete={false}>
-        <h3>{selection}</h3>
+        <h3>{schemaName}</h3>
         <div className="form-wrapper flex col">
-          {selection && buildForm()}
+          {schemaName && buildForm()}
           <ButtonCache>
             <button type="submit" onClick={e => handleSubmit(e)}>
               Save
@@ -510,19 +485,15 @@ export default function DatabaseEntry({
       </Form>
       <FormPreview
         name={
-          typeof newEntry.name === "object"
-            ? Object.values(newEntry.name)[0] ||
-              newEntry.subtitle ||
-              newEntry.title ||
-              newEntry.username ||
-              `New ${selection}`
-            : newEntry.name ||
-              newEntry.subtitle ||
-              newEntry.title ||
-              newEntry.username ||
-              `New ${selection}`
+          (typeof entryData.name === "object"
+            ? Object.values(entryData.name)[0]
+            : entryData.name) ||
+          entryData.subtitle ||
+          entryData.title ||
+          entryData.username ||
+          `New ${schemaName}`
         }
-        form={newEntry}
+        form={entryData}
         handleSubmit={e => handleSubmit(e)}
       />
     </div>

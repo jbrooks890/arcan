@@ -81,12 +81,11 @@ const DatabaseView = () => {
       <ul>
         {Object.entries(obj).map(([key, value], i) => {
           const isObject = typeof value === "object";
-          const hasValue = value !== null && value !== undefined;
-          const isArray = Array.isArray(obj[key]);
+          // const hasValue = value !== null && value !== undefined;
+          // const isArray = Array.isArray(obj[key]);
 
-          // console.log({ key, ancestors: ancestors.join(" > ") });
-          const root = ancestors[0] ?? key;
-          const parent = ancestors[ancestors.length - 1];
+          // const root = ancestors[0] ?? key;
+          // const parent = ancestors[ancestors.length - 1];
 
           const renderEntry = () => {
             const pathData = getPathData([...ancestors, key]);
@@ -143,6 +142,32 @@ const DatabaseView = () => {
     console.clear();
     setSelection(name);
     setEntrySelection("");
+  };
+
+  // :::::::::::::\ UPDATE ARCAN DATA /:::::::::::::
+
+  const updateArcanData = (collection = selection, newData) => {
+    setArcanData(prev => {
+      const { _id, name, subtitle, title, username } = newData;
+      return {
+        ...prev,
+        dependencies: {
+          ...prev.dependencies,
+          [collection]: [
+            ...prev.dependencies[collection],
+            {
+              _id,
+              name:
+                name ??
+                subtitle ??
+                title ??
+                username ??
+                `${collection}: ${_id}`,
+            },
+          ],
+        },
+      };
+    });
   };
 
   // ============================================
