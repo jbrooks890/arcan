@@ -15,7 +15,7 @@ import NumField from "../../form/NumField";
 import ArraySet from "../../form/ArraySet";
 import FormPreview from "../../form/FormPreview";
 
-export default function DatabaseEntry({
+export default function DatabaseDraft({
   record,
   schemaName,
   arcanData,
@@ -24,6 +24,9 @@ export default function DatabaseEntry({
   const [entryData, setEntryData] = useState();
   const { models, dependencies } = arcanData;
   const SCHEMA = models[schemaName];
+
+  // useEffect(() => console.log({ record, schemaName, arcanData }), []);
+  console.log({ record, schemaName, arcanData });
 
   // :::::::::::::\ GROOM DATA /:::::::::::::
 
@@ -59,9 +62,9 @@ export default function DatabaseEntry({
 
   const initEntry = entry => {
     const { paths } = SCHEMA;
-    const fields = createFormFields(paths);
+    // const fields = createFormFields(paths);
     // console.log("\nPATHS:", paths);
-    setEntryData(fields);
+    // setEntryData(fields);
   };
 
   // %%%%%%%%%%%%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%%%%%%%%%%%
@@ -186,7 +189,7 @@ export default function DatabaseEntry({
               {...props}
               single={single}
               options={options}
-              secondaryFormFields={createFormFields(secondaries)}
+              // secondaryFormFields={createFormFields(secondaries)}
               createFields={option =>
                 createFields(secondaries, [...ancestors, path, option])
               }
@@ -371,7 +374,7 @@ export default function DatabaseEntry({
                     createElements={index =>
                       createFields(paths, [...ancestors, path, index])
                     }
-                    entryData={createFormFields(paths)}
+                    // entryData={createFormFields(paths)}
                     handleChange={handleChange}
                   />
                 );
@@ -393,9 +396,9 @@ export default function DatabaseEntry({
                   {...props}
                   single={false}
                   options={options.enum}
-                  secondaryFormFields={createFormFields(
-                    $data.options.type.paths
-                  )}
+                  // secondaryFormFields={createFormFields(
+                  //   $data.options.type.paths
+                  // )}
                   createFields={option =>
                     createFields($data.options.type.paths, [
                       ...ancestors,

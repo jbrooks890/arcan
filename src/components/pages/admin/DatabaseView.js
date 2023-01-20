@@ -5,11 +5,14 @@ import { useState, useEffect } from "react";
 import Dropdown from "../../form/Dropdown";
 import Menu from "../../form/Menu";
 import Accordion from "../../form/Accordion";
+import { Link } from "react-router-dom";
+import DatabaseDraft from "./DatabaseDraft";
 
 const DatabaseView = () => {
   const [arcanData, setArcanData] = useState();
   const [selection, setSelection] = useState();
   const [entrySelection, setEntrySelection] = useState();
+  const [draftMode, setDraftMode] = useState(false);
 
   // :::::::::::::\ FETCH MODELS /:::::::::::::
 
@@ -170,6 +173,15 @@ const DatabaseView = () => {
     });
   };
 
+  const EDIT_STATE = {
+    record: entrySelection,
+    schemaName: selection,
+    arcanData,
+    updateArcanData,
+  };
+
+  const test = "test";
+
   // ============================================
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
@@ -230,13 +242,28 @@ const DatabaseView = () => {
                   </h3>
                   <h4 id="entry-id">{entrySelection._id}</h4>
                   <div className="button-cache">
-                    <button>Edit</button>
+                    <button
+                      onClick={() =>
+                        setDraftMode({
+                          record: entrySelection,
+                          schemaName: selection,
+                          arcanData,
+                          updateArcanData,
+                        })
+                      }
+                    >
+                      Edit
+                    </button>
                     <button>Delete</button>
                   </div>
                 </div>
-                <div id="entry-fields" className="flex col">
-                  {buildList(entrySelection)}
-                </div>
+                {draftMode ? (
+                  <DatabaseDraft {...draftMode} />
+                ) : (
+                  <div id="entry-fields" className="flex col">
+                    {buildList(entrySelection)}
+                  </div>
+                )}
               </>
             ) : (
               <span className="fade">No selection</span>

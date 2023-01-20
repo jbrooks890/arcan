@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import About from "../pages/About";
 import AddNew from "../pages/admin/AddNew";
-import DatabaseEntry from "../pages/admin/DatabaseEntry";
+import DatabaseDraft from "../pages/admin/DatabaseDraft";
 import DatabaseView from "../pages/admin/DatabaseView";
 import Gallery from "../pages/Gallery";
 import Home from "../pages/Home";
@@ -22,7 +22,7 @@ export default function Main() {
       <Route path="/database">
         <Route index element={<DatabaseView />} />
         <Route path="add" element={<AddNew />} />
-        <Route path="modify" element={<DatabaseEntry />} />
+        <Route path="modify" element={<DatabaseDraft />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
