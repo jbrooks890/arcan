@@ -127,12 +127,17 @@ const DatabaseView = () => {
     );
   };
 
+  // :::::::::::::\ CANCEL DRAFT /:::::::::::::
+
+  const cancelDraft = () => setDraftMode(null);
+
   // :::::::::::::\ FETCH ENTRY /:::::::::::::
 
   const fetchEntry = async entry_id => {
     try {
       const response = await axios.get(`/${selection}/${entry_id}`);
       console.log({ RESPONSE: response.data });
+      draftMode && cancelDraft();
       setEntrySelection(response.data);
     } catch (err) {
       console.error(err);
@@ -143,6 +148,7 @@ const DatabaseView = () => {
 
   const selectCollection = name => {
     console.clear();
+    draftMode && cancelDraft();
     setSelection(name);
     setEntrySelection("");
   };
@@ -253,7 +259,7 @@ const DatabaseView = () => {
                 </div>
                 <div id="entry-content-body" className="flex">
                   {draftMode ? (
-                    <DatabaseDraft {...draftMode} />
+                    <DatabaseDraft {...draftMode} cancel={cancelDraft} />
                   ) : (
                     <div id="entry-fields" className="flex col">
                       {buildList(entrySelection)}

@@ -16,7 +16,7 @@ const DataSetEntry = ({
   handleChange,
   value,
   createFields,
-  secondaryFormFields,
+  // subFields,
 }) => {
   const inputs = useRef([]);
   const primaries = useRef([]);
@@ -29,7 +29,7 @@ const DataSetEntry = ({
 
   const BANK = options ? options : cache;
 
-  const update = option => {
+  const update = (option, subFields) => {
     // console.log("\nTEST:", value);
 
     handleChange(
@@ -42,7 +42,7 @@ const DataSetEntry = ({
                 .includes(option)
             )
           )
-        : { ...value, [option]: secondaryFormFields }
+        : { ...value, [option]: subFields }
     );
   };
 
@@ -70,18 +70,27 @@ const DataSetEntry = ({
       {inputText && <TermInput add={addEntry} />}
       {BANK.length ? (
         <ul className="entry-cache flex col">
-          {options.map((option, i) => (
-            <DataSetItem
-              key={i}
-              setRef={element => (primaries.current[i] = element)}
-              option={option}
-              secondaries={createFields(option).map(entry => entry[1].element)}
-              field={field}
-              single={single}
-              checked={Object.keys(value).includes(option)}
-              handleChange={() => update(option)}
-            />
-          ))}
+          {options.map((option, i) => {
+            const DATA = createFields(option);
+            const ELEMENTS = DATA.map(entry => entry[1].element);
+            const FIELDS = Object.fromEntries(
+              DATA.map(([path, entry]) => [path, entry.field])
+            );
+
+            // console.log({ FIELDS });
+            return (
+              <DataSetItem
+                key={i}
+                setRef={element => (primaries.current[i] = element)}
+                option={option}
+                secondaries={ELEMENTS}
+                field={field}
+                single={single}
+                checked={Object.keys(value).includes(option)}
+                handleChange={() => update(option, FIELDS)}
+              />
+            );
+          })}
         </ul>
       ) : (
         <span className="fade">No entries</span>

@@ -7,7 +7,9 @@ const FormPreview = ({
   legend = "Preview",
   heading = "Summary",
   buttonText = "Submit",
+  cancelText = "cancel",
   handleSubmit,
+  cancel,
 }) => {
   // console.log({ heading, form });
 
@@ -49,17 +51,17 @@ const FormPreview = ({
   // const handleSubmit = e => e.preventDefault();
 
   return (
-    <div
-      id={id}
-      className={`form-preview fieldset flex col ${className ?? ""}`}
-    >
-      <span className="legend">{legend}</span>
-      <h2>{heading}</h2>
+    <fieldset id={id} className={`form-preview flex col ${className ?? ""}`}>
+      <legend>{legend}</legend>
+      <h3>{heading}</h3>
       <div className={`wrapper flex col`}>{buildList(form)}</div>
       <button type="submit" onClick={handleSubmit}>
         {buttonText}
       </button>
-    </div>
+      <button className="cancel-button" onClick={cancel}>
+        {cancelText}
+      </button>
+    </fieldset>
   );
 };
 

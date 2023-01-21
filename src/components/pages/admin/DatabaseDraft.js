@@ -20,6 +20,7 @@ export default function DatabaseDraft({
   schemaName,
   arcanData,
   updateArcanData,
+  cancel,
 }) {
   const [entryMaster, setEntryMaster] = useState();
   const [entryData, setEntryData] = useState();
@@ -73,7 +74,7 @@ export default function DatabaseDraft({
 
         let label, element;
         let field =
-          recordValue[path] ??
+          recordValue?.[path] ??
           defaultValue ??
           (required && enumValues ? enumValues[0] : undefined);
 
@@ -122,10 +123,11 @@ export default function DatabaseDraft({
               ancestors.reduce(
                 (arr, path) => {
                   const parent = arr.pop();
-                  const current = parent[path];
-                  return [...arr, parent, current];
+                  const current = parent[1][path];
+                  // console.log({ parent, current });
+                  return [...arr, parent, [path, current]];
                 },
-                [entryData]
+                [[undefined, entryData ?? record]]
               )
             )
           : null;
@@ -367,12 +369,6 @@ export default function DatabaseDraft({
                     />
                   );
                 }
-                // element = (
-                //   <label key={key}>
-                //     <span>{label}</span>
-                //     <div>[{path}]</div>
-                //   </label>
-                // );
 
                 break;
               case "Map":
@@ -405,7 +401,7 @@ export default function DatabaseDraft({
                   ...ancestors,
                   path,
                 ]).map(entry => entry[1].element);
-                console.log({ path, elements });
+                // console.log({ path, elements });
 
                 element = (
                   <FieldSet {...props} className="col">
@@ -416,13 +412,6 @@ export default function DatabaseDraft({
                 console.log({ path });
               }
             }
-            // console.warn(`${path.toUpperCase()}: Unknown type!`);
-            // element = (
-            //   <label key={key}>
-            //     <span>{label}</span>
-            //     <div>?</div>
-            //   </label>
-            // );
           }
         }
 
@@ -463,6 +452,7 @@ export default function DatabaseDraft({
   const handleSubmit = async e => {
     e.preventDefault();
     console.clear();
+
     try {
       const response = await axios.post("/" + schemaName, entryData);
       !record && initEntry(schemaName);
@@ -496,7 +486,9 @@ export default function DatabaseDraft({
       <FormPreview
         form={entryData}
         buttonText={record ? "Update" : "Submit"}
+        legend={record ? "Edit" : "New"}
         handleSubmit={e => handleSubmit(e)}
+        cancel={cancel}
       />
     </div>
   );
