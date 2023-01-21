@@ -1,7 +1,15 @@
 import "../../styles/FormPreview.css";
 
-const FormPreview = ({ name, form, className, handleSubmit }) => {
-  // console.log({ name, form });
+const FormPreview = ({
+  form,
+  id,
+  className,
+  legend = "Preview",
+  heading = "Summary",
+  buttonText = "Submit",
+  handleSubmit,
+}) => {
+  // console.log({ heading, form });
 
   const buildList = (obj = {}) => {
     return (
@@ -41,11 +49,15 @@ const FormPreview = ({ name, form, className, handleSubmit }) => {
   // const handleSubmit = e => e.preventDefault();
 
   return (
-    <div className={`form-preview flex col ${className ?? ""}`}>
-      <h2>{name}</h2>
+    <div
+      id={id}
+      className={`form-preview fieldset flex col ${className ?? ""}`}
+    >
+      <span className="legend">{legend}</span>
+      <h2>{heading}</h2>
       <div className={`wrapper flex col`}>{buildList(form)}</div>
       <button type="submit" onClick={handleSubmit}>
-        Submit
+        {buttonText}
       </button>
     </div>
   );

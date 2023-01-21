@@ -6,7 +6,7 @@
   position: relative;
   box-sizing: border-box;
   width: 100vw;
-  max-width: 1024px;
+  max-width: 1280px;
   padding: 1rem;
   overflow: hidden;
 }
@@ -119,6 +119,14 @@
   transition: .1s ease-out;
 }
 
+/* ========== ENTRY CONTENT BODY ========== */
+
+#entry-content-body {
+  padding-block: 1em;
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+
 /* ========== ENTRY FIELDS ========== */
 
 #entry-fields {
@@ -127,7 +135,8 @@
   box-sizing: border-box;
 }
 
-#entry-data ul {
+#entry-data #entry-fields ul {
+  margin:0;
   padding-left: 1em;
 }
 

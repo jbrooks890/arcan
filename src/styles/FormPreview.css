@@ -1,10 +1,11 @@
 .form-preview {
   position: relative;
   /* top:1rem; */
-  background-color: var(--green);
-  color: var(--dark);
+  /* background-color: var(--green);
+  color: var(--dark); */
   width: 480px;
   overflow-x: hidden;
+  border: 2px solid var(--green);
   border-radius: var(--outside);
   padding-bottom: 2em;
   text-align: left;
@@ -17,6 +18,7 @@
 }
 
 .flex .form-preview h2 {
+  font-family: var(--keyFont2);
   text-align: center;
 }
 

@@ -1,4 +1,4 @@
-import "../../../styles/AddNew.css";
+import "../../../styles/DBEntryDraft.css";
 import axios from "../../../apis/axios";
 import { useState, useEffect } from "react";
 // import { useParams, useLocation } from "react-router-dom";
@@ -21,41 +21,19 @@ export default function DatabaseDraft({
   arcanData,
   updateArcanData,
 }) {
+  const [entryMaster, setEntryMaster] = useState();
   const [entryData, setEntryData] = useState();
   const { models, dependencies } = arcanData;
   const SCHEMA = models[schemaName];
 
   // useEffect(() => console.log({ record, schemaName, arcanData }), []);
-  console.log({ record, schemaName, arcanData });
+  // console.log({ record, schemaName, arcanData });
+  // useEffect(() => entryData && console.log({ entryData }), [entryData]);
+  useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
 
-  // :::::::::::::\ CREATE FORM FIELDS /:::::::::::::
-
-  /* const createFormFields = paths =>
-    Object.fromEntries(
-      Object.entries(paths)
-        .filter(
-          ([field]) =>
-            !["_id", "createdAt", "updatedAt", "__v"].includes(field) &&
-            !field.endsWith(".$*")
-        )
-        .map(([field, path]) => {
-          const { instance, defaultValue } = path;
-          const $default =
-            instance !== "Array" ? defaultValue : path.options.default;
-
-          return [
-            field,
-            $default
-              ? $default
-              : instance
-              ? undefined
-              : createFormFields(path.options.type.paths),
-          ];
-        })
-    ); */
-
-  const initEntry = entry => {
+  const initEntry = () => {
     const { paths } = SCHEMA;
+    console.log();
     // const fields = createFormFields(paths);
     // console.log("\nPATHS:", paths);
     // setEntryData(fields);
@@ -72,7 +50,7 @@ export default function DatabaseDraft({
   // %%%%%%%%%%%%%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%%%%%%%%%%%%
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
 
-  const createFields = (paths, ancestors = []) => {
+  function createFields(paths, ancestors = []) {
     return Object.entries(paths)
       .filter(
         ([path]) =>
@@ -88,11 +66,18 @@ export default function DatabaseDraft({
           enumValues,
         } = data;
 
+        const getNestedValue = root =>
+          ancestors.reduce((obj, path) => obj[path], root);
+
+        const recordValue = record ? getNestedValue(record) : null;
+
         let label, element;
         let field =
-          record?.[path] ??
+          recordValue[path] ??
           defaultValue ??
           (required && enumValues ? enumValues[0] : undefined);
+
+        // console.log({ path, recordValue, field });
 
         const parent = ancestors[0];
 
@@ -132,14 +117,20 @@ export default function DatabaseDraft({
 
         label = createLabel();
 
-        const chain = new Map();
+        const chain = entryData
+          ? new Map(
+              ancestors.reduce(
+                (arr, path) => {
+                  const parent = arr.pop();
+                  const current = parent[path];
+                  return [...arr, parent, current];
+                },
+                [entryData]
+              )
+            )
+          : null;
 
-        const set = ancestors.reduce((obj, prop) => {
-          chain.set(prop, obj);
-
-          return obj[prop];
-        }, entryData);
-
+        const set = getNestedValue(entryData ?? record);
         const value = set?.[path] ?? field;
 
         // ---------| HANDLE CHANGE |---------
@@ -178,15 +169,14 @@ export default function DatabaseDraft({
 
         // ---------| CREATE DATASET ENTRY |---------
 
-        const createDataSetEntry = (single = false, options, secondaries) => {
+        const createDataSetEntry = (paths, options, single = false) => {
           return (
             <DataSetEntry
               {...props}
               single={single}
               options={options}
-              // secondaryFormFields={createFormFields(secondaries)}
               createFields={option =>
-                createFields(secondaries, [...ancestors, path, option])
+                createFields(paths, [...ancestors, path, option])
               }
               handleChange={handleChange}
             />
@@ -268,11 +258,12 @@ export default function DatabaseDraft({
 
           // selfRef && console.log({ display: choiceProps.display });
 
-          return choices.length > 3 || !required ? (
-            <Dropdown {...choiceProps} />
-          ) : (
-            <ChoiceBox {...choiceProps} />
-          );
+          element =
+            choices.length > 3 || !required ? (
+              <Dropdown {...choiceProps} />
+            ) : (
+              <ChoiceBox {...choiceProps} />
+            );
         } else {
           if (instance) {
             switch (instance) {
@@ -356,7 +347,7 @@ export default function DatabaseDraft({
                     element = (
                       <WordBank
                         {...props}
-                        terms={set[path]}
+                        terms={set?.[path] ?? recordValue[path]}
                         update={entry => handleChange(entry)}
                       />
                     );
@@ -372,47 +363,32 @@ export default function DatabaseDraft({
                       createElements={index =>
                         createFields(paths, [...ancestors, path, index])
                       }
-                      // entryData={createFormFields(paths)}
                       handleChange={handleChange}
                     />
                   );
                 }
-                element = (
-                  <label key={key} {...props}>
-                    <span>{label}</span>
-                    <div>[{path}]</div>
-                  </label>
-                );
+                // element = (
+                //   <label key={key}>
+                //     <span>{label}</span>
+                //     <div>[{path}]</div>
+                //   </label>
+                // );
 
                 break;
               case "Map":
                 const $data = paths[path + ".$*"];
                 // console.log($data.options.type.paths);
-
-                element = (
-                  <DataSetEntry
-                    {...props}
-                    single={false}
-                    options={options.enum}
-                    // secondaryFormFields={createFormFields(
-                    //   $data.options.type.paths
-                    // )}
-                    createFields={option =>
-                      createFields($data.options.type.paths, [
-                        ...ancestors,
-                        path,
-                        option,
-                      ])
-                    }
-                    handleChange={handleChange}
-                  />
+                element = createDataSetEntry(
+                  $data.options.type.paths,
+                  options.enum
                 );
+
                 break;
               case "ObjectID":
                 element = createObjIdBox(options);
                 break;
               default:
-                console.warning(
+                console.warn(
                   `${path.toUpperCase()}: No handler for ${instance}`
                 );
                 element = (
@@ -425,36 +401,53 @@ export default function DatabaseDraft({
           } else {
             if (options) {
               if (options.type?.paths) {
+                const elements = createFields(options.type.paths, [
+                  ...ancestors,
+                  path,
+                ]).map(entry => entry[1].element);
+                console.log({ path, elements });
+
                 element = (
                   <FieldSet {...props} className="col">
-                    {createFields(options.type.paths, [...ancestors, path])}
+                    {elements}
                   </FieldSet>
                 );
               } else {
                 console.log({ path });
               }
             }
-            console.warning(`${path.toUpperCase()}: Unknown type!`);
-            element = (
-              <label key={key} {...props}>
-                <span>{label}</span>
-                <div>?</div>
-              </label>
-            );
+            // console.warn(`${path.toUpperCase()}: Unknown type!`);
+            // element = (
+            //   <label key={key}>
+            //     <span>{label}</span>
+            //     <div>?</div>
+            //   </label>
+            // );
           }
         }
 
         return [path, { field, label, instance, element }];
       });
-  };
+  }
 
   // %%%%%%%%%%%%%\ BUILD FORM /%%%%%%%%%%%%%
 
   const buildForm = () => {
     const { paths } = SCHEMA;
-    // console.log("paths:", paths);
+    const DATA = createFields(paths);
+    console.log({ DATA });
 
-    return createFields(paths);
+    if (!entryMaster) {
+      setEntryMaster(Object.fromEntries(DATA));
+      setEntryData(
+        Object.fromEntries(
+          DATA.map(([path, pathData]) => [path, pathData.field])
+        )
+      );
+    }
+
+    // console.log(createFields(paths));
+    return DATA.map(entry => entry[1].element);
   };
 
   // :::::::::::::\ HANDLE RESET /:::::::::::::
@@ -487,9 +480,9 @@ export default function DatabaseDraft({
   return (
     <div id="database-entry" className="flex">
       <Form className="flex col" autocomplete={false}>
-        <h3>{schemaName}</h3>
+        {/* <h3>{schemaName}</h3> */}
         <div className="form-wrapper flex col">
-          {schemaName && buildForm()}
+          {buildForm()}
           <ButtonCache>
             <button type="submit" onClick={e => handleSubmit(e)}>
               Save
@@ -501,16 +494,8 @@ export default function DatabaseDraft({
         </div>
       </Form>
       <FormPreview
-        name={
-          (typeof entryData.name === "object"
-            ? Object.values(entryData.name)[0]
-            : entryData.name) ||
-          entryData.subtitle ||
-          entryData.title ||
-          entryData.username ||
-          `New ${schemaName}`
-        }
         form={entryData}
+        buttonText={record ? "Update" : "Submit"}
         handleSubmit={e => handleSubmit(e)}
       />
     </div>

@@ -173,15 +173,6 @@ const DatabaseView = () => {
     });
   };
 
-  const EDIT_STATE = {
-    record: entrySelection,
-    schemaName: selection,
-    arcanData,
-    updateArcanData,
-  };
-
-  const test = "test";
-
   // ============================================
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
@@ -246,6 +237,9 @@ const DatabaseView = () => {
                       onClick={() =>
                         setDraftMode({
                           record: entrySelection,
+                          recordName: arcanData.dependencies[selection].find(
+                            entry => entry._id === entrySelection._id
+                          ).name,
                           schemaName: selection,
                           arcanData,
                           updateArcanData,
@@ -257,13 +251,15 @@ const DatabaseView = () => {
                     <button>Delete</button>
                   </div>
                 </div>
-                {draftMode ? (
-                  <DatabaseDraft {...draftMode} />
-                ) : (
-                  <div id="entry-fields" className="flex col">
-                    {buildList(entrySelection)}
-                  </div>
-                )}
+                <div id="entry-content-body" className="flex">
+                  {draftMode ? (
+                    <DatabaseDraft {...draftMode} />
+                  ) : (
+                    <div id="entry-fields" className="flex col">
+                      {buildList(entrySelection)}
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <span className="fade">No selection</span>

@@ -75,7 +75,7 @@ const DataSetEntry = ({
               key={i}
               setRef={element => (primaries.current[i] = element)}
               option={option}
-              secondaries={createFields(option)}
+              secondaries={createFields(option).map(entry => entry[1].element)}
               field={field}
               single={single}
               checked={Object.keys(value).includes(option)}

@@ -39,6 +39,10 @@
   font-weight: bold;
 }
 
+.word-bank .entry-cache {
+  padding: 0;
+}
+
 .word-bank .entry-cache .entry {
   cursor: pointer;
   margin: 0 .5em .5em 0;

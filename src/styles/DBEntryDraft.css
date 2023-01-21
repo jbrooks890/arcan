@@ -1,0 +1,88 @@
+#database-entry {
+  position: relative;
+  /* padding: 2rem; */
+  /* border: 1px solid red; */
+  box-sizing: border-box;
+  /* height: 100vh; */
+}
+
+.flex #database-entry {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+#database-entry.flex {
+  justify-content: center;
+}
+
+#database-entry>*:not(:last-child) {
+  margin-right: 1rem;
+  /* overflow-y: scroll; */
+}
+
+#database-entry form {
+  position: relative;
+  /* width: 75vw; */
+  /* max-width: 480px; */
+  /* height: 100vh; */
+  /* padding: 1em; */
+  flex-grow: 1;
+  box-sizing: border-box;
+  /* border: 2px solid var(--green); */
+  border-radius: var(--outside);
+  overflow-y: scroll;
+}
+
+#database-entry form .form-wrapper {
+  position: relative;
+  /* padding: 1em; */
+  box-sizing: border-box;
+  border-color: var(--green);
+}
+
+#database-entry form .form-wrapper>* {
+  display: block;
+  margin-bottom: 1em;
+  text-align: left;
+}
+
+#database-entry form h3 {
+  align-self: stretch;
+  position: sticky;
+  top: 0;
+  margin: 0;
+  padding-block: 1.5em;
+  background-color: var(--dark);
+  text-align: center;
+  z-index: 1000;
+}
+
+#database-entry label span {
+  text-transform: uppercase;
+  font-size: small;
+}
+
+#database-entry label span+* {
+  margin-top: 2px;
+}
+
+/* #database-entry input {
+  display: block;
+  padding: .5em;
+  font-size: 1rem;
+  box-sizing: border-box;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+} */
+
+/* #database-entry input::selection{
+  background-color: var(--green);
+  color: black;
+} */
+
+/* #database-entry .select-box {
+  
+  text-transform: uppercase;
+  border: 2px solid var(--green);
+  border-radius: var(--inside);
+} */
