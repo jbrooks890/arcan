@@ -28,12 +28,6 @@ export default function DatabaseDraft({
   // useEffect(() => console.log({ record, schemaName, arcanData }), []);
   console.log({ record, schemaName, arcanData });
 
-  // :::::::::::::\ GROOM DATA /:::::::::::::
-
-  function groomData(entry, schema = schema) {
-    return Object.fromEntries(Object.entries(entry).map(([field, data]) => {}));
-  }
-
   // :::::::::::::\ CREATE FORM FIELDS /:::::::::::::
 
   /* const createFormFields = paths =>
@@ -95,20 +89,12 @@ export default function DatabaseDraft({
         } = data;
 
         let label, element;
-        // let field = instance !== "Array" ? defaultValue : path.options.default;
         let field =
           record?.[path] ??
           defaultValue ??
           (required && enumValues ? enumValues[0] : undefined);
 
         const parent = ancestors[0];
-        const chain = new Map();
-
-        const set = ancestors.reduce((obj, prop) => {
-          chain.set(prop, obj);
-
-          return obj[prop];
-        }, entryData);
 
         // ---------| CREATE LABEL |---------
 
@@ -143,9 +129,18 @@ export default function DatabaseDraft({
           if (label.startsWith("is ")) label = label.slice(2) + "?";
           return label;
         };
+
         label = createLabel();
-        const value = set?.[path] ?? defaultValue ?? enumValues?.[0];
-        // createFormDefault(instance);
+
+        const chain = new Map();
+
+        const set = ancestors.reduce((obj, prop) => {
+          chain.set(prop, obj);
+
+          return obj[prop];
+        }, entryData);
+
+        const value = set?.[path] ?? field;
 
         // ---------| HANDLE CHANGE |---------
 
@@ -279,160 +274,177 @@ export default function DatabaseDraft({
             <ChoiceBox {...choiceProps} />
           );
         } else {
-          switch (instance) {
-            case "String":
-              element =
-                path === "description" ? (
-                  <label key={key}>
-                    <span className={required ? "required" : ""}>{label}</span>
-                    <textarea
-                      placeholder={`Description for ${schemaName}`}
-                      onChange={e => handleChange(e.currentTarget.value)}
-                      rows={6}
-                      value={set[path] ?? ""}
-                    />
-                  </label>
-                ) : (
-                  <TextField
-                    {...props}
-                    handleChange={e => handleChange(e.currentTarget.value)}
-                  />
-                );
-              break;
-            case "Number":
-              element = (
-                <NumField
-                  {...props}
-                  min={data.options?.min}
-                  max={data.options?.max}
-                  handleChange={e =>
-                    handleChange(parseInt(e.currentTarget.value))
-                  }
-                />
-              );
-              break;
-            case "Decimal128":
-              if (record?.[path])
-                field = parseFloat(record[path].$numberDecimal);
-              element = (
-                <NumField
-                  {...props}
-                  min={data.options?.min}
-                  max={data.options?.max}
-                  step={0.01}
-                  handleChange={e =>
-                    handleChange(parseFloat(e.currentTarget.value))
-                  }
-                />
-              );
-              break;
-            case "Boolean":
-              element = (
-                <Toggle
-                  {...props}
-                  handleChange={e => handleChange(e.currentTarget.checked)}
-                />
-              );
-              break;
-            case "Date":
-              // console.log("DATE:", set[path] instanceof Date);
-              set[path] instanceof Date &&
-                console.log("DATE:", set[path].toDateString());
-              element = (
-                <label key={key}>
-                  <span className={required ? "required" : ""}>{label}</span>
-                  <input
-                    type="date"
-                    onChange={e => handleChange(e.currentTarget.value)}
-                    // value={set[path].toDateString()}
-                    value={set[path]}
-                  />
-                </label>
-              );
-              break;
-            case "Array":
-              const { schema, caster } = data;
-              if (caster) {
-                const { instance, options } = caster;
-                if (instance === "String")
-                  element = (
-                    <WordBank
+          if (instance) {
+            switch (instance) {
+              case "String":
+                element =
+                  path === "description" ? (
+                    <label key={key}>
+                      <span className={required ? "required" : ""}>
+                        {label}
+                      </span>
+                      <textarea
+                        placeholder={`Description for ${schemaName}`}
+                        onChange={e => handleChange(e.currentTarget.value)}
+                        rows={6}
+                        value={set[path] ?? ""}
+                      />
+                    </label>
+                  ) : (
+                    <TextField
                       {...props}
-                      terms={set[path]}
-                      update={entry => handleChange(entry)}
+                      handleChange={e => handleChange(e.currentTarget.value)}
                     />
                   );
-                if (instance === "ObjectID")
-                  element = createObjIdBox(caster.options, false);
-              }
-              if (schema) {
-                const { paths } = schema;
+                break;
+              case "Number":
+                element = (
+                  <NumField
+                    {...props}
+                    min={data.options?.min}
+                    max={data.options?.max}
+                    handleChange={e =>
+                      handleChange(parseInt(e.currentTarget.value))
+                    }
+                  />
+                );
+                break;
+              case "Decimal128":
+                if (record?.[path])
+                  field = parseFloat(record[path].$numberDecimal);
+                element = (
+                  <NumField
+                    {...props}
+                    min={data.options?.min}
+                    max={data.options?.max}
+                    step={0.01}
+                    handleChange={e =>
+                      handleChange(parseFloat(e.currentTarget.value))
+                    }
+                  />
+                );
+                break;
+              case "Boolean":
+                element = (
+                  <Toggle
+                    {...props}
+                    handleChange={e => handleChange(e.currentTarget.checked)}
+                  />
+                );
+                break;
+              case "Date":
+                // console.log("DATE:", set[path] instanceof Date);
+                set[path] instanceof Date &&
+                  console.log("DATE:", set[path].toDateString());
+                element = (
+                  <label key={key}>
+                    <span className={required ? "required" : ""}>{label}</span>
+                    <input
+                      type="date"
+                      onChange={e => handleChange(e.currentTarget.value)}
+                      // value={set[path].toDateString()}
+                      value={set[path]}
+                    />
+                  </label>
+                );
+                break;
+              case "Array":
+                const { schema, caster } = data;
+                if (caster) {
+                  const { instance, options } = caster;
+                  if (instance === "String")
+                    element = (
+                      <WordBank
+                        {...props}
+                        terms={set[path]}
+                        update={entry => handleChange(entry)}
+                      />
+                    );
+                  if (instance === "ObjectID")
+                    element = createObjIdBox(caster.options, false);
+                }
+                if (schema) {
+                  const { paths } = schema;
+
+                  element = (
+                    <ArraySet
+                      {...props}
+                      createElements={index =>
+                        createFields(paths, [...ancestors, path, index])
+                      }
+                      // entryData={createFormFields(paths)}
+                      handleChange={handleChange}
+                    />
+                  );
+                }
+                element = (
+                  <label key={key} {...props}>
+                    <span>{label}</span>
+                    <div>[{path}]</div>
+                  </label>
+                );
+
+                break;
+              case "Map":
+                const $data = paths[path + ".$*"];
+                // console.log($data.options.type.paths);
 
                 element = (
-                  <ArraySet
+                  <DataSetEntry
                     {...props}
-                    createElements={index =>
-                      createFields(paths, [...ancestors, path, index])
+                    single={false}
+                    options={options.enum}
+                    // secondaryFormFields={createFormFields(
+                    //   $data.options.type.paths
+                    // )}
+                    createFields={option =>
+                      createFields($data.options.type.paths, [
+                        ...ancestors,
+                        path,
+                        option,
+                      ])
                     }
-                    // entryData={createFormFields(paths)}
                     handleChange={handleChange}
                   />
                 );
+                break;
+              case "ObjectID":
+                element = createObjIdBox(options);
+                break;
+              default:
+                console.warning(
+                  `${path.toUpperCase()}: No handler for ${instance}`
+                );
+                element = (
+                  <label key={key} {...props}>
+                    <span>{label}</span>
+                    <div>?</div>
+                  </label>
+                );
+            }
+          } else {
+            if (options) {
+              if (options.type?.paths) {
+                element = (
+                  <FieldSet {...props} className="col">
+                    {createFields(options.type.paths, [...ancestors, path])}
+                  </FieldSet>
+                );
+              } else {
+                console.log({ path });
               }
-              element = (
-                <label key={key} {...props}>
-                  <span>{label}</span>
-                  <div>[{path}]</div>
-                </label>
-              );
-
-              break;
-            case "Map":
-              const $data = paths[path + ".$*"];
-              // console.log($data.options.type.paths);
-
-              element = (
-                <DataSetEntry
-                  {...props}
-                  single={false}
-                  options={options.enum}
-                  // secondaryFormFields={createFormFields(
-                  //   $data.options.type.paths
-                  // )}
-                  createFields={option =>
-                    createFields($data.options.type.paths, [
-                      ...ancestors,
-                      path,
-                      option,
-                    ])
-                  }
-                  handleChange={handleChange}
-                />
-              );
-              break;
-            case "ObjectID":
-              element = createObjIdBox(options);
-              break;
-            default:
-              if (options) {
-                if (options?.type?.paths) {
-                  element = (
-                    <FieldSet {...props} className="col">
-                      {createFields(options.type.paths, [...ancestors, path])}
-                    </FieldSet>
-                  );
-                } else {
-                  console.log({ path });
-                }
-              }
-              element = (
-                <label key={key} {...props}>
-                  <span>{label}</span>
-                  <div>?</div>
-                </label>
-              );
+            }
+            console.warning(`${path.toUpperCase()}: Unknown type!`);
+            element = (
+              <label key={key} {...props}>
+                <span>{label}</span>
+                <div>?</div>
+              </label>
+            );
           }
         }
+
+        return [path, { field, label, instance, element }];
       });
   };
 
