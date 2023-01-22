@@ -75,7 +75,7 @@
   opacity: 0;
   transition: max-height 0.1s ease-out;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: hidden scroll;
 
 }
 

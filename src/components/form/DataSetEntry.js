@@ -62,9 +62,7 @@ const DataSetEntry = ({
 
   return (
     <fieldset
-      className={`choice-box word-bank complex ${
-        className ? className : ""
-      } flex col`}
+      className={`choice-box complex ${className ? className : ""} flex col`}
     >
       <legend className={required ? "required" : ""}>{label}</legend>
       {inputText && <TermInput add={addEntry} />}

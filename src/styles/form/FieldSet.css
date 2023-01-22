@@ -1,5 +1,9 @@
 /* ::::::::\ FIELDSET /:::::::: */
 
+.custom-form fieldset {
+  resize: vertical;
+}
+
 .custom-form fieldset.wrapper {
   border-radius: var(--outside);
   border-color: inherit;

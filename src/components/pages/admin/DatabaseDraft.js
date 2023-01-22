@@ -78,8 +78,6 @@ export default function DatabaseDraft({
           defaultValue ??
           (required && enumValues ? enumValues[0] : undefined);
 
-        // console.log({ path, recordValue, field });
-
         const parent = ancestors[0];
 
         // ---------| CREATE LABEL |---------
@@ -118,22 +116,28 @@ export default function DatabaseDraft({
 
         label = createLabel();
 
-        const chain = entryData
-          ? new Map(
-              ancestors.reduce(
-                (arr, path) => {
-                  const parent = arr.pop();
-                  const current = parent[1][path];
-                  // console.log({ parent, current });
-                  return [...arr, parent, [path, current]];
-                },
-                [[undefined, entryData ?? record]]
-              )
-            )
-          : null;
+        const chain = new Map(
+          ancestors.slice(1).reduce(
+            (links, current) => {
+              const _parent = links.pop();
+              const [path, obj] = _parent;
+              const child = [current, obj[path]];
+              return [...links, _parent, child];
+            },
+            [[parent, entryData ?? record]]
+          )
+        );
 
         const set = getNestedValue(entryData ?? record);
         const value = set?.[path] ?? field;
+
+        // parent === "affiliations" &&
+        //   console.log({
+        //     path,
+        //     ancestors: ancestors.join(" > "),
+        //     chain,
+        //   });
+        // parent === "affiliations" && console.log(`\n${"-".repeat(50)}`);
 
         // ---------| HANDLE CHANGE |---------
 
@@ -198,16 +202,8 @@ export default function DatabaseDraft({
             <ChoiceBox
               {...props}
               single={single}
-              options={dependency.map(entry => entry._id)}
-              display={Object.fromEntries(
-                dependency.map(entry => {
-                  const { _id, name, title, subtitle } = entry;
-                  return [
-                    _id,
-                    name ?? subtitle ?? title ?? `${schemaName}: ${_id}`,
-                  ];
-                })
-              )}
+              options={Object.keys(dependency)}
+              display={dependency}
               handleChange={entry => handleChange(entry)}
             />
           );
@@ -424,7 +420,7 @@ export default function DatabaseDraft({
   const buildForm = () => {
     const { paths } = SCHEMA;
     const DATA = createFields(paths);
-    console.log({ DATA });
+    // console.log({ DATA });
 
     if (!entryMaster) {
       setEntryMaster(Object.fromEntries(DATA));
@@ -448,18 +444,44 @@ export default function DatabaseDraft({
     console.log("%cJSON:", "color:cyan", JSON.stringify(entryData));
   };
 
-  // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
-  const handleSubmit = async e => {
-    e.preventDefault();
-    console.clear();
+  // :::::::::::::\ SEND UPDATE /:::::::::::::
+  const sendUpdate = async () => {
+    try {
+      const response = await axios.put(
+        `/${schemaName}/${record._id}`,
+        entryData
+      );
+      return response?.data;
+    } catch (err) {
+      console.error(err.message);
+      console.error(err.response.data.error);
+      return;
+    }
+  };
 
+  // :::::::::::::\ SEND NEW /:::::::::::::
+  const sendNew = async () => {
     try {
       const response = await axios.post("/" + schemaName, entryData);
       !record && initEntry(schemaName);
-      response?.data && updateArcanData(response.data);
+      // response?.data && updateArcanData(response.data);
+      return response?.data;
     } catch (err) {
       console.error(err.message);
       console.error(err.response.data.error.split(", ").join("\n"));
+      return;
+    }
+  };
+
+  // :::::::::::::\ HANDLE SUBMIT /:::::::::::::
+  const handleSubmit = async e => {
+    e.preventDefault();
+    // console.clear();
+    const success = record ? await sendUpdate() : await sendNew();
+    if (success) {
+      console.log({ success });
+      updateArcanData(success);
+      cancel();
     }
   };
 

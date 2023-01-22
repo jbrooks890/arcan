@@ -1,6 +1,6 @@
 import FieldSet from "./FieldSet";
 
-const ArraySet = ({
+export default function ArraySet({
   field,
   label,
   required,
@@ -10,7 +10,7 @@ const ArraySet = ({
   value = [],
   cache = value,
   handleChange,
-}) => {
+}) {
   // console.log({ value, cache });
 
   const addEntry = () => handleChange([...cache, newEntry]);
@@ -29,6 +29,4 @@ const ArraySet = ({
       </div>
     </FieldSet>
   );
-};
-
-export default ArraySet;
+}

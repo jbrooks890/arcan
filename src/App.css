@@ -31,8 +31,9 @@
   --header-ht: 3rem;
   /* ============================= */
   background-color: var(--dark);
-
+  
 }
+
 
 .App {
   height: 100vh;
@@ -43,9 +44,13 @@
   fill: var(--pop);
 }
 
+/* ::::::::::\ SCROLLBAR /:::::::::: */
+
 ::-webkit-scrollbar {
   display: none;
 }
+
+/* ::::::::::\ HEADER, FOOTER /:::::::::: */
 
 header, footer {
   font-family: var(--keyFont2);
@@ -78,6 +83,7 @@ button {
 }
 
 ul {
+  margin: 0;
   padding-left: 0;
   list-style: none inside none;
 }

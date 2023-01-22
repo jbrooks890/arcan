@@ -3,7 +3,12 @@
 .choice-box {
   border: 2px solid var(--green);
   border-radius: var(--outside);
-  max-height: 240px;
+  /* max-height: 240px; */
+  overflow-y: scroll;
+}
+
+.choice-box.scroll {
+  max-height: 10em;
   overflow-y: scroll;
 }
 
@@ -147,10 +152,17 @@
 }
 
 .choice-box .drawer {
+  /* padding-bottom: .5em; */
   overflow: hidden;
   transition: .2s ease-out;
 }
 
 .choice-box .drawer.closed {
   max-height: 0;
+  opacity: 0;
+  z-index:-1;
+}
+
+.choice-box .drawer > :last-child {
+  margin-bottom: .5em;
 }

@@ -21,20 +21,33 @@ const DatabaseView = () => {
     // console.log("DATA:", response.data);
 
     let [models, dependencies] = Object.entries(response.data)
-      .map(([name, { schema, collection }]) => [
-        [name, schema],
-        [name, collection],
-      ])
+      .map(([name, { schema, collection }]) => {
+        // const { _id: id, ...others } = collection;
+        // console.log({ collection });
+        // console.log(Object.entries(collection));
+        return [
+          [name, schema],
+          [
+            name,
+            Object.fromEntries(collection.map(({ _id, name }) => [_id, name])),
+          ],
+        ];
+      })
       .reduce(
-        ([$schemata, $collections], [schema, collection]) => [
-          [...$schemata, schema],
-          [...$collections, collection],
-        ],
+        ([$schemata, $collections], [schema, collection]) => {
+          // console.log({ collection });
+          return [
+            [...$schemata, schema],
+            [...$collections, collection],
+          ];
+        },
         [[], []]
       );
 
     models = Object.fromEntries(models);
     dependencies = Object.fromEntries(dependencies);
+
+    // console.log({ dependencies });
 
     setArcanData({ models, dependencies });
     setSelection(Object.keys(models)[0]);
@@ -95,9 +108,7 @@ const DatabaseView = () => {
             const { instance, options } = pathData;
 
             return instance === "ObjectID"
-              ? arcanData.dependencies[options.ref].find(
-                  entry => entry._id === value
-                ).name
+              ? arcanData.dependencies[options.ref][value]
               : String(value);
           };
 
@@ -155,28 +166,26 @@ const DatabaseView = () => {
 
   // :::::::::::::\ UPDATE ARCAN DATA /:::::::::::::
 
-  const updateArcanData = (collection = selection, newData) => {
+  const updateArcanData = (newData, collection = selection) => {
     setArcanData(prev => {
       const { _id, name, subtitle, title, username } = newData;
+
+      const NAME =
+        (typeof name === "object" ? name[Object.keys(name)[0]] : name) ??
+        subtitle ??
+        title ??
+        username ??
+        `${collection}: ${_id}`;
+
       return {
         ...prev,
         dependencies: {
           ...prev.dependencies,
-          [collection]: [
-            ...prev.dependencies[collection],
-            {
-              _id,
-              name:
-                name ??
-                subtitle ??
-                title ??
-                username ??
-                `${collection}: ${_id}`,
-            },
-          ],
+          [collection]: { ...prev.dependencies[collection], [_id]: NAME },
         },
       };
     });
+    setEntrySelection(newData);
   };
 
   // ============================================
@@ -212,15 +221,8 @@ const DatabaseView = () => {
           {/* ------- ENTRY MENU ------- */}
           <Menu
             label="Entries"
-            options={Object.values(arcanData.dependencies[selection]).map(
-              entry => entry._id
-            )}
-            display={Object.fromEntries(
-              Object.values(arcanData.dependencies[selection]).map(entry => [
-                entry._id,
-                entry.name,
-              ])
-            )}
+            options={Object.keys(arcanData.dependencies[selection])}
+            display={arcanData.dependencies[selection]}
             handleChange={entry => fetchEntry(entry)}
             id="collection-entry-list"
           />
@@ -229,33 +231,34 @@ const DatabaseView = () => {
           <div id="entry-data" className="flex col">
             {entrySelection ? (
               <>
-                <div id="entry-header" className="flex col">
-                  <h3 id="entry-name" data-entry-id={entrySelection._id}>
-                    {
-                      arcanData.dependencies[selection].find(
-                        entry => entry._id === entrySelection._id
-                      ).name
-                    }
-                  </h3>
-                  <h4 id="entry-id">{entrySelection._id}</h4>
-                  <div className="button-cache">
-                    <button
-                      onClick={() =>
-                        setDraftMode({
-                          record: entrySelection,
-                          recordName: arcanData.dependencies[selection].find(
-                            entry => entry._id === entrySelection._id
-                          ).name,
-                          schemaName: selection,
-                          arcanData,
-                          updateArcanData,
-                        })
-                      }
-                    >
-                      Edit
-                    </button>
-                    <button>Delete</button>
+                <div id="entry-header" className="flex">
+                  <div id="entry-title">
+                    <h3 id="entry-name" data-entry-id={entrySelection._id}>
+                      {arcanData.dependencies[selection][entrySelection._id]}
+                    </h3>
+                    <h4 id="entry-id">{entrySelection._id}</h4>
                   </div>
+                  {!draftMode && (
+                    <div className="button-cache">
+                      <button
+                        onClick={() =>
+                          setDraftMode({
+                            record: entrySelection,
+                            recordName:
+                              arcanData.dependencies[selection][
+                                entrySelection._id
+                              ],
+                            schemaName: selection,
+                            arcanData,
+                            updateArcanData,
+                          })
+                        }
+                      >
+                        Edit
+                      </button>
+                      <button>Delete</button>
+                    </div>
+                  )}
                 </div>
                 <div id="entry-content-body" className="flex">
                   {draftMode ? (

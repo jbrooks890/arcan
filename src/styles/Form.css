@@ -52,6 +52,7 @@ textarea {
   padding: .5em;
   resize: vertical;
   background-color: transparent;
+  font-family: var(--bodyFont);
   color: inherit;
   font-size: 1rem;
   border: 2px solid var(--green);

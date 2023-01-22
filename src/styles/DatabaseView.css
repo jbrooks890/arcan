@@ -87,10 +87,20 @@
 /* ========== ENTRY HEADER ========== */
 
 #entry-header {
+  padding-bottom: .5rem;
   border-bottom: 1px solid var(--green);
 }
 
-#entry-header > *{
+#entry-header.flex {
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.flex #entry-title {
+  flex-grow: 1;
+}
+
+#entry-title > *{
   margin: 0;
 }
 
@@ -113,10 +123,13 @@
 #entry-header .button-cache button{
   cursor: pointer;
   transition: .1s ease-out;
-  margin-right: 1em;
   padding: 0;
   opacity: 0;
   transition: .1s ease-out;
+}
+
+#entry-header .button-cache > :not(:last-child){
+  margin-right: 1em;
 }
 
 /* ========== ENTRY CONTENT BODY ========== */

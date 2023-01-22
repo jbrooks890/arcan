@@ -21,7 +21,11 @@ export default function ChoiceBox({
   // useEffect(() => console.log({ field, inputs: inputs.current }), []);
 
   return (
-    <fieldset className={`choice-box ${className ? className : ""} flex col`}>
+    <fieldset
+      className={`choice-box ${className ? className : ""} ${
+        options.length > 3 ? "scroll" : ""
+      } flex col`}
+    >
       <legend className={required ? "required" : ""}>{label}</legend>
       {options.length ? (
         options.map((option, i) => {
