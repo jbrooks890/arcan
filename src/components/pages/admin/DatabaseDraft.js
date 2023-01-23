@@ -87,6 +87,8 @@ export default function DatabaseDraft({
           if (/[a-z]/.test(label.charAt()))
             label = label.replace(/([A-Z])/g, " $1").toLowerCase();
 
+          if (label.startsWith("_")) label = label.slice(1);
+
           const shorthands = new Map([
             ["pref", "preference"],
             ["ref", "reference"],
@@ -299,8 +301,8 @@ export default function DatabaseDraft({
                 );
                 break;
               case "Decimal128":
-                if (record?.[path])
-                  field = parseFloat(record[path].$numberDecimal);
+                // if (record?.[path])
+                //   field = parseFloat(record[path].$numberDecimal);
                 element = (
                   <NumField
                     {...props}

@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import Dropdown from "../../form/Dropdown";
 import Menu from "../../form/Menu";
 import Accordion from "../../form/Accordion";
-import { Link } from "react-router-dom";
 import DatabaseDraft from "./DatabaseDraft";
 
 const DatabaseView = () => {
@@ -22,9 +21,6 @@ const DatabaseView = () => {
 
     let [models, dependencies] = Object.entries(response.data)
       .map(([name, { schema, collection }]) => {
-        // const { _id: id, ...others } = collection;
-        // console.log({ collection });
-        // console.log(Object.entries(collection));
         return [
           [name, schema],
           [
@@ -215,7 +211,21 @@ const DatabaseView = () => {
               </div>
               <div>Filter</div>
             </div>
-            <button className="add-new flex middle">New</button>
+            <button
+              className="add-new flex middle"
+              onClick={() =>
+                setDraftMode({
+                  // record: entrySelection,
+                  // recordName:
+                  //   arcanData.dependencies[selection][entrySelection._id],
+                  schemaName: selection,
+                  arcanData,
+                  updateArcanData,
+                })
+              }
+            >
+              New
+            </button>
           </div>
 
           {/* ------- ENTRY MENU ------- */}
