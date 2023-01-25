@@ -27,14 +27,10 @@ export default function DatabaseDraft({
   const { models, dependencies } = arcanData;
   const SCHEMA = models[schemaName];
 
-  // useEffect(() => console.log({ record, schemaName, arcanData }), []);
-  // console.log({ record, schemaName, arcanData });
-  // useEffect(() => entryData && console.log({ entryData }), [entryData]);
   useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
 
   const initEntry = () => {
     const { paths } = SCHEMA;
-    console.log();
     // const fields = createFormFields(paths);
     // console.log("\nPATHS:", paths);
     // setEntryData(fields);
@@ -68,7 +64,7 @@ export default function DatabaseDraft({
         } = data;
 
         const getNestedValue = root =>
-          ancestors.reduce((obj, path) => obj[path], root);
+          root ? ancestors.reduce((obj, path) => obj[path], root) : null;
 
         const recordValue = record ? getNestedValue(record) : null;
 
@@ -133,13 +129,7 @@ export default function DatabaseDraft({
         const set = getNestedValue(entryData ?? record);
         const value = set?.[path] ?? field;
 
-        // parent === "affiliations" &&
-        //   console.log({
-        //     path,
-        //     ancestors: ancestors.join(" > "),
-        //     chain,
-        //   });
-        // parent === "affiliations" && console.log(`\n${"-".repeat(50)}`);
+        // console.log({ set, value });
 
         // ---------| HANDLE CHANGE |---------
 
@@ -213,7 +203,7 @@ export default function DatabaseDraft({
 
         // ===========================================
         const { suggestions, selfRef, enumRef } = options;
-        const pathRef = enumRef ? set[enumRef] : [];
+        const pathRef = enumRef ? set?.[enumRef] : undefined;
 
         let choices = enumValues?.length
           ? enumValues
@@ -226,7 +216,6 @@ export default function DatabaseDraft({
         if (choices?.length) {
           if (selfRef) {
             choices = choices.filter(choice => {
-              let fields = Object.keys(set);
               return typeof set?.[choice] === "object"
                 ? Object.values(set[choice]).join(", ")
                 : set?.[choice];
@@ -278,7 +267,7 @@ export default function DatabaseDraft({
                         placeholder={`Description for ${schemaName}`}
                         onChange={e => handleChange(e.currentTarget.value)}
                         rows={6}
-                        value={set[path] ?? ""}
+                        value={set?.[path] ?? ""}
                       />
                     </label>
                   ) : (
@@ -325,16 +314,14 @@ export default function DatabaseDraft({
                 break;
               case "Date":
                 // console.log("DATE:", set[path] instanceof Date);
-                set[path] instanceof Date &&
-                  console.log("DATE:", set[path].toDateString());
                 element = (
                   <label key={key}>
                     <span className={required ? "required" : ""}>{label}</span>
                     <input
                       type="date"
                       onChange={e => handleChange(e.currentTarget.value)}
-                      // value={set[path].toDateString()}
-                      value={set[path]}
+                      // value={set?.[path].toDateString()}
+                      value={set?.[path]}
                     />
                   </label>
                 );
@@ -347,7 +334,7 @@ export default function DatabaseDraft({
                     element = (
                       <WordBank
                         {...props}
-                        terms={set?.[path] ?? recordValue[path]}
+                        terms={set?.[path] ?? recordValue?.[path] ?? []}
                         update={entry => handleChange(entry)}
                       />
                     );

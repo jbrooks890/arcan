@@ -184,6 +184,39 @@ const DatabaseView = () => {
     setEntrySelection(newData);
   };
 
+  // :::::::::::::\ ADD NEW ENTRY /:::::::::::::
+  const addNew = () => {
+    setEntrySelection(null);
+    setDraftMode({
+      schemaName: selection,
+      arcanData,
+      updateArcanData,
+    });
+  };
+
+  // :::::::::::::\ DELETE ENTRY /:::::::::::::
+  const deleteEntry = async (id, collection = selection) => {
+    try {
+      const response = await axios.delete(`/${collection}/${id}`);
+      if (response.status === 201) {
+        setArcanData(prev => ({
+          ...prev,
+          dependencies: {
+            ...prev.dependencies,
+            [collection]: Object.fromEntries(
+              Object.entries(prev.dependencies[collection]).filter(
+                ([entryID]) => entryID !== id
+              )
+            ),
+          },
+        }));
+        setEntrySelection(null);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // ============================================
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
@@ -211,19 +244,7 @@ const DatabaseView = () => {
               </div>
               <div>Filter</div>
             </div>
-            <button
-              className="add-new flex middle"
-              onClick={() =>
-                setDraftMode({
-                  // record: entrySelection,
-                  // recordName:
-                  //   arcanData.dependencies[selection][entrySelection._id],
-                  schemaName: selection,
-                  arcanData,
-                  updateArcanData,
-                })
-              }
-            >
+            <button className="add-new flex middle" onClick={addNew}>
               New
             </button>
           </div>
@@ -239,14 +260,20 @@ const DatabaseView = () => {
 
           {/* ------- ENTRY DATA ------- */}
           <div id="entry-data" className="flex col">
-            {entrySelection ? (
+            {entrySelection || draftMode ? (
               <>
                 <div id="entry-header" className="flex">
                   <div id="entry-title">
-                    <h3 id="entry-name" data-entry-id={entrySelection._id}>
-                      {arcanData.dependencies[selection][entrySelection._id]}
+                    <h3
+                      id="entry-name"
+                      data-entry-id={entrySelection?._id ?? undefined}
+                    >
+                      {arcanData.dependencies[selection][entrySelection?._id] ??
+                        `New ${selection}`}
                     </h3>
-                    <h4 id="entry-id">{entrySelection._id}</h4>
+                    {entrySelection?._id && (
+                      <h4 id="entry-id">{entrySelection?._id}</h4>
+                    )}
                   </div>
                   {!draftMode && (
                     <div className="button-cache">
@@ -266,7 +293,9 @@ const DatabaseView = () => {
                       >
                         Edit
                       </button>
-                      <button>Delete</button>
+                      <button onClick={() => deleteEntry(entrySelection?._id)}>
+                        Delete
+                      </button>
                     </div>
                   )}
                 </div>
