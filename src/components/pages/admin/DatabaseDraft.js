@@ -94,6 +94,7 @@ export default function DatabaseDraft({
             ["intro", "introduction"],
             ["avg", "average"],
             ["dob", "date of birth"],
+            ["abbr", "abbreviation"],
           ]);
           const nonPlurals = ["s", "y"];
 
