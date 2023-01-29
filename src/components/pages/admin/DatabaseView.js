@@ -102,9 +102,13 @@ const DatabaseView = () => {
           const renderEntry = () => {
             const pathData = getPathData([...ancestors, key]);
             const { instance, options } = pathData;
+            const { ref, refPath } = options;
+            const reference = ref ?? entrySelection?.[refPath];
+
+            // console.log({ ref, refPath });
 
             return instance === "ObjectID"
-              ? arcanData.dependencies[options.ref][value]
+              ? arcanData.dependencies[reference][value]
               : String(value);
           };
 

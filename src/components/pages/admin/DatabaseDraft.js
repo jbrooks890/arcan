@@ -72,6 +72,7 @@ export default function DatabaseDraft({
         let field =
           recordValue?.[path] ??
           defaultValue ??
+          options?.default ??
           (required && enumValues ? enumValues[0] : undefined);
 
         const parent = ancestors[0];
