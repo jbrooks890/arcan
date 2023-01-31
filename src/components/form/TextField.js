@@ -9,6 +9,7 @@ const TextField = ({
   label,
   required,
   criteria,
+  stack = true,
   handleChange,
   value,
   validator,
@@ -21,7 +22,11 @@ const TextField = ({
   };
 
   return (
-    <label htmlFor={field} data-label={label}>
+    <label
+      htmlFor={field}
+      data-label={label}
+      className={`flex ${stack ? "col" : ""}`}
+    >
       <span onClick={criteria ? toggleCriteria : null}>
         {label}
         {required && <span className={required ? "required" : ""} />}

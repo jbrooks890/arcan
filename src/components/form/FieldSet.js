@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import "../../styles/form/FieldSet.css";
 
-const FieldSet = ({ field, label, children, className, required }) => {
+const FieldSet = ({ field, label, children, id, className, required }) => {
   // console.log(fields);
   // useEffect(() => console.log({ required }), []);
 
   return (
     <fieldset
-      className={`${field}-section wrapper flex ${className ? className : ""}`}
+      id={id}
+      className={`${field}-section group wrapper flex ${
+        className ? className : ""
+      }`}
     >
       <legend className={required ? "required" : ""}>{label}</legend>
       {children}

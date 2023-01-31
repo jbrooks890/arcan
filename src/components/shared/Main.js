@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import DBContextProvider from "../contexts/DBContext";
 import About from "../pages/About";
 import AddNew from "../pages/admin/AddNew";
 import DatabaseDraft from "../pages/admin/DatabaseDraft";
@@ -21,9 +22,14 @@ export default function Main() {
       <Route path="/test" element={<Sandbox />} />
       {/* <Route path="/database" element={<DatabaseView />} /> */}
       <Route path="/database">
-        <Route index element={<DatabaseView />} />
-        <Route path="add" element={<AddNew />} />
-        <Route path="modify" element={<DatabaseDraft />} />
+        <Route
+          index
+          element={
+            <DBContextProvider>
+              <DatabaseView />
+            </DBContextProvider>
+          }
+        />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

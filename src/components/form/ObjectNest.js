@@ -1,16 +1,17 @@
+import { useDBMaster } from "../contexts/DBContext";
 import Accordion from "./Accordion";
 
-export default function ObjectNest({ dataObj }) {
+export default function ObjectNest({ dataObj, collectionName, id, className }) {
+  const { arcanData, omittedFields } = useDBMaster();
+  const { models, dependencies } = arcanData;
+
   // :::::::::::::\ GET PATH DATA /:::::::::::::
 
-  const getPathData = (ancestors, collection = selection) => {
+  const getPathData = (ancestors, collection = collectionName) => {
     // Navigate to the appropriate schema path
-    const model = arcanData.models[collection];
-
-    // SET=
+    const model = models[collection];
     const set = ancestors.reduce((paths, pathName) => {
       const current = paths[pathName];
-      // console.log({ pathName, paths, current });
 
       if (current) {
         if (current.instance) {
@@ -31,24 +32,28 @@ export default function ObjectNest({ dataObj }) {
 
   const buildList = (obj = {}, ancestors = []) => {
     obj = Object.fromEntries(
-      Object.entries(obj).filter(
-        ([key]) => !["_id", "id", "createdAt", "updatedAt", "__v"].includes(key)
-      )
+      Object.entries(obj).filter(([key]) => !omittedFields.includes(key))
     );
 
     return (
       <ul>
         {Object.entries(obj).map(([key, value], i) => {
           const isObject = typeof value === "object";
+
+          // ---------- RENDER ENTRY ----------
           const renderEntry = () => {
             const pathData = getPathData([...ancestors, key]);
             const { instance, options } = pathData;
 
-            return instance === "ObjectID"
-              ? arcanData.dependencies[options.ref].find(
-                  entry => entry._id === value
-                ).name
-              : String(value);
+            // instance === "ObjectID" && console.log({ options });
+
+            return value === null || value === undefined ? (
+              <span className="fade">{"no entry"}</span>
+            ) : instance === "ObjectID" ? (
+              dependencies[options.ref ?? dataObj[options.refPath]][value]
+            ) : (
+              String(value)
+            );
           };
 
           return (
@@ -77,5 +82,9 @@ export default function ObjectNest({ dataObj }) {
     );
   };
 
-  return <div>ObjectNest</div>;
+  return (
+    <div id={id} className={className}>
+      {buildList(dataObj)}
+    </div>
+  );
 }

@@ -42,6 +42,7 @@ legend {
 }
 
 label {
+  position: relative;
   display: block;
 }
 
@@ -92,4 +93,37 @@ textarea::-webkit-resizer {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 0 .5em;
+}
+
+/* ::::::::::: GROUPS ::::::::::: */
+
+.group > label:focus-within::before {
+  content: "";
+  position: absolute;
+  background-color: var(--pop);
+  inset: 0;
+  opacity: .05;
+}
+
+.group > label.col {
+  flex-direction: column-reverse;
+}
+
+.group input {
+  padding: 0;
+  padding-bottom: .25em;
+  border: none;
+  border-bottom: 1px solid var(--pop);
+  border-radius: 0;
+}
+
+.group > .choice-box {
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid var(--pop);
+}
+
+.group>.choice-box legend {
+  text-align: center;
 }

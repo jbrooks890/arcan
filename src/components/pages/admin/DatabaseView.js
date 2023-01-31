@@ -6,50 +6,15 @@ import Dropdown from "../../form/Dropdown";
 import Menu from "../../form/Menu";
 import Accordion from "../../form/Accordion";
 import DatabaseDraft from "./DatabaseDraft";
+import DBContextProvider, { useDBMaster } from "../../contexts/DBContext";
+import DBDraftProvider from "../../contexts/DBDraftContext";
+import ObjectNest from "../../form/ObjectNest";
 
 const DatabaseView = () => {
-  const [arcanData, setArcanData] = useState();
-  const [selection, setSelection] = useState();
+  const { arcanData, setArcanData, updateArcanData } = useDBMaster();
+  const [selection, setSelection] = useState(Object.keys(arcanData?.models)[0]);
   const [entrySelection, setEntrySelection] = useState();
   const [draftMode, setDraftMode] = useState(false);
-
-  // :::::::::::::\ FETCH MODELS /:::::::::::::
-
-  const fetchModels = async () => {
-    const response = await axios.get("/models");
-    // console.log("DATA:", response.data);
-
-    let [models, dependencies] = Object.entries(response.data)
-      .map(([name, { schema, collection }]) => {
-        return [
-          [name, schema],
-          [
-            name,
-            Object.fromEntries(collection.map(({ _id, name }) => [_id, name])),
-          ],
-        ];
-      })
-      .reduce(
-        ([$schemata, $collections], [schema, collection]) => {
-          // console.log({ collection });
-          return [
-            [...$schemata, schema],
-            [...$collections, collection],
-          ];
-        },
-        [[], []]
-      );
-
-    models = Object.fromEntries(models);
-    dependencies = Object.fromEntries(dependencies);
-
-    // console.log({ dependencies });
-
-    setArcanData({ models, dependencies });
-    setSelection(Object.keys(models)[0]);
-  };
-
-  useEffect(() => fetchModels(), []);
 
   useEffect(() => arcanData && console.log({ arcanData }), [arcanData]);
 
@@ -93,11 +58,6 @@ const DatabaseView = () => {
       <ul>
         {Object.entries(obj).map(([key, value], i) => {
           const isObject = typeof value === "object";
-          // const hasValue = value !== null && value !== undefined;
-          // const isArray = Array.isArray(obj[key]);
-
-          // const root = ancestors[0] ?? key;
-          // const parent = ancestors[ancestors.length - 1];
 
           const renderEntry = () => {
             const pathData = getPathData([...ancestors, key]);
@@ -167,25 +127,26 @@ const DatabaseView = () => {
 
   // :::::::::::::\ UPDATE ARCAN DATA /:::::::::::::
 
-  const updateArcanData = (newData, collection = selection) => {
-    setArcanData(prev => {
-      const { _id, name, subtitle, title, username } = newData;
+  const updateMaster = (newData, collection = selection) => {
+    // setArcanData(prev => {
+    //   const { _id, name, subtitle, title, username } = newData;
 
-      const NAME =
-        (typeof name === "object" ? name[Object.keys(name)[0]] : name) ??
-        subtitle ??
-        title ??
-        username ??
-        `${collection}: ${_id}`;
+    //   const NAME =
+    //     (typeof name === "object" ? name[Object.keys(name)[0]] : name) ??
+    //     subtitle ??
+    //     title ??
+    //     username ??
+    //     `${collection}: ${_id}`;
 
-      return {
-        ...prev,
-        dependencies: {
-          ...prev.dependencies,
-          [collection]: { ...prev.dependencies[collection], [_id]: NAME },
-        },
-      };
-    });
+    //   return {
+    //     ...prev,
+    //     dependencies: {
+    //       ...prev.dependencies,
+    //       [collection]: { ...prev.dependencies[collection], [_id]: NAME },
+    //     },
+    //   };
+    // });
+    updateArcanData(newData, collection);
     setEntrySelection(newData);
   };
 
@@ -195,7 +156,7 @@ const DatabaseView = () => {
     setDraftMode({
       schemaName: selection,
       arcanData,
-      updateArcanData,
+      updateMaster,
     });
   };
 
@@ -227,102 +188,123 @@ const DatabaseView = () => {
   // ============================================
 
   return (
-    <main id="database-view" className="flex col middle">
-      {selection ? (
-        <div id="database-view-wrapper" className="grid">
-          {/* ------- COLLECTION SELECTOR ------- */}
-          <div id="collection-select" className="fieldset flex middle">
-            <div className="legend">Collection</div>
-            <Dropdown
-              options={Object.keys(arcanData.models)}
-              value={selection}
-              handleChange={selectCollection}
-            />
-          </div>
-
-          {/* ------- COLLECTION DATA ------- */}
-          <div id="collection-data" className="fieldset flex middle">
-            <div className="legend">Collection Data</div>
-            <div className="data-cache flex middle">
-              <div>
-                Entries: {Object.keys(arcanData.dependencies[selection]).length}
-              </div>
-              <div>Filter</div>
+    <DBDraftProvider
+      state={[
+        selection,
+        setSelection,
+        entrySelection,
+        setEntrySelection,
+        draftMode,
+        setDraftMode,
+      ]}
+    >
+      <main id="database-view" className="flex col middle">
+        {selection ? (
+          <div id="database-view-wrapper" className="grid">
+            {/* ------- COLLECTION SELECTOR ------- */}
+            <div id="collection-select" className="fieldset flex middle">
+              <div className="legend">Collection</div>
+              <Dropdown
+                options={Object.keys(arcanData.models)}
+                value={selection}
+                handleChange={selectCollection}
+              />
             </div>
-            <button className="add-new flex middle" onClick={addNew}>
-              New
-            </button>
-          </div>
 
-          {/* ------- ENTRY MENU ------- */}
-          <Menu
-            label="Entries"
-            options={Object.keys(arcanData.dependencies[selection])}
-            display={arcanData.dependencies[selection]}
-            handleChange={entry => fetchEntry(entry)}
-            id="collection-entry-list"
-          />
+            {/* ------- COLLECTION DATA ------- */}
+            <div id="collection-data" className="fieldset flex middle">
+              <div className="legend">Collection Data</div>
+              <div className="data-cache flex middle">
+                <div>
+                  Entries:{" "}
+                  {Object.keys(arcanData.dependencies[selection]).length}
+                </div>
+                <div>Filter</div>
+              </div>
+              <button className="add-new flex middle" onClick={addNew}>
+                New
+              </button>
+            </div>
 
-          {/* ------- ENTRY DATA ------- */}
-          <div id="entry-data" className="flex col">
-            {entrySelection || draftMode ? (
-              <>
-                <div id="entry-header" className="flex">
-                  <div id="entry-title">
-                    <h3
-                      id="entry-name"
-                      data-entry-id={entrySelection?._id ?? undefined}
-                    >
-                      {arcanData.dependencies[selection][entrySelection?._id] ??
-                        `New ${selection}`}
-                    </h3>
-                    {entrySelection?._id && (
-                      <h4 id="entry-id">{entrySelection?._id}</h4>
+            {/* ------- ENTRY MENU ------- */}
+            <Menu
+              label="Entries"
+              options={Object.keys(arcanData.dependencies[selection])}
+              display={arcanData.dependencies[selection]}
+              handleChange={entry => fetchEntry(entry)}
+              id="collection-entry-list"
+            />
+
+            {/* ------- ENTRY DATA ------- */}
+            <div id="entry-data" className="flex col">
+              {entrySelection || draftMode ? (
+                <>
+                  <div id="entry-header" className="flex">
+                    <div id="entry-title">
+                      <h3
+                        id="entry-name"
+                        data-entry-id={entrySelection?._id ?? undefined}
+                      >
+                        {arcanData.dependencies[selection][
+                          entrySelection?._id
+                        ] ?? `New ${selection}`}
+                      </h3>
+                      {entrySelection?._id && (
+                        <h4 id="entry-id">{entrySelection?._id}</h4>
+                      )}
+                    </div>
+                    {!draftMode && (
+                      <div className="button-cache">
+                        <button
+                          onClick={() =>
+                            setDraftMode({
+                              record: entrySelection,
+                              recordName:
+                                arcanData.dependencies[selection][
+                                  entrySelection._id
+                                ],
+                              schemaName: selection,
+                              arcanData,
+                              updateArcanData,
+                            })
+                          }
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteEntry(entrySelection?._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     )}
                   </div>
-                  {!draftMode && (
-                    <div className="button-cache">
-                      <button
-                        onClick={() =>
-                          setDraftMode({
-                            record: entrySelection,
-                            recordName:
-                              arcanData.dependencies[selection][
-                                entrySelection._id
-                              ],
-                            schemaName: selection,
-                            arcanData,
-                            updateArcanData,
-                          })
-                        }
-                      >
-                        Edit
-                      </button>
-                      <button onClick={() => deleteEntry(entrySelection?._id)}>
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div id="entry-content-body" className="flex">
-                  {draftMode ? (
-                    <DatabaseDraft {...draftMode} cancel={cancelDraft} />
-                  ) : (
-                    <div id="entry-fields" className="flex col">
-                      {buildList(entrySelection)}
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <span className="fade">No selection</span>
-            )}
+                  <div id="entry-content-body" className="flex">
+                    {draftMode ? (
+                      <DatabaseDraft {...draftMode} cancel={cancelDraft} />
+                    ) : (
+                      // <div id="entry-fields" className="flex col">
+                      //   {buildList(entrySelection)}
+                      // </div>
+                      <ObjectNest
+                        dataObj={entrySelection}
+                        collectionName={selection}
+                        id="entry-fields"
+                        className="flex col"
+                      />
+                    )}
+                  </div>
+                </>
+              ) : (
+                <span className="fade">No selection</span>
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <div>Loading...</div>
-      )}
-    </main>
+        ) : (
+          <div>Loading...</div>
+        )}
+      </main>
+    </DBDraftProvider>
   );
 };
 

@@ -36,18 +36,16 @@ export default function DatabaseDraft({
     // setEntryData(fields);
   };
 
-  // %%%%%%%%%%%%%%%%%%%%%%%\ UPDATE FORM /%%%%%%%%%%%%%%%%%%%%%%%
-
-  const updateForm = (field, entry) => {
-    // console.log("%cUPDATE FORM:\n", "color:cyan", { field, entry });
-    setEntryData(prev => ({ ...prev, [field]: entry }));
-  };
-
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
   // %%%%%%%%%%%%%%%%%%%%%%\ CREATE FIELDS /%%%%%%%%%%%%%%%%%%%%%%
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
 
-  function createFields(paths, ancestors = []) {
+  function createFields(
+    paths,
+    ancestors = [],
+    source = entryData ?? record,
+    updateFn = setEntryData
+  ) {
     return Object.entries(paths)
       .filter(
         ([path]) =>
@@ -124,28 +122,29 @@ export default function DatabaseDraft({
               const child = [current, obj[path]];
               return [...links, _parent, child];
             },
-            [[parent, entryData ?? record]]
+            // [[parent, entryData ?? record]]
+            [[parent, source]]
           )
         );
 
-        const set = getNestedValue(entryData ?? record);
+        const set = getNestedValue(source);
         const value = set?.[path] ?? field;
 
-        // console.log({ set, value });
+        // parent === "affiliations" && console.log({ set, value });
+        // !"_name lockedAttr".split(" ").includes(parent) &&
+        //   console.log({ path, ancestors, set, value });
 
         // ---------| HANDLE CHANGE |---------
 
         const handleChange = value => {
-          updateForm(
-            parent ?? path,
-            parent
-              ? // ? Object.entries(chain)
-                [...chain.entries()]
+          updateFn(prev => ({
+            ...prev,
+            [parent ?? path]: parent
+              ? [...chain.entries()]
                   .slice(1) // EXCLUDE OVERALL FORM
                   .reduceRight(
                     (val, [child, parent]) => {
                       parent[child] = val;
-
                       return parent;
                     },
                     {
@@ -153,15 +152,16 @@ export default function DatabaseDraft({
                       [path]: value,
                     }
                   )
-              : value
+              : value,
             // CHANGE HAS TO BE AT LOWEST LEVEL, RETURNED VALUE HAS TO BE AT HIGHEST LEVEL
-          );
+          }));
         };
 
         const props = {
           key,
           field: path,
           fieldPath: [...ancestors, path].join("-"),
+          schemaName,
           label,
           required,
           value,
@@ -349,8 +349,9 @@ export default function DatabaseDraft({
                   element = (
                     <ArraySet
                       {...props}
-                      createElements={index =>
-                        createFields(paths, [...ancestors, path, index])
+                      ancestry={[...ancestors, path]}
+                      createNewEntry={(source, update) =>
+                        createFields(paths, [], source, update)
                       }
                       handleChange={handleChange}
                     />
@@ -482,7 +483,7 @@ export default function DatabaseDraft({
 
   return (
     <div id="database-entry" className="flex">
-      <Form className="flex col" autocomplete={false}>
+      <Form className="flex col" autoComplete={false}>
         {/* <h3>{schemaName}</h3> */}
         <div className="form-wrapper flex col">
           {buildForm()}
@@ -498,6 +499,7 @@ export default function DatabaseDraft({
       </Form>
       <FormPreview
         form={entryData}
+        collection={schemaName}
         buttonText={record ? "Update" : "Submit"}
         legend={record ? "Edit" : "New"}
         handleSubmit={e => handleSubmit(e)}

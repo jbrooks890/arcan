@@ -23,6 +23,7 @@
   sans-serif;
   font-size: 18px;
   /* ========== SPECIAL CHARS ========== */
+  --plus: "\254B";
   --cancel: "\254B";
   /* ========== BORDERS ========== */
   --inside: 5px;
@@ -103,8 +104,16 @@ h3 {
   flex-wrap: wrap;
 }
 
+.flex.reverse:not(.col){
+  flex-direction: row-reverse;
+}
+
 .flex.col {
   flex-direction: column;
+}
+
+.flex.col.reverse {
+  flex-direction: column-reverse;
 }
 
 .flex.start {

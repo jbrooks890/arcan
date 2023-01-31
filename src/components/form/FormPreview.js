@@ -1,7 +1,9 @@
 import "../../styles/FormPreview.css";
+import ObjectNest from "./ObjectNest";
 
 const FormPreview = ({
   form,
+  collection,
   id,
   className,
   legend = "Preview",
@@ -54,7 +56,12 @@ const FormPreview = ({
     <fieldset id={id} className={`form-preview flex col ${className ?? ""}`}>
       <legend>{legend}</legend>
       <h3>{heading}</h3>
-      <div className={`wrapper flex col`}>{buildList(form)}</div>
+      {/* <div className={`wrapper flex col`}>{buildList(form)}</div> */}
+      <ObjectNest
+        dataObj={form}
+        collectionName={collection}
+        className="wrapper flex col"
+      />
       <button type="submit" onClick={handleSubmit}>
         {buttonText}
       </button>
