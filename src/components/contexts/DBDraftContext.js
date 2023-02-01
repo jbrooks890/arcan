@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { useDBMaster } from "./DBContext";
 
 const DBDraft = createContext();
@@ -7,10 +7,13 @@ export const useDBDraft = () => useContext(DBDraft);
 export default function DBDraftProvider({ state, children }) {
   const { arcanData } = useDBMaster();
   const { models, dependencies } = arcanData;
+  const { selection } = state;
+
+  // useEffect(() => console.log({ selection }), []);
 
   // :::::::::::::\ GET PATH DATA /:::::::::::::
 
-  const getPathData = (ancestors, collection) => {
+  const getPathData = (ancestors, collection = selection) => {
     // Navigate to the appropriate schema path
     const model = models[collection];
     const set = ancestors.reduce((paths, pathName) => {
@@ -31,6 +34,10 @@ export default function DBDraftProvider({ state, children }) {
 
     return set;
   };
+
+  // ============================================
+  // :::::::::::::::::\ RENDER /:::::::::::::::::
+  // ============================================
 
   return (
     <DBDraft.Provider value={{ ...state, getPathData }}>

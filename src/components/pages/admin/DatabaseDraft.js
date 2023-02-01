@@ -15,16 +15,20 @@ import NumField from "../../form/NumField";
 import ArraySet from "../../form/ArraySet";
 import FormPreview from "../../form/FormPreview";
 import DBDraftProvider from "../../contexts/DBDraftContext";
+import { useDBMaster } from "../../contexts/DBContext";
 
 export default function DatabaseDraft({
   record,
   schemaName,
-  arcanData,
-  updateArcanData,
+  // arcanData,
+  // updateArcanData,
+  updateMaster,
   cancel,
 }) {
   const [entryMaster, setEntryMaster] = useState();
   const [entryData, setEntryData] = useState();
+
+  const { arcanData, updateArcanData } = useDBMaster();
   const { models, dependencies } = arcanData;
   const SCHEMA = models[schemaName];
 
@@ -473,7 +477,7 @@ export default function DatabaseDraft({
     const success = record ? await sendUpdate() : await sendNew();
     if (success) {
       console.log({ success });
-      updateArcanData(success);
+      updateMaster(success);
       cancel();
     }
   };

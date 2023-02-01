@@ -189,14 +189,14 @@ const DatabaseView = () => {
 
   return (
     <DBDraftProvider
-      state={[
+      state={{
         selection,
         setSelection,
         entrySelection,
         setEntrySelection,
         draftMode,
         setDraftMode,
-      ]}
+      }}
     >
       <main id="database-view" className="flex col middle">
         {selection ? (
@@ -265,7 +265,7 @@ const DatabaseView = () => {
                                 ],
                               schemaName: selection,
                               arcanData,
-                              updateArcanData,
+                              updateMaster,
                             })
                           }
                         >
@@ -283,9 +283,6 @@ const DatabaseView = () => {
                     {draftMode ? (
                       <DatabaseDraft {...draftMode} cancel={cancelDraft} />
                     ) : (
-                      // <div id="entry-fields" className="flex col">
-                      //   {buildList(entrySelection)}
-                      // </div>
                       <ObjectNest
                         dataObj={entrySelection}
                         collectionName={selection}

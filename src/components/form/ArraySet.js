@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import ArraySetEntry from "./ArraySetEntry";
 import FieldSet from "./FieldSet";
 import ArraySetNew from "./ArraySetNew";
+import Table from "./Table";
 
 export default function ArraySet({
   field,
@@ -49,6 +50,9 @@ export default function ArraySet({
   // ---------- REMOVE ----------
 
   const removeEntry = i => handleChange();
+
+  // ---------- EDIT ----------
+
   const editEntry = () => {};
 
   // ============================================
@@ -65,16 +69,17 @@ export default function ArraySet({
           add={addEntry}
         />
       }
-      <div className="entries">
+      {/* <div className="entries">
         {cache.map((data, i) => (
           <ArraySetEntry
             key={i}
             obj={data}
             collection={schemaName}
-            ancestry={ancestry}
+            ancestry={[...ancestry, i]}
           />
         ))}
-      </div>
+      </div> */}
+      <Table data={cache} />
     </FieldSet>
   ) : (
     "No entry"

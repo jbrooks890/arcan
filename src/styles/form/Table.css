@@ -1,0 +1,77 @@
+.data-table-wrap {
+  position: relative;
+  padding: .5em;
+  border-radius: var(--inside);
+  border: 1px solid var(--pop);
+  box-sizing: border-box;
+}
+
+.data-table {
+  position: relative;
+  border: 1px solid var(--pop);
+  border-collapse: collapse;
+  border-radius: var(--inside);
+}
+
+.data-table, .data-table > * {
+  box-sizing: border-box;
+}
+
+.data-table tr {
+  position: relative;
+  border-radius: var(--inside);
+}
+
+.data-table thead > tr {
+  background-color: var(--pop);
+  color: var(--dark);
+}
+
+.data-table thead th {
+  font-weight: 300;
+  font-variant: small-caps;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+.data-table tbody tr:not(.data-list){
+  cursor: pointer;
+}
+
+.data-table td:not(.data-list td) {
+  padding: .25em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.data-table td:not(.data-list td):not(tr td:first-of-type){
+  border: 1px solid var(--pop);
+}
+
+.data-table .data-list {
+  overflow: hidden;
+  transition: .1s ease-out;
+}
+
+.data-table .data-list.closed {
+  display: block;
+  opacity: 0;
+  max-height: 0;
+}
+
+.data-table .data-list.open {
+  opacity: 1;
+}
+
+.data-table .data-list > td {
+  padding: .5em;
+}
+
+/* %%%%%%%%%%%%%%%/ HOVER \%%%%%%%%%%%%%%% */
+
+@media(hover:hover){
+  /* .data-table tbody tr:not(.data-list):hover{
+    background-color: var(--pop);
+    opacity: .5;
+  } */
+}

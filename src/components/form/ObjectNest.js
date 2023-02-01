@@ -1,33 +1,12 @@
 import { useDBMaster } from "../contexts/DBContext";
+import { useDBDraft } from "../contexts/DBDraftContext";
 import Accordion from "./Accordion";
 
-export default function ObjectNest({ dataObj, collectionName, id, className }) {
+export default function ObjectNest({ dataObj, id, className, ...props }) {
   const { arcanData, omittedFields } = useDBMaster();
+  const { getPathData } = useDBDraft();
   const { models, dependencies } = arcanData;
 
-  // :::::::::::::\ GET PATH DATA /:::::::::::::
-
-  const getPathData = (ancestors, collection = collectionName) => {
-    // Navigate to the appropriate schema path
-    const model = models[collection];
-    const set = ancestors.reduce((paths, pathName) => {
-      const current = paths[pathName];
-
-      if (current) {
-        if (current.instance) {
-          const { instance } = current;
-          if (instance === "Array")
-            return current.caster || current.schema.paths;
-          if (instance === "Map")
-            return current.$__schemaType.options.type.paths;
-        }
-        return current.options?.type?.paths || current;
-      }
-      return paths;
-    }, model.paths);
-
-    return set;
-  };
   // :::::::::::::\ BUILD LIST /:::::::::::::
 
   const buildList = (obj = {}, ancestors = []) => {
@@ -84,7 +63,7 @@ export default function ObjectNest({ dataObj, collectionName, id, className }) {
 
   return (
     <div id={id} className={className}>
-      {buildList(dataObj)}
+      {buildList(dataObj, props.ancestry)}
     </div>
   );
 }
