@@ -79,7 +79,7 @@ export default function ArraySet({
           />
         ))}
       </div> */}
-      <Table data={cache} />
+      <Table data={cache} ancestry={ancestry} />
     </FieldSet>
   ) : (
     "No entry"
