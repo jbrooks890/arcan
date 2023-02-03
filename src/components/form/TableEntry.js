@@ -16,10 +16,10 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
     const { instance, options } = pathData;
     // console.log({ instance });
     const display = entry[ancestors.pop()];
-    instance === "ObjectID" && console.log({ display });
+    // instance === "ObjectID" && console.log({ display });
     if (instance === "ObjectID") {
       const ref = options?.ref ?? options?.refPath;
-      console.log({ ref });
+      //   console.log({ ref });
       return <span data-oid={display}>{dependencies[ref][display]}</span>;
     }
     return display;
@@ -30,7 +30,7 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
       <tr onClick={toggle}>
         <td>{index}</td>
         {headers.map((data, i) => {
-          console.log({ data });
+          //   console.log({ data });
           return <td key={i}>{renderEntry([...ancestry, data])}</td>;
         })}
       </tr>

@@ -69,17 +69,11 @@ export default function ArraySet({
           add={addEntry}
         />
       }
-      {/* <div className="entries">
-        {cache.map((data, i) => (
-          <ArraySetEntry
-            key={i}
-            obj={data}
-            collection={schemaName}
-            ancestry={[...ancestry, i]}
-          />
-        ))}
-      </div> */}
-      <Table data={cache} ancestry={ancestry} />
+      {cache.length ? (
+        <Table data={cache} ancestry={ancestry} />
+      ) : (
+        <span className="fade">No entries</span>
+      )}
     </FieldSet>
   ) : (
     "No entry"

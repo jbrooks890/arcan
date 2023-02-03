@@ -2,7 +2,7 @@ import "../../styles/form/Table.css";
 import { useDBMaster } from "../contexts/DBContext";
 import TableEntry from "./TableEntry";
 
-export default function Table({ data, id, className, ancestry }) {
+export default function Table({ data = {}, id, className, ancestry = [] }) {
   console.log({ data });
   const { omittedFields } = useDBMaster();
 

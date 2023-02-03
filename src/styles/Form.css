@@ -1,4 +1,8 @@
 
+button {
+  outline: none;
+}
+
 input {
   appearance: none;
   display: block;

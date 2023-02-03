@@ -1,18 +1,29 @@
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import "../../styles/form/FieldSet.css";
 
-const FieldSet = ({ field, label, children, id, className, required }) => {
-  // console.log(fields);
-  // useEffect(() => console.log({ required }), []);
+const FieldSet = ({
+  field,
+  label,
+  children,
+  id,
+  className,
+  required,
+  open,
+}) => {
+  const fieldset = useRef();
+  const legend = useRef();
 
   return (
     <fieldset
-      id={id}
-      className={`${field}-section group wrapper flex ${
-        className ? className : ""
-      }`}
+      ref={fieldset}
+      id={id ?? ""}
+      className={`${className ? className : ""} ${
+        field ? `${field}-section` : ""
+      } group wrapper flex ${open ? "open" : "closed"}`}
     >
-      <legend className={required ? "required" : ""}>{label}</legend>
+      <legend ref={legend} className={required ? "required" : ""}>
+        {label}
+      </legend>
       {children}
     </fieldset>
   );

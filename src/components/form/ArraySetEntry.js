@@ -1,7 +1,9 @@
+import { useState } from "react";
 import ObjectNest from "./ObjectNest";
-import Table from "./Table";
 
 const ArraySetEntry = ({ obj, ancestry }) => {
+  const [expanded, setExpanded] = useState(false);
+
   // console.log({ obj });
   return (
     <div className={`array-set-entry flex col`}>
