@@ -1,3 +1,17 @@
+/* .array-set-new.closed {
+  background-color: var(--pop);
+  color: var(--dark);
+} */
+
+.array-set-new.closed button {
+  margin: 0 !important;
+  font-size: 1rem;
+  font-variant: small-caps;
+  font-weight: 300 !important;
+  text-transform: lowercase;
+  transition: .1s ease-out;
+}
+
 .array-set-new legend{
   text-align: center;
 }
@@ -42,8 +56,16 @@
   content: ": ";
 }
 
+/* %%%%%%%%%%%%%%%/ HOVER \%%%%%%%%%%%%%%% */
+
 @media(hover:hover){
-  .add-btn:hover {
+  .array-set-new.closed:hover {
+      background-color: var(--pop);
+      border-style: solid;
+      color: var(--dark);
+  }
+
+  .add-btn:not(.closed .add-btn):hover {
       position: relative;
       padding: .5em 1em;
       background-color: var(--pop);

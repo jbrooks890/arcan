@@ -8,10 +8,16 @@ const ArraySetNew = ({ elements, addBtnTxt = "add", add }) => {
 
   return (
     <FieldSet label="New" className={`array-set-new col`} open={expanded}>
-      {elements}
-      <button className="add-btn flex center" onClick={add}>
-        {addBtnTxt}
-      </button>
+      {expanded ? (
+        <>
+          {elements}
+          <button className="add-btn flex center" onClick={add}>
+            {addBtnTxt}
+          </button>
+        </>
+      ) : (
+        <button onClick={toggle}>Add New</button>
+      )}
     </FieldSet>
   );
 };

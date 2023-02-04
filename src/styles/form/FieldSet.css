@@ -13,3 +13,10 @@
 .custom-form fieldset.wrapper>*:not(legend) {
   margin-bottom: .5em;
 }
+
+.custom-form fieldset.closed > legend {
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0;
+}
