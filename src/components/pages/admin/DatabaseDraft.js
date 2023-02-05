@@ -29,7 +29,7 @@ export default function DatabaseDraft({
   const [entryData, setEntryData] = useState();
 
   const { arcanData, updateArcanData } = useDBMaster();
-  const { models, dependencies } = arcanData;
+  const { models, references } = arcanData;
   const SCHEMA = models[schemaName];
 
   useEffect(() => entryMaster && console.log({ entryMaster }), [entryMaster]);
@@ -194,7 +194,7 @@ export default function DatabaseDraft({
           const reference = refPath
             ? set?.[refPath] || paths[refPath].enumValues[0]
             : ref;
-          const dependency = dependencies[reference];
+          const dependency = references[reference];
           // console.log({ path, dependency });
 
           return (

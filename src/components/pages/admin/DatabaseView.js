@@ -9,20 +9,26 @@ import DatabaseDraft from "./DatabaseDraft";
 import DBContextProvider, { useDBMaster } from "../../contexts/DBContext";
 import DBDraftProvider from "../../contexts/DBDraftContext";
 import ObjectNest from "../../form/ObjectNest";
+import Table from "../../form/Table";
 
 const DatabaseView = () => {
-  const { arcanData, setArcanData, updateArcanData } = useDBMaster();
+  const { arcanData, setArcanData, updateArcanData, omittedFields } =
+    useDBMaster();
   const [selection, setSelection] = useState(Object.keys(arcanData?.models)[0]);
   const [entrySelection, setEntrySelection] = useState();
   const [draftMode, setDraftMode] = useState(false);
 
-  useEffect(() => arcanData && console.log({ arcanData }), [arcanData]);
+  const { models, references, collections } = arcanData;
+  const collection = collections[selection];
+
+  useEffect(() => console.log({ arcanData }), [arcanData]);
+  // useEffect(() => arcanData && console.log({ collection }), [selection]);
 
   // :::::::::::::\ GET PATH DATA /:::::::::::::
 
   const getPathData = (ancestors, collection = selection) => {
     // Navigate to the appropriate schema path
-    const model = arcanData.models[collection];
+    const model = models[collection];
 
     // SET=
     const set = ancestors.reduce((paths, pathName) => {
@@ -69,7 +75,7 @@ const DatabaseView = () => {
             // console.log({ ref, refPath });
 
             return instance === "ObjectID"
-              ? arcanData.dependencies[reference][value]
+              ? references[reference][value]
               : String(value);
           };
 
@@ -140,9 +146,9 @@ const DatabaseView = () => {
 
     //   return {
     //     ...prev,
-    //     dependencies: {
-    //       ...prev.dependencies,
-    //       [collection]: { ...prev.dependencies[collection], [_id]: NAME },
+    //     references: {
+    //       ...prev.references,
+    //       [collection]: { ...prev.references[collection], [_id]: NAME },
     //     },
     //   };
     // });
@@ -167,10 +173,10 @@ const DatabaseView = () => {
       if (response.status === 201) {
         setArcanData(prev => ({
           ...prev,
-          dependencies: {
-            ...prev.dependencies,
+          references: {
+            ...prev.references,
             [collection]: Object.fromEntries(
-              Object.entries(prev.dependencies[collection]).filter(
+              Object.entries(prev.references[collection]).filter(
                 ([entryID]) => entryID !== id
               )
             ),
@@ -205,7 +211,7 @@ const DatabaseView = () => {
             <div id="collection-select" className="fieldset flex middle">
               <div className="legend">Collection</div>
               <Dropdown
-                options={Object.keys(arcanData.models)}
+                options={Object.keys(models)}
                 value={selection}
                 handleChange={selectCollection}
               />
@@ -215,10 +221,7 @@ const DatabaseView = () => {
             <div id="collection-data" className="fieldset flex middle">
               <div className="legend">Collection Data</div>
               <div className="data-cache flex middle">
-                <div>
-                  Entries:{" "}
-                  {Object.keys(arcanData.dependencies[selection]).length}
-                </div>
+                <div>Entries: {Object.keys(references[selection]).length}</div>
                 <div>Filter</div>
               </div>
               <button className="add-new flex middle" onClick={addNew}>
@@ -229,8 +232,8 @@ const DatabaseView = () => {
             {/* ------- ENTRY MENU ------- */}
             <Menu
               label="Entries"
-              options={Object.keys(arcanData.dependencies[selection])}
-              display={arcanData.dependencies[selection]}
+              options={Object.keys(references[selection])}
+              display={references[selection]}
               handleChange={entry => fetchEntry(entry)}
               id="collection-entry-list"
             />
@@ -245,9 +248,8 @@ const DatabaseView = () => {
                         id="entry-name"
                         data-entry-id={entrySelection?._id ?? undefined}
                       >
-                        {arcanData.dependencies[selection][
-                          entrySelection?._id
-                        ] ?? `New ${selection}`}
+                        {references[selection][entrySelection?._id] ??
+                          `New ${selection}`}
                       </h3>
                       {entrySelection?._id && (
                         <h4 id="entry-id">{entrySelection?._id}</h4>
@@ -260,9 +262,7 @@ const DatabaseView = () => {
                             setDraftMode({
                               record: entrySelection,
                               recordName:
-                                arcanData.dependencies[selection][
-                                  entrySelection._id
-                                ],
+                                references[selection][entrySelection._id],
                               schemaName: selection,
                               arcanData,
                               updateMaster,
@@ -293,7 +293,16 @@ const DatabaseView = () => {
                   </div>
                 </>
               ) : (
-                <span className="fade">No selection</span>
+                // <span className="fade">No selection</span>
+                <Table
+                  data={Object.fromEntries(
+                    collection.map(entry => {
+                      const { name, ...others } = entry;
+                      return [name, others];
+                    })
+                  )}
+                  omitted={omittedFields}
+                />
               )}
             </div>
           </div>

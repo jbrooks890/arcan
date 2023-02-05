@@ -7,42 +7,50 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
   const dataList = useRef();
   const { getPathData } = useDBDraft();
   const { arcanData } = useDBMaster();
-  const { dependencies } = arcanData;
+  const { references } = arcanData;
+
+  // console.log({ entry });
 
   const toggle = () => setOpen(prev => !prev);
 
   const renderEntry = ancestors => {
     const pathData = getPathData(ancestors);
     const { instance, options } = pathData;
-    // console.log({ instance });
     const display = entry[ancestors.pop()];
-    // instance === "ObjectID" && console.log({ display });
+
+    // instance === "ObjectID" && console.log({ display, instance });
+
+    let render = display;
+
+    if (typeof display === "object") render = Object.values(display).join(", ");
+    if (Array.isArray(display)) render = `[ ${display.length} ]`;
+
     if (instance === "ObjectID") {
       const ref = options?.ref ?? options?.refPath;
-      //   console.log({ ref });
-      return <span data-oid={display}>{dependencies[ref][display]}</span>;
+      console.log({ ref, [display]: references[ref][display] });
+
+      return <span data-oid={display}>{references[ref][display]}</span>;
     }
-    return display;
+    return render;
   };
 
   return (
     <>
-      <tr onClick={toggle}>
-        <td>{index}</td>
-        {headers.map((data, i) => {
-          //   console.log({ data });
-          return <td key={i}>{renderEntry([...ancestry, data])}</td>;
-        })}
-      </tr>
-      <tr
+      {/* <tr onClick={toggle}></tr> */}
+      <div className="entry-index">{index}</div>
+      {headers.map((data, i) => {
+        //   console.log({ data });
+        return <div key={i}>{renderEntry([...ancestry, data])}</div>;
+      })}
+      <div
         ref={dataList}
         className={`data-list ${open ? "open" : "closed"}`}
         style={{
           maxHeight: open ? dataList.current.scrollHeight + "px" : null,
         }}
       >
-        <td colSpan={headers.length + 1}>Test</td>
-      </tr>
+        Test
+      </div>
     </>
   );
 }

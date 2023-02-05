@@ -14,7 +14,7 @@ export default function DBContextProvider({ state, children }) {
     const response = await axios.get("/models");
     // console.log("DATA:", response.data);
 
-    let [models, dependencies] = Object.entries(response.data)
+    let [models, references, collections] = Object.entries(response.data)
       .map(([name, { schema, collection }]) => {
         return [
           [name, schema],
@@ -22,23 +22,29 @@ export default function DBContextProvider({ state, children }) {
             name,
             Object.fromEntries(collection.map(({ _id, name }) => [_id, name])),
           ],
+          [name, collection],
         ];
       })
       .reduce(
-        ([$schemata, $collections], [schema, collection]) => {
-          // console.log({ collection });
+        (
+          [$schemata, $references, $collections],
+          [schema, reference, collection]
+        ) => {
+          // console.log({ reference });
           return [
             [...$schemata, schema],
+            [...$references, reference],
             [...$collections, collection],
           ];
         },
-        [[], []]
+        [[], [], []]
       );
 
     models = Object.fromEntries(models);
-    dependencies = Object.fromEntries(dependencies);
+    references = Object.fromEntries(references);
+    collections = Object.fromEntries(collections);
 
-    setArcanData({ models, dependencies });
+    setArcanData({ models, references, collections });
   }
 
   useEffect(() => fetchModels(), []);
@@ -69,9 +75,9 @@ export default function DBContextProvider({ state, children }) {
 
       return {
         ...prev,
-        dependencies: {
-          ...prev.dependencies,
-          [collection]: { ...prev.dependencies[collection], [_id]: NAME },
+        references: {
+          ...prev.references,
+          [collection]: { ...prev.references[collection], [_id]: NAME },
         },
       };
     });

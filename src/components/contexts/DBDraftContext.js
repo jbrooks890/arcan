@@ -6,7 +6,7 @@ export const useDBDraft = () => useContext(DBDraft);
 
 export default function DBDraftProvider({ state, children }) {
   const { arcanData } = useDBMaster();
-  const { models, dependencies } = arcanData;
+  const { models } = arcanData;
   const { selection } = state;
 
   // useEffect(() => console.log({ selection }), []);

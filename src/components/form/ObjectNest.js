@@ -5,7 +5,7 @@ import Accordion from "./Accordion";
 export default function ObjectNest({ dataObj, id, className, ...props }) {
   const { arcanData, omittedFields } = useDBMaster();
   const { getPathData } = useDBDraft();
-  const { models, dependencies } = arcanData;
+  const { models, references } = arcanData;
 
   // :::::::::::::\ BUILD LIST /:::::::::::::
 
@@ -29,7 +29,7 @@ export default function ObjectNest({ dataObj, id, className, ...props }) {
             return value === null || value === undefined ? (
               <span className="fade">{"no entry"}</span>
             ) : instance === "ObjectID" ? (
-              dependencies[options.ref ?? dataObj[options.refPath]][value]
+              references[options.ref ?? dataObj[options.refPath]][value]
             ) : (
               String(value)
             );

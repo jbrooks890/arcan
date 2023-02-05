@@ -1,8 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import DBContextProvider from "../contexts/DBContext";
 import About from "../pages/About";
-import AddNew from "../pages/admin/AddNew";
-import DatabaseDraft from "../pages/admin/DatabaseDraft";
 import DatabaseView from "../pages/admin/DatabaseView";
 import Sandbox from "../pages/admin/Sandbox";
 import Gallery from "../pages/Gallery";

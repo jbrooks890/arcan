@@ -4,6 +4,7 @@ import ArraySetEntry from "./ArraySetEntry";
 import FieldSet from "./FieldSet";
 import ArraySetNew from "./ArraySetNew";
 import Table from "./Table";
+import { useDBMaster } from "../contexts/DBContext";
 
 export default function ArraySet({
   field,
@@ -22,6 +23,7 @@ export default function ArraySet({
     () => createNewEntry(entryDraft, setEntryDraft),
     [entryDraft]
   );
+  const { omittedFields } = useDBMaster();
   // const newEntry = createNewEntry(entryDraft, setEntryDraft);
 
   useEffect(
@@ -70,7 +72,7 @@ export default function ArraySet({
         />
       }
       {cache.length ? (
-        <Table data={cache} ancestry={ancestry} />
+        <Table data={cache} omitted={omittedFields} ancestry={ancestry} />
       ) : (
         <span className="fade">No entries</span>
       )}
