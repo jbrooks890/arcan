@@ -17,17 +17,18 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
     const pathData = getPathData(ancestors);
     const { instance, options } = pathData;
     const display = entry[ancestors.pop()];
+    const isArray = Array.isArray(display);
 
     // instance === "ObjectID" && console.log({ display, instance });
 
     let render = display;
 
     if (typeof display === "object") render = Object.values(display).join(", ");
-    if (Array.isArray(display)) render = `[ ${display.length} ]`;
+    if (isArray) render = `[ ${display.length} ]`;
 
     if (instance === "ObjectID") {
       const ref = options?.ref ?? options?.refPath;
-      console.log({ ref, [display]: references[ref][display] });
+      // console.log({ ref, [display]: references[ref][display] });
 
       return <span data-oid={display}>{references[ref][display]}</span>;
     }
@@ -36,21 +37,23 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
 
   return (
     <>
-      {/* <tr onClick={toggle}></tr> */}
-      <div className="entry-index">{index}</div>
-      {headers.map((data, i) => {
-        //   console.log({ data });
-        return <div key={i}>{renderEntry([...ancestry, data])}</div>;
-      })}
-      <div
+      <tr onClick={toggle}>
+        {<td className="entry-index">{index}</td>}
+        {headers.map((data, i) => {
+          //   console.log({ data });
+          return <td key={i}>{renderEntry([...ancestry, data])}</td>;
+        })}
+      </tr>
+
+      <tr
         ref={dataList}
         className={`data-list ${open ? "open" : "closed"}`}
         style={{
           maxHeight: open ? dataList.current.scrollHeight + "px" : null,
         }}
       >
-        Test
-      </div>
+        <td colSpan={0}>Test</td>
+      </tr>
     </>
   );
 }

@@ -19,26 +19,26 @@ export default function Table({
   // console.log({ isArray, headers });
 
   return (
-    <div
+    <table
       id={id}
-      className={`data-table grid ${className} ${isArray ? "array" : ""}`}
-      style={{
-        ["--columns"]: isArray ? headers.length : headers.length + 1,
-        ["--rows"]: Object.values(data).length * 2 - 1,
-      }}
+      className={`data-table ${className} ${isArray ? "array" : ""}`}
     >
-      <div className="corner" />
-      {headers.map((col, i) => (
-        <div key={i} className="header">
-          {col}
-        </div>
-      ))}
-      {Object.entries(data).map(([index, entry], i) => (
-        <TableEntry
-          key={i}
-          {...{ index, headers, entry, ancestry: [...ancestry, i] }}
-        />
-      ))}
-    </div>
+      <thead>
+        <th className="corner" />
+        {headers.map((col, i) => (
+          <th key={i} className="header">
+            {col}
+          </th>
+        ))}
+      </thead>
+      <tbody>
+        {Object.entries(data).map(([index, entry], i) => (
+          <TableEntry
+            key={i}
+            {...{ index, headers, entry, ancestry: [...ancestry, i] }}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 }

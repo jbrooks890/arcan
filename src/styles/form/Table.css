@@ -82,10 +82,10 @@
 } */
 
 .data-table .data-list {
-  grid-column: 2/-1;
+  /* grid-column: 2/-1; */
   overflow: hidden;
   transition: .1s ease-out;
-  border: 1px solid coral;
+  /* border: 1px solid coral; */
 }
 
 .data-table .data-list.closed {

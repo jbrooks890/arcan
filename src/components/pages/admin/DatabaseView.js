@@ -24,6 +24,8 @@ const DatabaseView = () => {
   useEffect(() => console.log({ arcanData }), [arcanData]);
   // useEffect(() => arcanData && console.log({ collection }), [selection]);
 
+  console.log({ entrySelection });
+
   // :::::::::::::\ GET PATH DATA /:::::::::::::
 
   const getPathData = (ancestors, collection = selection) => {
@@ -235,6 +237,7 @@ const DatabaseView = () => {
               options={Object.keys(references[selection])}
               display={references[selection]}
               handleChange={entry => fetchEntry(entry)}
+              value={entrySelection?._id}
               id="collection-entry-list"
             />
 
