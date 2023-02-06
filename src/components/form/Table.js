@@ -24,12 +24,14 @@ export default function Table({
       className={`data-table ${className} ${isArray ? "array" : ""}`}
     >
       <thead>
-        <th className="corner" />
-        {headers.map((col, i) => (
-          <th key={i} className="header">
-            {col}
-          </th>
-        ))}
+        <tr>
+          <th className="corner" />
+          {headers.map((col, i) => (
+            <th key={i} className="header">
+              {col}
+            </th>
+          ))}
+        </tr>
       </thead>
       <tbody>
         {Object.entries(data).map(([index, entry], i) => (

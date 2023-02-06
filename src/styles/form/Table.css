@@ -39,6 +39,14 @@
   /* border: 1px solid orange; */
 }
 
+.data-table.array tr:not(.data-list) > *:first-child {
+  display: none;
+}
+
+.data-table.array tr:not(.data-list) * {
+  padding-right: .5em;
+}
+
 .data-table tr {
   position: relative;
   border-radius: var(--inside);
