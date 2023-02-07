@@ -8,25 +8,62 @@
 
 .data-table {
   position: relative;
-  /* display: block; */
+  display: block;
   margin: 0;
+  padding-bottom: 1em;
   /* border: 1px solid red; */
   border-collapse: collapse;
   border-radius: var(--inside);
-  /* overflow: hidden; */
-  /* width: 100%;
-  max-width: 100%; */
+  overflow-x: scroll;
+  width: 100%;
+  max-width: 100%;
 }
 
-.data-table.grid {
+.data-table::-webkit-scrollbar {
+  cursor: pointer;
+  display: block;
+  /* background-color: var(--pop); */
+  height: 1ch;
+  /* border-radius: 100px; */
+}
+
+.data-table::-webkit-scrollbar-thumb {
+  background-color: var(--pop);
+  border-radius: 100px;
+}
+
+/* .data-table.grid {
   grid-template-columns: repeat(var(--columns), auto);
   grid-template-rows: repeat(var(--rows), 1fr);
   gap: 2px;
-}
+} */
 
 .data-table > * {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.data-table tr {
+  position: relative;
+}
+
+.data-table tr:not(.data-list) > *{
+  max-width: 20ch;
+  overflow: hidden;
+}
+
+/* .data-table tbody {
+  border-left: 1px solid var(--pop);
+  border-top: 1px solid var(--pop);
+} */
+
+.data-table tbody tr:not(.data-list) {
+  height: 2em;
+}
+
+.data-table tr :not(.entry-index) {
+  padding-inline: .5em;
+  text-align: center;
 }
 
 .flex .data-table {
@@ -43,27 +80,27 @@
   display: none;
 }
 
-.data-table.array tr:not(.data-list) * {
-  padding-right: .5em;
-}
+/* .data-table.array tr:not(.data-list) * {
+  padding-right: 1em;
+} */
 
 .data-table tr {
   position: relative;
   border-radius: var(--inside);
 }
 
-.data-table tr:not(.data-list):not(:nth-last-of-type(2)){
+/* .data-table tr:not(.data-list):not(:nth-last-of-type(2)){
   border-bottom: 1px solid var(--pop);
-}
+} */
 
 /* .data-table thead > tr {
   background-color: var(--pop);
   color: var(--dark);
 } */
 
-.data-table thead>tr {
+/* .data-table thead>tr {
   border-bottom: 1px dotted var(--pop);
-}
+} */
 
 .data-table .header,
 .data-table .entry-index
@@ -71,7 +108,6 @@
   color: var(--mint);
   font-weight: 400;
   font-variant: small-caps;
-  /* text-align: center; */
   text-transform: lowercase;
 }
 
@@ -108,13 +144,21 @@
 
 .data-table .data-list > td {
   padding: .5em;
+  /* border: 1px solid red; */
+  /* width: 100%; */
 }
 
 /* %%%%%%%%%%%%%%%/ HOVER \%%%%%%%%%%%%%%% */
 
 @media(hover:hover){
-  /* .data-table tbody tr:not(.data-list):hover{
+  /* tbody tr:hover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
     background-color: var(--pop);
-    opacity: .5;
+    opacity: .1;
   } */
+  tbody tr:not(.data-list):hover {
+    background-color: hsla(0,0%,100%,0.1);
+  }
 }

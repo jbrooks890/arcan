@@ -191,6 +191,12 @@ const DatabaseView = () => {
     }
   };
 
+  // :::::::::::::\ HOME BUTTON /:::::::::::::
+  const toCollectionHome = () => {
+    cancelDraft();
+    setEntrySelection(undefined);
+  };
+
   // ============================================
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
@@ -224,7 +230,10 @@ const DatabaseView = () => {
               <div className="legend">Collection Data</div>
               <div className="data-cache flex middle">
                 <div>Entries: {Object.keys(references[selection]).length}</div>
-                <div>Filter</div>
+                <button onClick={entrySelection && toCollectionHome}>
+                  Home
+                </button>
+                <button>Filter</button>
               </div>
               <button className="add-new flex middle" onClick={addNew}>
                 New
@@ -275,7 +284,7 @@ const DatabaseView = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => deleteEntry(entrySelection?._id)}
+                        // onClick={() => deleteEntry(entrySelection?._id)}
                         >
                           Delete
                         </button>
@@ -295,17 +304,18 @@ const DatabaseView = () => {
                     )}
                   </div>
                 </>
-              ) : (
-                // <span className="fade">No selection</span>
+              ) : Object.keys(collection).length ? (
                 <Table
                   data={Object.fromEntries(
-                    collection.map(entry => {
+                    collection?.map(entry => {
                       const { name, ...others } = entry;
                       return [name, others];
                     })
                   )}
                   omitted={omittedFields}
                 />
+              ) : (
+                <span className="fade">No entries</span>
               )}
             </div>
           </div>

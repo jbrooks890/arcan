@@ -23,7 +23,10 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
 
     let render = display;
 
-    if (typeof display === "object") render = Object.values(display).join(", ");
+    if (typeof display === "object") {
+      render = Object.values(display).filter(Boolean).join(", ");
+      console.log({ display, render });
+    }
     if (isArray) render = `[ ${display.length} ]`;
 
     if (instance === "ObjectID") {
@@ -32,7 +35,8 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
 
       return <span data-oid={display}>{references[ref][display]}</span>;
     }
-    return render;
+
+    return String(render);
   };
 
   return (
@@ -52,7 +56,7 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
           maxHeight: open ? dataList.current.scrollHeight + "px" : null,
         }}
       >
-        <td colSpan={0}>Test</td>
+        <td colSpan={headers.length}>Test</td>
       </tr>
     </>
   );
