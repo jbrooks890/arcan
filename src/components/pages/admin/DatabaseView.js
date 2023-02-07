@@ -10,6 +10,7 @@ import DBContextProvider, { useDBMaster } from "../../contexts/DBContext";
 import DBDraftProvider from "../../contexts/DBDraftContext";
 import ObjectNest from "../../form/ObjectNest";
 import Table from "../../form/Table";
+import Prompt from "../../frags/Prompt";
 
 const DatabaseView = () => {
   const { arcanData, setArcanData, updateArcanData, omittedFields } =
@@ -169,7 +170,10 @@ const DatabaseView = () => {
   };
 
   // :::::::::::::\ DELETE ENTRY /:::::::::::::
-  const deleteEntry = async (id, collection = selection) => {
+  const deleteEntry = async (
+    id = entrySelection?._id,
+    collection = selection
+  ) => {
     try {
       const response = await axios.delete(`/${collection}/${id}`);
       if (response.status === 201) {
@@ -244,6 +248,7 @@ const DatabaseView = () => {
             <Menu
               label="Entries"
               options={Object.keys(references[selection])}
+              className="col"
               display={references[selection]}
               handleChange={entry => fetchEntry(entry)}
               value={entrySelection?._id}
@@ -283,11 +288,16 @@ const DatabaseView = () => {
                         >
                           Edit
                         </button>
-                        <button
-                        // onClick={() => deleteEntry(entrySelection?._id)}
-                        >
-                          Delete
-                        </button>
+                        <Prompt
+                          btnTxt="Delete"
+                          message={
+                            <>
+                              Are you sure you want to delete{" "}
+                              <strong>{entrySelection.name}</strong>?
+                            </>
+                          }
+                          options={{ Delete: deleteEntry }}
+                        />
                       </div>
                     )}
                   </div>

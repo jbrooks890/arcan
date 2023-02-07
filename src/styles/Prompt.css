@@ -1,0 +1,24 @@
+.flex .prompt.wrapper {
+  align-self: center;
+}
+
+.prompt.wrapper {
+  margin: 2rem;
+  margin-bottom: 10rem;
+  padding: 1rem 2rem;
+  background-color: var(--dark);
+  color: var(--pop);
+  border: 2px solid var(--pop);
+  border-radius: var(--outside);
+  transition: .1s ease-out;
+}
+
+.prompt-query {
+  font-size: larger;
+}
+
+.prompt .select-menu {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+}

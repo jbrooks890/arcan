@@ -16,7 +16,7 @@
 .select-menu input[type="radio"]+label {
   cursor: pointer;
   border: 2px solid var(--green);
-  margin-bottom: .5em;
+  /* margin-bottom: .5em; */
   padding: .5em;
   font-family: var(--keyFont2);
   font-size: smaller;
@@ -26,6 +26,18 @@
   box-sizing: border-box;
   border-radius: var(--inside);
   transition: .1s ease-out;
+}
+
+.select-menu.flex:not(.col) {
+  justify-content: center;
+}
+
+.select-menu.flex:not(.col) input[type="radio"]+label:not(:last-of-type) {
+  margin-right: .5em;
+}
+
+.select-menu.flex.col input[type="radio"]+label {
+  margin-bottom: .5em;
 }
 
 .select-menu input[type="radio"]:checked+label {

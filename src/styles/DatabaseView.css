@@ -70,7 +70,7 @@
 }
 
 #collection-data .add-new::before {
-  content: var(--cancel);
+  content: var(--plus);
   margin-right: .5em;
 }
 

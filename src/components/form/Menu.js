@@ -5,7 +5,7 @@ import Search from "./Search";
 const Menu = ({
   options,
   display,
-  label = "Select",
+  label,
   id,
   className,
   field = "selectMenu",
@@ -18,9 +18,9 @@ const Menu = ({
   return (
     <fieldset
       id={id}
-      className={`select-menu ${className ? className : ""} flex col`}
+      className={`select-menu ${className ? className : ""} flex`}
     >
-      <legend>{label}</legend>
+      {label && <legend>{label}</legend>}
       {searchable && <Search />}
       {options.map((option, i) => (
         <Fragment key={i}>
@@ -32,7 +32,10 @@ const Menu = ({
             checked={option === value}
             onChange={() => handleChange(option)}
           />
-          <label htmlFor={option}>{display ? display[option] : option}</label>
+
+          <label htmlFor={option} tabIndex={0}>
+            {display ? display[option] : option}
+          </label>
         </Fragment>
       ))}
     </fieldset>

@@ -1,0 +1,48 @@
+.modal-wrapper {
+  position: fixed;
+  inset: 0;
+  /* border: 1px solid red; */
+  box-sizing: border-box;
+  z-index: 10000 ;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  transition: .1s ease-out;
+  z-index: 9999;
+}
+
+.modal-overlay.screen {
+  background-color: hsla(0, 0%, 0%, .1);
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  width: 100%;
+  height: 100%;
+  /* border: 1px solid lime; */
+}
+
+.modal-close {
+  --size: 1em;
+  --offset: 1em;
+  cursor: pointer;
+  position: absolute;
+  top: var(--offset);
+  right: var(--offset);
+  width: var(--size);
+  height: var(--size);
+  font-size: small;
+  font-weight: 600;
+  /* border: 1px solid blue; */
+}
+
+.modal-close::before{
+  content: var(--cancel);
+  color: var(--pop);
+}
+
+/* %%%%%%%%%%%%%%%/ HOVER \%%%%%%%%%%%%%%% */
+
+@media(hover:hover) {}

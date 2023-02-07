@@ -37,7 +37,7 @@
 }
 
 .word-bank .new-entry-wrap button::before {
-  content: var(--cancel);
+  content: var(--plus);
   font-size: smaller;
   font-weight: bold;
 }
