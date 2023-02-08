@@ -8,7 +8,7 @@ const FieldSet = ({
   id,
   className,
   required,
-  open,
+  open = true,
 }) => {
   const fieldset = useRef();
   const legend = useRef();
