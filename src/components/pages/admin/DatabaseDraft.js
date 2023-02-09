@@ -199,7 +199,7 @@ export default function DatabaseDraft({
 
           return (
             <ChoiceBox
-              {...props}
+              {...{ ...props, value: value?._id ?? undefined }}
               single={single}
               options={Object.keys(dependency)}
               display={dependency}
@@ -374,6 +374,7 @@ export default function DatabaseDraft({
 
                 break;
               case "ObjectID":
+                // console.log({ data });
                 element = createObjIdBox(options);
                 break;
               default:

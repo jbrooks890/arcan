@@ -17,7 +17,7 @@ export default function Prompt({
 
     if (options.size === 1 && cancelable) options.set("cancel", close);
 
-    console.log({ options });
+    // console.log({ options });
 
     const exec = option => {
       options.get(option)();

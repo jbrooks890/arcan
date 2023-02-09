@@ -12,7 +12,7 @@ export default function useModal() {
   const close = () => isShowing && setIsShowing(false);
 
   const modal = (content, className, auto) => {
-    console.log({ content });
+    // console.log({ content });
     // return <Modal {...{ isShowing: true, className, auto }}>{content}</Modal>;
     return (
       <Modal

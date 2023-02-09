@@ -25,7 +25,7 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
 
     if (typeof display === "object") {
       render = Object.values(display).filter(Boolean).join(", ");
-      console.log({ display, render });
+      // console.log({ display, render });
     }
     if (isArray) render = `[ ${display.length} ]`;
 

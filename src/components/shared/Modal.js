@@ -16,7 +16,7 @@ export default function Modal({
   const wrapper = useRef();
 
   // console.log({ isShowing });
-  console.log({ children });
+  // console.log({ children });
   useEffect(() => isShowing && setActive(true), []);
 
   const closeModal = e => {
