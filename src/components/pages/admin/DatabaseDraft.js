@@ -195,11 +195,21 @@ export default function DatabaseDraft({
             ? set?.[refPath] || paths[refPath].enumValues[0]
             : ref;
           const dependency = references[reference];
+
+          record && console.log({ record });
+          // value = record?.populated(path);
           // console.log({ path, dependency });
+
+          console.log(path, { value, field });
 
           return (
             <ChoiceBox
-              {...{ ...props, value: value?._id ?? undefined }}
+              {...{
+                ...props,
+                value: single
+                  ? value?._id ?? value
+                  : value?.map(entry => entry._id ?? entry),
+              }}
               single={single}
               options={Object.keys(dependency)}
               display={dependency}

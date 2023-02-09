@@ -14,6 +14,7 @@ const ArraySetNew = ({ elements, addBtnTxt = "add", add }) => {
           <button className="add-btn flex center" onClick={add}>
             {addBtnTxt}
           </button>
+          <button onClick={() => setExpanded(false)}>cancel</button>
         </>
       ) : (
         <button onClick={toggle}>Add New</button>
