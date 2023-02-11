@@ -137,6 +137,10 @@ h3 {
 /* ::::::::::\ OTHER /:::::::::: */
 
 .fade {
-  font-style: italic;
+  /* font-style: italic; */
+  display: block;
+  text-align: c;
+  text-transform: lowercase;
+  font-variant: small-caps;
   opacity: .5;
 }

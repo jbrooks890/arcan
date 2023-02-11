@@ -1,5 +1,3 @@
-const ButtonCache = ({ children }) => {
-  return <div className="buttonCache flex middle">{children}</div>;
-};
-
-export default ButtonCache;
+export default function ButtonCache({ children }) {
+  return <div className="button-cache flex middle">{children}</div>;
+}

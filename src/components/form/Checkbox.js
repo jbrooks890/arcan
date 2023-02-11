@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
-// import "../../../styles/Checkbox.css";
+import "../../styles/form/Checkbox.css";
 
-export default function Checkbox({ id, classList, label, onChange, def }) {
+export default function Checkbox({ id, className, label, onChange, def }) {
   const input = useRef();
   const wrapper = useRef();
 
   return (
-    <label className={`custom-checkbox ${classList.join(" ")}`} htmlFor={id}>
+    <label className={`custom-checkbox ${className ?? ""}`} htmlFor={id}>
       <input
         ref={input}
         type="checkbox"

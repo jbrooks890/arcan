@@ -5,9 +5,12 @@ import FieldSet from "./FieldSet";
 import ArraySetNew from "./ArraySetNew";
 import Table from "./Table";
 import { useDBMaster } from "../contexts/DBContext";
+import TableEntry from "./TableEntry";
+import useTableElement from "../../hooks/useTableElement";
 
 export default function ArraySet({
   field,
+  fieldPath,
   schemaName,
   label,
   required,
@@ -23,8 +26,11 @@ export default function ArraySet({
     () => createNewEntry(entryDraft, setEntryDraft),
     [entryDraft]
   );
-  const { omittedFields } = useDBMaster();
-  // const newEntry = createNewEntry(entryDraft, setEntryDraft);
+  // const [selectedEntries, setSelectedEntries] = useState([]);
+  const [expandNew, setExpandNew] = useState(false);
+  const [submitDraft, setSubmitDraft] = useState();
+  const { omittedFields, models } = useDBMaster();
+  const { createTable } = useTableElement();
 
   useEffect(
     () =>
@@ -33,7 +39,6 @@ export default function ArraySet({
       ),
     []
   );
-  // useEffect(() => entryDraft && console.log({ entryDraft }, [entryDraft]));
 
   // ---------- RESET ----------
 
@@ -44,18 +49,28 @@ export default function ArraySet({
 
   // ---------- ADD ----------
 
-  const addEntry = () => {
+  function addEntry() {
     handleChange([...cache, entryDraft]);
     resetDraft();
-  };
+  }
 
   // ---------- REMOVE ----------
 
-  const removeEntry = i => handleChange();
+  const removeEntry = index => handleChange();
 
   // ---------- EDIT ----------
 
-  const editEntry = () => {};
+  const editEntry = index => {
+    !expandNew && setExpandNew(prev => !prev);
+    setEntryDraft(cache[index]);
+    setSubmitDraft(() => {
+      const mod = [...cache];
+      mod[index] = entryDraft;
+      handleChange(mod);
+      resetDraft();
+      setSubmitDraft(undefined);
+    });
+  };
 
   // ============================================
   // :::::::::::::::::\ RENDER /:::::::::::::::::
@@ -68,11 +83,19 @@ export default function ArraySet({
       {
         <ArraySetNew
           elements={newEntry.map(field => field[1].element)}
-          add={addEntry}
+          expanded={expandNew}
+          setExpanded={setExpandNew}
+          add={submitDraft ?? addEntry}
         />
       }
       {cache.length ? (
-        <Table data={cache} omitted={omittedFields} ancestry={ancestry} />
+        createTable(cache, {
+          omittedFields,
+          ancestry,
+          headers: Object.keys(Object.values(cache)[0]).filter(
+            entry => !omittedFields.includes(entry)
+          ),
+        })
       ) : (
         <span className="fade">No entries</span>
       )}

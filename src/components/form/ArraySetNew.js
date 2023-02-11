@@ -1,8 +1,14 @@
 import { useState } from "react";
 import FieldSet from "./FieldSet";
 
-const ArraySetNew = ({ elements, addBtnTxt = "add", add }) => {
-  const [expanded, setExpanded] = useState(false);
+const ArraySetNew = ({
+  elements,
+  addBtnTxt = "add",
+  add,
+  expanded,
+  setExpanded,
+}) => {
+  // const [expanded, setExpanded] = useState(isOpen);
 
   const toggle = () => setExpanded(prev => !prev);
 

@@ -13,7 +13,7 @@
   padding-bottom: 1em;
   /* border: 1px solid red; */
   border-collapse: collapse;
-  border-radius: var(--inside);
+  /* border-radius: var(--inside); */
   overflow-x: scroll;
   width: 100%;
   max-width: 100%;
@@ -39,6 +39,7 @@
 } */
 
 .data-table > * {
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -56,6 +57,17 @@
   border-left: 1px solid var(--pop);
   border-top: 1px solid var(--pop);
 } */
+
+/* &&&&&&&&&&&\ HEADER ROW /&&&&&&&&&&& */
+
+.data-table thead tr {
+  background-color: var(--pop);
+  border-radius: var(--inside);
+}
+
+.data-table thead tr th.header {
+  color: var(--dark);
+}
 
 .data-table tbody tr:not(.data-list) {
   height: 2em;
@@ -109,6 +121,34 @@
   font-weight: 400;
   font-variant: small-caps;
   text-transform: lowercase;
+}
+
+.data-table .entry-index > * {
+display: inline-block;
+}
+
+.data-table .entry-index .entry-selector {
+  --size: 1em;
+  margin: 0;
+  margin-right: 1ch;
+  padding: 0;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--size);
+  height: var(--size);
+  border: 2px solid var(--pop);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.data-table .entry-index .entry-selector:checked::before {
+  --size: .5em;
+  content: "";
+  display: block;
+  background-color: var(--pop);
+  width: var(--size);
+  height: var(--size);
 }
 
 .data-table tbody tr:not(.data-list){

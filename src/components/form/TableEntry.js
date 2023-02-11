@@ -2,16 +2,24 @@ import { useRef, useState } from "react";
 import { useDBMaster } from "../contexts/DBContext";
 import { useDBDraft } from "../contexts/DBDraftContext";
 
-export default function TableEntry({ entry, headers, index, ancestry }) {
+export default function TableEntry({
+  entry,
+  headers,
+  index,
+  ancestry,
+  children,
+}) {
   const [open, setOpen] = useState(false);
   const dataList = useRef();
   const { getPathData } = useDBDraft();
   const { arcanData } = useDBMaster();
   const { references } = arcanData;
 
-  // console.log({ entry });
+  // ---------| TOGGLE |---------
 
   const toggle = () => setOpen(prev => !prev);
+
+  // ---------| RENDER ENTRY |---------
 
   const renderEntry = ancestors => {
     const pathData = getPathData(ancestors);
@@ -42,11 +50,15 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
   return (
     <>
       <tr onClick={toggle}>
-        {<td className="entry-index">{index}</td>}
-        {headers.map((data, i) => {
-          //   console.log({ data });
-          return <td key={i}>{renderEntry([...ancestry, data])}</td>;
-        })}
+        {
+          <td className="entry-index ">
+            {/* <input type="checkbox" className="entry-selector" /> */}
+            {index}
+          </td>
+        }
+        {headers.map((field, i) => (
+          <td key={i}>{renderEntry([...ancestry, field])}</td>
+        ))}
       </tr>
 
       <tr
@@ -56,7 +68,7 @@ export default function TableEntry({ entry, headers, index, ancestry }) {
           maxHeight: open ? dataList.current.scrollHeight + "px" : null,
         }}
       >
-        <td colSpan={headers.length}>Test</td>
+        <td colSpan={headers.length}>{children}</td>
       </tr>
     </>
   );

@@ -11,6 +11,7 @@ import DBDraftProvider from "../../contexts/DBDraftContext";
 import ObjectNest from "../../form/ObjectNest";
 import Table from "../../form/Table";
 import Prompt from "../../frags/Prompt";
+import useTableElement from "../../../hooks/useTableElement";
 
 const DatabaseView = () => {
   const { arcanData, setArcanData, updateArcanData, omittedFields } =
@@ -21,11 +22,14 @@ const DatabaseView = () => {
 
   const { models, references, collections } = arcanData;
   const collection = collections[selection];
+  const { createTable } = useTableElement();
+
+  console.log({ collection });
 
   useEffect(() => console.log({ arcanData }), [arcanData]);
   // useEffect(() => arcanData && console.log({ collection }), [selection]);
 
-  console.log({ entrySelection });
+  // console.log({ entrySelection });
 
   // :::::::::::::\ GET PATH DATA /:::::::::::::
 
@@ -315,15 +319,21 @@ const DatabaseView = () => {
                   </div>
                 </>
               ) : Object.keys(collection).length ? (
-                <Table
-                  data={Object.fromEntries(
-                    collection?.map(entry => {
+                createTable(
+                  Object.fromEntries(
+                    collection.map(entry => {
                       const { name, ...others } = entry;
                       return [name, others];
                     })
-                  )}
-                  omitted={omittedFields}
-                />
+                  ),
+                  {
+                    omittedFields,
+                    headers: Object.keys(models[selection].paths).filter(
+                      field =>
+                        !omittedFields.includes(field) && !field.endsWith(".$*")
+                    ),
+                  }
+                )
               ) : (
                 <span className="fade">No entries</span>
               )}

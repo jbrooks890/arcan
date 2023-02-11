@@ -1,22 +1,23 @@
 import "../../styles/form/Table.css";
 import { useDBMaster } from "../contexts/DBContext";
 import TableEntry from "./TableEntry";
+import Checkbox from "./Checkbox";
 
 export default function Table({
   data = {},
   id,
   className,
-  ancestry = [],
   omitted = [],
-}) {
-  // console.log({ data });
-
-  const isArray = Array.isArray(data);
-  const headers = Object.keys(Object.values(data)[0]).filter(
+  headers = Object.keys(Object.values(data)[0]).filter(
     entry => !omitted.includes(entry)
-  );
-
-  // console.log({ isArray, headers });
+  ),
+  isArray,
+  ancestry = [],
+  selections = [],
+  setSelections,
+  children,
+}) {
+  // const isArray = Array.isArray(data);
 
   return (
     <table
@@ -25,7 +26,9 @@ export default function Table({
     >
       <thead>
         <tr>
-          <th className="corner" />
+          <th className="corner">
+            <input type="checkbox" />
+          </th>
           {headers.map((col, i) => (
             <th key={i} className="header">
               {col}
@@ -33,14 +36,7 @@ export default function Table({
           ))}
         </tr>
       </thead>
-      <tbody>
-        {Object.entries(data).map(([index, entry], i) => (
-          <TableEntry
-            key={i}
-            {...{ index, headers, entry, ancestry: [...ancestry, i] }}
-          />
-        ))}
-      </tbody>
+      <tbody>{children}</tbody>
     </table>
   );
 }

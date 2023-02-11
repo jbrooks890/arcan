@@ -15,11 +15,6 @@ export default function ChoiceBox({
 }) {
   const inputs = useRef([]);
 
-  // display && console.log({ field, display });
-  // useEffect(() => console.log({ field, fieldPath }), []);
-  // useEffect(() => console.log({ field, options }), []);
-  // useEffect(() => console.log({ field, inputs: inputs.current }), []);
-
   return (
     <fieldset
       className={`choice-box ${className ? className : ""} ${
