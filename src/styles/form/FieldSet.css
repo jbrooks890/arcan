@@ -2,6 +2,7 @@
 
 .custom-form fieldset {
   resize: vertical;
+  margin: 0;
 }
 
 .custom-form fieldset.wrapper {

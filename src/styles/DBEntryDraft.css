@@ -24,13 +24,14 @@
   position: relative;
   /* width: 75vw; */
   /* max-width: 480px; */
+  max-width: 50%;
   /* height: 100vh; */
   /* padding: 1em; */
   flex-grow: 1;
   box-sizing: border-box;
   /* border: 2px solid var(--green); */
   /* border-radius: var(--outside); */
-  overflow-y: scroll;
+  overflow: hidden scroll;
 }
 
 #database-entry form .form-wrapper {

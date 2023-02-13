@@ -28,7 +28,7 @@ export default function useTableElement() {
               key={i}
               ancestry={[...ancestry, i]}
             >
-              {entryContents}
+              {entryContents && entryContents(entry)}
             </TableEntry>
           );
         })}

@@ -2,9 +2,12 @@ import { useState } from "react";
 import FieldSet from "./FieldSet";
 
 const ArraySetNew = ({
+  emRef,
   elements,
-  addBtnTxt = "add",
-  add,
+  submitBtnTxt = "submit",
+  submit,
+  cancel,
+  cancelBtnTxt = "cancel",
   expanded,
   setExpanded,
 }) => {
@@ -13,14 +16,19 @@ const ArraySetNew = ({
   const toggle = () => setExpanded(prev => !prev);
 
   return (
-    <FieldSet label="New" className={`array-set-new col`} open={expanded}>
+    <FieldSet
+      ref={emRef}
+      label="New"
+      className={`array-set-new col`}
+      open={expanded}
+    >
       {expanded ? (
         <>
           {elements}
-          <button className="add-btn flex center" onClick={add}>
-            {addBtnTxt}
+          <button className="add-btn flex center" onClick={submit}>
+            {submitBtnTxt}
           </button>
-          <button onClick={() => setExpanded(false)}>cancel</button>
+          <button onClick={cancel}>{cancelBtnTxt}</button>
         </>
       ) : (
         <button onClick={toggle}>Add New</button>

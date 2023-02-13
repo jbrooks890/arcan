@@ -2,7 +2,13 @@ import { useDBMaster } from "../contexts/DBContext";
 import { useDBDraft } from "../contexts/DBDraftContext";
 import Accordion from "./Accordion";
 
-export default function ObjectNest({ dataObj, id, className, ...props }) {
+export default function ObjectNest({
+  dataObj,
+  id,
+  className,
+  ancestry = [],
+  ...props
+}) {
   const { arcanData, omittedFields } = useDBMaster();
   const { getPathData } = useDBDraft();
   const { models, references } = arcanData;
@@ -63,7 +69,7 @@ export default function ObjectNest({ dataObj, id, className, ...props }) {
 
   return (
     <div id={id} className={className}>
-      {buildList(dataObj, props.ancestry)}
+      {buildList(dataObj, ancestry)}
     </div>
   );
 }

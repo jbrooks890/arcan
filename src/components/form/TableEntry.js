@@ -61,15 +61,17 @@ export default function TableEntry({
         ))}
       </tr>
 
-      <tr
-        ref={dataList}
-        className={`data-list ${open ? "open" : "closed"}`}
-        style={{
-          maxHeight: open ? dataList.current.scrollHeight + "px" : null,
-        }}
-      >
-        <td colSpan={headers.length}>{children}</td>
-      </tr>
+      {children?.length && (
+        <tr
+          ref={dataList}
+          className={`data-list ${open ? "open" : "closed"}`}
+          style={{
+            maxHeight: open ? dataList.current.scrollHeight + "px" : null,
+          }}
+        >
+          <td colSpan={headers.length}>{children}</td>
+        </tr>
+      )}
     </>
   );
 }

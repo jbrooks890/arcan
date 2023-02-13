@@ -1,5 +1,5 @@
 import "../../styles/form/ArraySet.css";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ArraySetEntry from "./ArraySetEntry";
 import FieldSet from "./FieldSet";
 import ArraySetNew from "./ArraySetNew";
@@ -7,6 +7,8 @@ import Table from "./Table";
 import { useDBMaster } from "../contexts/DBContext";
 import TableEntry from "./TableEntry";
 import useTableElement from "../../hooks/useTableElement";
+import ObjectNest from "./ObjectNest";
+import useOpsCache from "../../hooks/useOpsCache";
 
 export default function ArraySet({
   field,
@@ -31,6 +33,10 @@ export default function ArraySet({
   const [submitDraft, setSubmitDraft] = useState();
   const { omittedFields, models } = useDBMaster();
   const { createTable } = useTableElement();
+  const { createButtons } = useOpsCache();
+  const newEntryEm = useRef();
+
+  console.log({ entryDraft, submitDraft });
 
   useEffect(
     () =>
@@ -56,20 +62,33 @@ export default function ArraySet({
 
   // ---------- REMOVE ----------
 
-  const removeEntry = index => handleChange();
+  const removeEntry = entry =>
+    handleChange(Object.values(cache).filter(record => record !== entry));
 
   // ---------- EDIT ----------
 
-  const editEntry = index => {
+  const editEntry = entry => {
     !expandNew && setExpandNew(prev => !prev);
-    setEntryDraft(cache[index]);
-    setSubmitDraft(() => {
+    const index = Object.values(cache).indexOf(entry);
+    // console.log({ index, entry });
+    // newEntryEm.current.focus();
+
+    setEntryDraft(entry);
+    setSubmitDraft(() => update => {
       const mod = [...cache];
-      mod[index] = entryDraft;
+      mod[index] = update;
       handleChange(mod);
       resetDraft();
       setSubmitDraft(undefined);
     });
+  };
+
+  // ---------- CANCEL ----------
+
+  const cancel = () => {
+    resetDraft();
+    setExpandNew(false);
+    setSubmitDraft(undefined);
   };
 
   // ============================================
@@ -82,10 +101,12 @@ export default function ArraySet({
     >
       {
         <ArraySetNew
+          emRef={newEntryEm}
           elements={newEntry.map(field => field[1].element)}
           expanded={expandNew}
           setExpanded={setExpandNew}
-          add={submitDraft ?? addEntry}
+          submit={() => (submitDraft ? submitDraft(entryDraft) : addEntry())}
+          cancel={cancel}
         />
       }
       {cache.length ? (
@@ -95,6 +116,17 @@ export default function ArraySet({
           headers: Object.keys(Object.values(cache)[0]).filter(
             entry => !omittedFields.includes(entry)
           ),
+          entryContents: entry => {
+            return (
+              <>
+                {createButtons({
+                  Edit: () => editEntry(entry),
+                  Delete: () => removeEntry(entry),
+                })}
+                {<ObjectNest dataObj={entry} ancestry={ancestry} />}
+              </>
+            );
+          },
         })
       ) : (
         <span className="fade">No entries</span>
