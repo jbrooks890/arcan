@@ -2,7 +2,6 @@ import { useState } from "react";
 import FieldSet from "./FieldSet";
 
 const ArraySetNew = ({
-  emRef,
   elements,
   submitBtnTxt = "submit",
   submit,
@@ -16,12 +15,7 @@ const ArraySetNew = ({
   const toggle = () => setExpanded(prev => !prev);
 
   return (
-    <FieldSet
-      ref={emRef}
-      label="New"
-      className={`array-set-new col`}
-      open={expanded}
-    >
+    <FieldSet label="New" className={`array-set-new col`} open={expanded}>
       {expanded ? (
         <>
           {elements}

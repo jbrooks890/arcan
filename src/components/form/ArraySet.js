@@ -34,9 +34,8 @@ export default function ArraySet({
   const { omittedFields, models } = useDBMaster();
   const { createTable } = useTableElement();
   const { createButtons } = useOpsCache();
-  const newEntryEm = useRef();
 
-  console.log({ entryDraft, submitDraft });
+  // console.log({ entryDraft, submitDraft });
 
   useEffect(
     () =>
@@ -101,7 +100,6 @@ export default function ArraySet({
     >
       {
         <ArraySetNew
-          emRef={newEntryEm}
           elements={newEntry.map(field => field[1].element)}
           expanded={expandNew}
           setExpanded={setExpandNew}
