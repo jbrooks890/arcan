@@ -15,6 +15,8 @@ export default function TableEntry({
   const { arcanData } = useDBMaster();
   const { references } = arcanData;
 
+  // console.log({ children });
+
   // ---------| TOGGLE |---------
 
   const toggle = () => setOpen(prev => !prev);
@@ -61,7 +63,7 @@ export default function TableEntry({
         ))}
       </tr>
 
-      {children?.length && (
+      {children && (
         <tr
           ref={dataList}
           className={`data-list ${open ? "open" : "closed"}`}

@@ -20,8 +20,6 @@ import { useDBMaster } from "../../contexts/DBContext";
 export default function DatabaseDraft({
   record,
   schemaName,
-  // arcanData,
-  // updateArcanData,
   updateMaster,
   cancel,
 }) {
@@ -219,14 +217,16 @@ export default function DatabaseDraft({
         };
 
         // ===========================================
-        const { suggestions, selfRef, enumRef } = options;
-        const pathRef = enumRef ? set?.[enumRef] : undefined;
+        const { suggestions, selfRef, enumRef, pathRef } = options;
+        const srcPath = enumRef ? set?.[enumRef] : undefined;
+
+        pathRef && console.log({ pathRef });
 
         let choices = enumValues?.length
           ? enumValues
           : suggestions?.length
           ? [...suggestions, "other"]
-          : enumRef && pathRef;
+          : enumRef && srcPath;
 
         // enumRef && console.log({ path, choices });
 
@@ -239,13 +239,13 @@ export default function DatabaseDraft({
             });
           }
 
-          // pathRef && console.log({ choices });
+          // srcPath && console.log({ choices });
 
           const display = Object.fromEntries(
             choices
               .map(choice => {
                 const value = set?.[choice];
-                return [choice, pathRef && value ? value : createLabel(choice)];
+                return [choice, srcPath && value ? value : createLabel(choice)];
               })
               .sort((a, b) => {
                 // console.log({ previous: a[1], current: b[1] });
@@ -386,6 +386,14 @@ export default function DatabaseDraft({
               case "ObjectID":
                 // console.log({ data });
                 element = createObjIdBox(options);
+                break;
+              case "Mixed":
+                if (pathRef) {
+                  const pathChain = pathRef?.split(".");
+                  console.log({ pathChain, source });
+                } else {
+                }
+                element = <div>MIXED</div>;
                 break;
               default:
                 console.warn(

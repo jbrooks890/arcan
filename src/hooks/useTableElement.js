@@ -22,6 +22,8 @@ export default function useTableElement() {
     return (
       <Table {...{ headers, isArray }}>
         {Object.entries(data).map(([index, entry], i) => {
+          // entryContents && console.log({ TEST: entryContents(entry) });
+
           return (
             <TableEntry
               {...{ index, entry, headers }}
