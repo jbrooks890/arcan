@@ -170,6 +170,14 @@ export default function DatabaseDraft({
           value,
         };
 
+        // ---------| NO ELEMENT: TODO |---------
+        const NO_ELEMENT = (
+          <label key={key} {...props}>
+            <span>{label}</span>
+            <div>?</div>
+          </label>
+        );
+
         // ---------| CREATE DATASET ENTRY |---------
 
         const createDataSetEntry = (paths, options, single = false) => {
@@ -376,11 +384,14 @@ export default function DatabaseDraft({
                 break;
               case "Map":
                 const $data = paths[path + ".$*"];
-                // console.log($data.options.type.paths);
-                element = createDataSetEntry(
-                  $data.options.type.paths,
-                  options.enum
-                );
+                if ($data?.options?.type?.paths) {
+                  element = createDataSetEntry(
+                    $data.options.type.paths,
+                    options.enum
+                  );
+                } else {
+                  element = NO_ELEMENT;
+                }
 
                 break;
               case "ObjectID":
@@ -399,12 +410,7 @@ export default function DatabaseDraft({
                 console.warn(
                   `${path.toUpperCase()}: No handler for ${instance}`
                 );
-                element = (
-                  <label key={key} {...props}>
-                    <span>{label}</span>
-                    <div>?</div>
-                  </label>
-                );
+                element = NO_ELEMENT;
             }
           } else {
             if (options) {

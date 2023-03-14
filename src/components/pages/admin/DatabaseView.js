@@ -238,7 +238,7 @@ const DatabaseView = () => {
               <div className="legend">Collection Data</div>
               <div className="data-cache flex middle">
                 <div>Entries: {Object.keys(references[selection]).length}</div>
-                <button onClick={entrySelection && toCollectionHome}>
+                <button onClick={() => entrySelection && toCollectionHome()}>
                   Home
                 </button>
                 <button>Filter</button>

@@ -25,7 +25,12 @@ export default function DBDraftProvider({ state, children }) {
           if (instance === "Array")
             return current.caster || current.schema.paths;
           if (instance === "Map")
-            return current.$__schemaType.options.type.paths;
+            return (
+              current.$__schemaType.options?.type?.paths ?? {
+                instance: current.$__schemaType.instance,
+                options: {},
+              }
+            );
         }
         return current.options?.type?.paths || current;
       }

@@ -64,20 +64,30 @@ export default function DBContextProvider({ state, children }) {
 
   const updateArcanData = (newData, collection) => {
     setArcanData(prev => {
-      const { _id, name, subtitle, title, username } = newData;
+      const { id, name, subtitle, title, username } = newData;
 
       const NAME =
         (typeof name === "object" ? name[Object.keys(name)[0]] : name) ??
         subtitle ??
         title ??
         username ??
-        `${collection}: ${_id}`;
+        `${collection}: ${id}`;
+
+      const existing = arcanData.collections[collection].findIndex(
+        entry => entry.id === id
+      );
+
+      console.log({ existing });
 
       return {
         ...prev,
         references: {
           ...prev.references,
-          [collection]: { ...prev.references[collection], [_id]: NAME },
+          [collection]: { ...prev.references[collection], [id]: NAME },
+        },
+        collections: {
+          ...prev.collections,
+          [collection]: [...prev.collections[collection]],
         },
       };
     });
