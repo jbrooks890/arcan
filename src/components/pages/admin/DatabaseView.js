@@ -181,17 +181,27 @@ const DatabaseView = () => {
     try {
       const response = await axios.delete(`/${collection}/${id}`);
       if (response.status === 201) {
-        setArcanData(prev => ({
-          ...prev,
-          references: {
-            ...prev.references,
-            [collection]: Object.fromEntries(
-              Object.entries(prev.references[collection]).filter(
-                ([entryID]) => entryID !== id
-              )
-            ),
-          },
-        }));
+        setArcanData(prev => {
+          return {
+            ...prev,
+            references: {
+              ...prev.references,
+              [collection]: Object.fromEntries(
+                Object.entries(prev.references[collection]).filter(
+                  ([entryID]) => entryID !== id
+                )
+              ),
+            },
+            collections: {
+              ...prev.collections,
+              [collection]: Object.fromEntries(
+                Object.entries(prev.collections[collection]).filter(
+                  ([entryID]) => entryID !== id
+                )
+              ),
+            },
+          };
+        });
         setEntrySelection(null);
       }
     } catch (err) {
@@ -321,7 +331,7 @@ const DatabaseView = () => {
               ) : Object.keys(collection).length ? (
                 createTable(
                   Object.fromEntries(
-                    collection.map(entry => {
+                    Object.values(collection).map(entry => {
                       const { name, ...others } = entry;
                       return [name, others];
                     })

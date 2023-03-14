@@ -12,7 +12,7 @@ export default function DBContextProvider({ state, children }) {
 
   async function fetchModels() {
     const response = await axios.get("/models");
-    // console.log("DATA:", response.data);
+    console.log("DATA:", response.data);
 
     let [models, references, collections] = Object.entries(response.data)
       .map(([name, { schema, collection }]) => {
@@ -22,7 +22,10 @@ export default function DBContextProvider({ state, children }) {
             name,
             Object.fromEntries(collection.map(({ _id, name }) => [_id, name])),
           ],
-          [name, collection],
+          [
+            name,
+            Object.fromEntries(collection.map(entry => [entry._id, entry])),
+          ],
         ];
       })
       .reduce(
@@ -64,30 +67,24 @@ export default function DBContextProvider({ state, children }) {
 
   const updateArcanData = (newData, collection) => {
     setArcanData(prev => {
-      const { id, name, subtitle, title, username } = newData;
+      const { _id, name, subtitle, title, username } = newData;
 
       const NAME =
         (typeof name === "object" ? name[Object.keys(name)[0]] : name) ??
         subtitle ??
         title ??
         username ??
-        `${collection}: ${id}`;
-
-      const existing = arcanData.collections[collection].findIndex(
-        entry => entry.id === id
-      );
-
-      console.log({ existing });
+        `${collection}: ${_id}`;
 
       return {
         ...prev,
         references: {
           ...prev.references,
-          [collection]: { ...prev.references[collection], [id]: NAME },
+          [collection]: { ...prev.references[collection], [_id]: NAME },
         },
         collections: {
           ...prev.collections,
-          [collection]: [...prev.collections[collection]],
+          [collection]: { ...prev.collections[collection], [_id]: newData },
         },
       };
     });

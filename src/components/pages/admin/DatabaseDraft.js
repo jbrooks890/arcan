@@ -202,12 +202,6 @@ export default function DatabaseDraft({
             : ref;
           const dependency = references[reference];
 
-          // record && console.log({ record });
-          // value = record?.populated(path);
-          // console.log({ path, dependency });
-
-          // console.log(path, { value, field });
-
           return (
             <ChoiceBox
               {...{
