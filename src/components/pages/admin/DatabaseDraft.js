@@ -34,9 +34,6 @@ export default function DatabaseDraft({
 
   const initEntry = () => {
     const { paths } = SCHEMA;
-    // const fields = createFormFields(paths);
-    // console.log("\nPATHS:", paths);
-    // setEntryData(fields);
   };
 
   // :-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:
@@ -65,7 +62,7 @@ export default function DatabaseDraft({
         } = data;
 
         const getNestedValue = root =>
-          root ? ancestors.reduce((obj, path) => obj[path], root) : null;
+          root ? ancestors.reduce((obj, path) => obj?.[path], root) : null;
 
         const recordValue = record ? getNestedValue(record) : null;
 
