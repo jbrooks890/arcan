@@ -94,6 +94,7 @@ export default function DatabaseDraft({
             ["avg", "average"],
             ["dob", "date of birth"],
             ["abbr", "abbreviation"],
+            ["msg", "message"],
           ]);
           const nonPlurals = ["s", "y"];
 
@@ -119,7 +120,7 @@ export default function DatabaseDraft({
             (links, current) => {
               const _parent = links.pop();
               const [path, obj] = _parent;
-              const child = [current, obj[path]];
+              const child = [current, obj?.[path]];
               return [...links, _parent, child];
             },
             // [[parent, entryData ?? record]]
@@ -382,6 +383,11 @@ export default function DatabaseDraft({
                   );
                 } else {
                   element = NO_ELEMENT;
+                  element = (
+                    <FieldSet {...props}>
+                      <TextField />
+                    </FieldSet>
+                  );
                 }
 
                 break;
