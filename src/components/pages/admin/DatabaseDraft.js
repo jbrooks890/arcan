@@ -307,8 +307,6 @@ export default function DatabaseDraft({
                 );
                 break;
               case "Decimal128":
-                // if (record?.[path])
-                //   field = parseFloat(record[path].$numberDecimal);
                 element = (
                   <NumField
                     {...props}
