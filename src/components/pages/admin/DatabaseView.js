@@ -219,6 +219,8 @@ const DatabaseView = () => {
   // :::::::::::::::::\ RENDER /:::::::::::::::::
   // ============================================
 
+  console.log(references[selection]);
+
   return (
     <DBDraftProvider
       state={{
@@ -261,10 +263,14 @@ const DatabaseView = () => {
             {/* ------- ENTRY MENU ------- */}
             <Menu
               label="Entries"
-              options={Object.keys(references[selection])}
+              options={
+                selection === "User"
+                  ? Object.values(references[selection])
+                  : Object.keys(references[selection])
+              }
               className="col"
-              display={references[selection]}
-              handleChange={entry => fetchEntry(entry)}
+              display={selection === "User" ? undefined : references[selection]}
+              handleChange={entry_id => fetchEntry(entry_id)}
               value={entrySelection?._id}
               id="collection-entry-list"
             />
